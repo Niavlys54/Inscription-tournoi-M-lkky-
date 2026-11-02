@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-stone-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS Pagny Mölkky (54)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wood: {
+                            50: '#FAF6F0',
+                            100: '#F4ECE1',
+                            200: '#E6D5C3',
+                            300: '#D5BAA2',
+                            500: '#B88E68',
+                            600: '#9B714B',
+                            700: '#7F5635',
+                            800: '#644227',
+                            900: '#4A2F1B',
+                        },
+                        grass: {
+                            50: '#F0F7F4',
+                            100: '#DDEFE7',
+                            500: '#2E8B57',
+                            600: '#246B43',
+                            700: '#1C5233',
+                            800: '#153C25',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4ECE1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #B88E68;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9B714B;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans text-stone-800 antialiased selection:bg-wood-300 selection:text-wood-900">
+
+    <!-- Header / Navbar -->
+    <header class="bg-wood-900 text-wood-50 shadow-lg sticky top-0 z-40 border-b border-wood-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Brand logo & title -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-600 to-wood-700 flex items-center justify-center shadow-inner border border-amber-400/40 text-amber-100 font-heading font-bold text-lg">
+                        <span>54</span>
+                    </div>
+                    <div>
+                        <h1 class="font-heading font-bold text-lg sm:text-xl text-amber-100 tracking-wide leading-tight">AS Pagny Mölkky</h1>
+                        <p class="text-xs text-wood-300 hidden sm:block">Gestion du Club & Suivi des Tournois</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex space-x-1 sm:space-x-2 bg-wood-800/80 p-1 rounded-xl border border-wood-700">
+                    <button id="nav-tournaments" onclick="switchTab('tournaments')" 
+                        class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-grass-600 text-white shadow-md">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Tournois</span>
+                    </button>
+                    <button id="nav-members" onclick="switchTab('members')" 
+                        class="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 text-wood-200 hover:text-white hover:bg-wood-700">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Membres</span>
+                        <span id="header-member-count" class="ml-1 bg-wood-900/60 px-2 py-0.5 rounded-full text-xs text-wood-300">0</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- SECTION 1: TOURNOIS -->
+        <section id="section-tournaments" class="space-y-6">
+            <!-- Action bar & header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-wood-200 shadow-sm">
+                <div>
+                    <h2 class="text-2xl font-heading font-bold text-wood-900">Planning & Inscriptions</h2>
+                    <p class="text-stone-500 text-sm mt-0.5">Suivez les disponibilités et organisez vos équipes pour chaque compétition.</p>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="openModal('modal-tournament')" class="w-full sm:w-auto px-4 py-2.5 bg-grass-600 hover:bg-grass-700 active:bg-grass-800 text-white font-semibold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nouveau tournoi</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tournaments List + Availability View Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Tournaments List (Left panel) -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="flex justify-between items-center px-1">
+                        <h3 class="font-heading font-semibold text-stone-700 text-sm uppercase tracking-wider">Événements</h3>
+                        <span id="tournament-count-badge" class="text-xs bg-stone-200 text-stone-700 px-2 py-0.5 rounded-full font-medium">0 tournoi</span>
+                    </div>
+
+                    <!-- Tournaments Card Container -->
+                    <div id="tournaments-list" class="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
+                        <!-- Content dynamic -->
+                    </div>
+                </div>
+
+                <!-- Availability & Details Panel (Right Panel) -->
+                <div class="lg:col-span-8">
+                    <div id="tournament-detail-container" class="bg-white rounded-2xl border border-wood-200 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+                        <!-- Dynamic details -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 2: MEMBRES -->
+        <section id="section-members" class="space-y-6 hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-wood-200 shadow-sm">
+                <div>
+                    <h2 class="text-2xl font-heading font-bold text-wood-900">Effectif AS Pagny Mölkky</h2>
+                    <p class="text-stone-500 text-sm mt-0.5">Membres du bureau et joueurs inscrits au club.</p>
+                </div>
+                <button onclick="openModal('modal-member')" class="w-full sm:w-auto px-4 py-2.5 bg-wood-700 hover:bg-wood-800 text-white font-semibold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Ajouter un membre</span>
+                </button>
+            </div>
+
+            <!-- Search and stats bar -->
+            <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div class="relative w-full sm:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
+                    <input type="text" id="member-search" oninput="renderMembers()" placeholder="Rechercher un membre..." 
+                        class="w-full pl-9 pr-4 py-2 bg-white border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-wood-500 focus:border-transparent">
+                </div>
+                <div class="flex gap-2 text-xs text-stone-500 w-full sm:w-auto justify-end">
+                    <button onclick="forceReloadClubData()" class="px-3 py-1.5 bg-wood-100 hover:bg-wood-200 text-wood-800 rounded-lg font-medium transition-colors border border-wood-300">
+                        <i class="fa-solid fa-rotate mr-1"></i> Recharger 14 Membres
+                    </button>
+                    <button onclick="resetData()" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg font-medium transition-colors border border-red-200">
+                        <i class="fa-solid fa-trash mr-1"></i> Vider
+                    </button>
+                </div>
+            </div>
+
+            <!-- Members List Grid -->
+            <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Dynamic cards -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: CREATION TOURNOI -->
+    <div id="modal-tournament" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-wood-200 transform transition-all">
+            <div class="bg-wood-900 px-6 py-4 text-white flex justify-between items-center">
+                <h3 class="font-heading font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400"></i>
+                    Créer un tournoi
+                </h3>
+                <button onclick="closeModal('modal-tournament')" class="text-stone-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <form id="form-tournament" onsubmit="handleSaveTournament(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Nom du tournoi *</label>
+                    <input type="text" id="t-name" required placeholder="Ex: Open Régional de Mölkky" 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-grass-500 focus:border-transparent outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Date *</label>
+                        <input type="date" id="t-date" required 
+                            class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-grass-500 focus:border-transparent outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Format *</label>
+                        <select id="t-format" required class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-grass-500 focus:border-transparent outline-none">
+                            <option value="Doublette">Doublette (2)</option>
+                            <option value="Triplette">Triplette (3)</option>
+                            <option value="Individuel">Individuel (1)</option>
+                            <option value="Quadrette">Quadrette (4)</option>
+                            <option value="Autre">Autre format</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Lieu *</label>
+                    <input type="text" id="t-location" required placeholder="Ex: Terrains AS Pagny Mölkky..." 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-grass-500 focus:border-transparent outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Description / Notes</label>
+                    <textarea id="t-notes" rows="2" placeholder="Heure de rdv, équipes à composer..." 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-grass-500 focus:border-transparent outline-none resize-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-3">
+                    <button type="button" onclick="closeModal('modal-tournament')" class="px-4 py-2 text-stone-600 text-sm font-medium hover:bg-stone-100 rounded-xl">Annuler</button>
+                    <button type="submit" class="px-5 py-2 bg-grass-600 hover:bg-grass-700 text-white font-semibold text-sm rounded-xl shadow">Créer le tournoi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: AJOUT MEMBRE -->
+    <div id="modal-member" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-opacity">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-wood-200 transform transition-all">
+            <div class="bg-wood-900 px-6 py-4 text-white flex justify-between items-center">
+                <h3 class="font-heading font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-amber-400"></i>
+                    Nouveau membre
+                </h3>
+                <button onclick="closeModal('modal-member')" class="text-stone-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <form id="form-member" onsubmit="handleSaveMember(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Prénom & Nom *</label>
+                    <input type="text" id="m-name" required placeholder="Ex: Jean Dupont" 
+                        class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-wood-500 focus:border-transparent outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Rôle au club</label>
+                        <select id="m-role" class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-wood-500 focus:border-transparent outline-none">
+                            <option value="Joueur">Membre</option>
+                            <option value="Président">Président</option>
+                            <option value="Vice Président">Vice Président</option>
+                            <option value="Secrétaire">Secrétaire</option>
+                            <option value="Trésorière">Trésorière</option>
+                            <option value="Communication">Communication</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Téléphone</label>
+                        <input type="tel" id="m-phone" placeholder="06 12 34 56 78" 
+                            class="w-full px-3 py-2 border border-stone-300 rounded-xl text-sm focus:ring-2 focus:ring-wood-500 focus:border-transparent outline-none">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-3">
+                    <button type="button" onclick="closeModal('modal-member')" class="px-4 py-2 text-stone-600 text-sm font-medium hover:bg-stone-100 rounded-xl">Annuler</button>
+                    <button type="submit" class="px-5 py-2 bg-wood-700 hover:bg-wood-800 text-white font-semibold text-sm rounded-xl shadow">Ajouter le membre</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // OFFICIAL MEMBERS LIST
+        const DEFAULT_CLUB_MEMBERS = [
+            { id: 'm1', name: 'Cyril Fortin', role: 'Président', phone: '' },
+            { id: 'm2', name: 'Sylvain Gaugain', role: 'Vice Président', phone: '' },
+            { id: 'm3', name: 'Laura Gaugain', role: 'Secrétaire', phone: '' },
+            { id: 'm4', name: 'Inès Chaouch', role: 'Trésorière', phone: '' },
+            { id: 'm5', name: 'Arnaud Pierre', role: 'Communication', phone: '' },
+            { id: 'm6', name: 'Yvon Nicolay', role: 'Membre', phone: '' },
+            { id: 'm7', name: 'François Perrin', role: 'Membre', phone: '' },
+            { id: 'm8', name: 'Jacques Gaugain', role: 'Membre', phone: '' },
+            { id: 'm9', name: 'Seb Bausch', role: 'Membre', phone: '' },
+            { id: 'm10', name: 'Bryan Bausch', role: 'Membre', phone: '' },
+            { id: 'm11', name: 'Logan Gangloff', role: 'Membre', phone: '' },
+            { id: 'm12', name: 'Patrick Gangloff', role: 'Membre', phone: '' },
+            { id: 'm13', name: 'Béa Gangloff', role: 'Membre', phone: '' },
+            { id: 'm14', name: 'Nathalie Mercier', role: 'Membre', phone: '' }
+        ];
+
+        // GLOBAL STATE
+        let state = {
+            members: [],
+            tournaments: [],
+            selectedTournamentId: null,
+            activeFilter: 'ALL'
+        };
+
+        // DOM ELEMENTS
+        const sectionTournaments = document.getElementById('section-tournaments');
+        const sectionMembers = document.getElementById('section-members');
+        const navTournaments = document.getElementById('nav-tournaments');
+        const navMembers = document.getElementById('nav-members');
+
+        // INITIALIZATION
+        window.onload = () => {
+            loadStorage();
+            
+            // Guarantee 14 members exist if storage is empty or count is 0
+            if (!state.members || state.members.length === 0) {
+                forceReloadClubData(false);
+            } else {
+                renderHeaderStats();
+                renderTournaments();
+                renderMembers();
+            }
+        };
+
+        function switchTab(tab) {
+            if (tab === 'tournaments') {
+                sectionTournaments.classList.remove('hidden');
+                sectionMembers.classList.add('hidden');
+                navTournaments.className = "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-grass-600 text-white shadow-md";
+                navMembers.className = "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 text-wood-200 hover:text-white hover:bg-wood-700";
+            } else {
+                sectionTournaments.classList.add('hidden');
+                sectionMembers.classList.remove('hidden');
+                navMembers.className = "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-wood-700 text-white shadow-md";
+                navTournaments.className = "px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 text-wood-200 hover:text-white hover:bg-wood-700";
+            }
+        }
+
+        function saveStorage() {
+            localStorage.setItem('aspagny_molkky_data', JSON.stringify({
+                members: state.members,
+                tournaments: state.tournaments
+            }));
+            renderHeaderStats();
+        }
+
+        function loadStorage() {
+            const data = localStorage.getItem('aspagny_molkky_data');
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    state.members = parsed.members || [];
+                    state.tournaments = parsed.tournaments || [];
+                    if (state.tournaments.length > 0) {
+                        state.selectedTournamentId = state.tournaments[0].id;
+                    }
+                } catch (e) {
+                    console.error("Storage parse error", e);
+                }
+            }
+        }
+
+        function forceReloadClubData(notify = true) {
+            state.members = [...DEFAULT_CLUB_MEMBERS];
+
+            const today = new Date();
+            const date1 = new Date(today.getTime() + 14 * 86400000).toISOString().split('T')[0];
+            const date2 = new Date(today.getTime() + 30 * 86400000).toISOString().split('T')[0];
+
+            state.tournaments = [
+                {
+                    id: 't1',
+                    name: 'Grand Prix AS Pagny Mölkky',
+                    date: date1,
+                    location: 'Terrains du Club, Pagny-sur-Moselle',
+                    format: 'Doublette',
+                    notes: 'Début des lancer à 9h30. Buvette et restauration sur place.',
+                    statuses: {
+                        'm1': 'REGISTERED',
+                        'm2': 'REGISTERED',
+                        'm3': 'REGISTERED',
+                        'm4': 'REGISTERED',
+                        'm5': 'AVAILABLE',
+                        'm12': 'REGISTERED',
+                        'm13': 'REGISTERED'
+                    }
+                },
+                {
+                    id: 't2',
+                    name: 'Tournoi Départemental de Meurthe-et-Moselle (54)',
+                    date: date2,
+                    location: 'Boulodrome Régional',
+                    format: 'Triplette',
+                    notes: 'Tournoi officiel en triplette.',
+                    statuses: {
+                        'm1': 'REGISTERED',
+                        'm2': 'REGISTERED',
+                        'm6': 'REGISTERED',
+                        'm7': 'REGISTERED',
+                        'm8': 'REGISTERED',
+                        'm9': 'REGISTERED'
+                    }
+                }
+            ];
+
+            state.selectedTournamentId = 't1';
+            saveStorage();
+            renderTournaments();
+            renderMembers();
+
+            if (notify) showToast("Les 14 membres du club ont été réinitialisés !", "success");
+        }
+
+        function resetData() {
+            if (confirm("Voulez-vous réinitialiser toutes les données ?")) {
+                state.members = [];
+                state.tournaments = [];
+                state.selectedTournamentId = null;
+                saveStorage();
+                renderTournaments();
+                renderMembers();
+                showToast("Toutes les données ont été vidées.", "info");
+            }
+        }
+
+        function renderHeaderStats() {
+            document.getElementById('header-member-count').textContent = state.members ? state.members.length : 0;
+        }
+
+        function renderMembers() {
+            const container = document.getElementById('members-grid');
+            const searchInput = (document.getElementById('member-search').value || '').toLowerCase();
+            container.innerHTML = '';
+
+            const filtered = state.members.filter(m => 
+                m.name.toLowerCase().includes(searchInput) || 
+                m.role.toLowerCase().includes(searchInput)
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-stone-200">
+                        <i class="fa-solid fa-users-slash text-3xl text-stone-300 mb-2"></i>
+                        <p class="text-stone-600 font-medium">Aucun membre trouvé</p>
+                        <button onclick="forceReloadClubData()" class="mt-2 text-xs font-bold text-wood-700 underline">Recharger les 14 membres</button>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(m => {
+                const initials = m.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-wood-200 text-wood-900 font-bold text-sm flex items-center justify-center border border-wood-300">
+                                    ${initials}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-stone-800 text-sm leading-tight">${m.name}</h4>
+                                    <span class="inline-block mt-0.5 px-2 py-0.5 text-[10px] font-semibold uppercase rounded-md bg-stone-100 text-stone-700 border border-stone-200">
+                                        ${m.role}
+                                    </span>
+                                </div>
+                            </div>
+                            <button onclick="deleteMember('${m.id}')" class="text-stone-300 hover:text-red-500 p-1 transition-colors" title="Supprimer">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
+                        ${m.phone ? `
+                            <div class="text-xs text-stone-500 flex items-center gap-2 mt-2 pt-2 border-t border-stone-100">
+                                <i class="fa-solid fa-phone text-stone-400"></i>
+                                <span>${m.phone}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function handleSaveMember(e) {
+            e.preventDefault();
+            const name = document.getElementById('m-name').value.trim();
+            const role = document.getElementById('m-role').value;
+            const phone = document.getElementById('m-phone').value.trim();
+
+            if (!name) return;
+
+            const newMember = {
+                id: 'm_' + Date.now(),
+                name,
+                role,
+                phone
+            };
+
+            state.members.push(newMember);
+            saveStorage();
+            renderMembers();
+            closeModal('modal-member');
+            document.getElementById('form-member').reset();
+            showToast(`${name} a été ajouté au club !`, "success");
+
+            if (state.selectedTournamentId) renderTournamentDetail();
+        }
+
+        function deleteMember(id) {
+            const member = state.members.find(m => m.id === id);
+            if (!member) return;
+
+            if (confirm(`Voulez-vous supprimer ${member.name} ?`)) {
+                state.members = state.members.filter(m => m.id !== id);
+                state.tournaments.forEach(t => {
+                    if (t.statuses && t.statuses[id]) delete t.statuses[id];
+                });
+
+                saveStorage();
+                renderMembers();
+                if (state.selectedTournamentId) renderTournamentDetail();
+                showToast("Membre supprimé.", "info");
+            }
+        }
+
+        function renderTournaments() {
+            const container = document.getElementById('tournaments-list');
+            const countBadge = document.getElementById('tournament-count-badge');
+            container.innerHTML = '';
+
+            countBadge.textContent = `${state.tournaments.length} tournoi${state.tournaments.length > 1 ? 's' : ''}`;
+
+            if (state.tournaments.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl border border-stone-200 text-center">
+                        <i class="fa-solid fa-calendar-xmark text-stone-300 text-3xl mb-2"></i>
+                        <p class="text-sm font-semibold text-stone-600">Aucun tournoi</p>
+                    </div>
+                `;
+                renderTournamentDetail();
+                return;
+            }
+
+            if (!state.selectedTournamentId || !state.tournaments.some(t => t.id === state.selectedTournamentId)) {
+                state.selectedTournamentId = state.tournaments[0].id;
+            }
+
+            state.tournaments.forEach(t => {
+                const isSelected = t.id === state.selectedTournamentId;
+                const statuses = t.statuses || {};
+                let registered = 0;
+                let available = 0;
+                
+                state.members.forEach(m => {
+                    const st = statuses[m.id] || 'AVAILABLE';
+                    if (st === 'REGISTERED') registered++;
+                    if (st === 'AVAILABLE') available++;
+                });
+
+                const dateFormatted = formatDate(t.date);
+
+                const card = document.createElement('div');
+                card.onclick = () => selectTournament(t.id);
+                card.className = `p-4 rounded-2xl border cursor-pointer transition-all ${
+                    isSelected 
+                        ? 'bg-wood-900 text-white border-wood-900 shadow-md transform scale-[1.01]' 
+                        : 'bg-white hover:bg-wood-50/50 text-stone-800 border-stone-200'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                        <h4 class="font-bold text-sm leading-tight ${isSelected ? 'text-amber-200' : 'text-wood-900'}">${t.name}</h4>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${isSelected ? 'bg-wood-800 text-wood-200 border border-wood-700' : 'bg-wood-100 text-wood-800'}">
+                            ${t.format}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs mb-3 ${isSelected ? 'text-wood-200' : 'text-stone-500'}">
+                        <span class="flex items-center gap-1"><i class="fa-regular fa-calendar text-[11px]"></i> ${dateFormatted}</span>
+                    </div>
+                    <div class="flex items-center gap-2 pt-2 border-t ${isSelected ? 'border-wood-800' : 'border-stone-100'} text-[11px]">
+                        <span class="px-2 py-0.5 rounded-md font-semibold ${isSelected ? 'bg-grass-700 text-white' : 'bg-grass-100 text-grass-800'}">
+                            <i class="fa-solid fa-check text-[9px] mr-1"></i>${registered} inscrits
+                        </span>
+                        <span class="px-2 py-0.5 rounded-md font-medium ${isSelected ? 'bg-amber-900/60 text-amber-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
+                            <i class="fa-regular fa-clock text-[9px] mr-1"></i>${available} dispo
+                        </span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            renderTournamentDetail();
+        }
+
+        function selectTournament(id) {
+            state.selectedTournamentId = id;
+            state.activeFilter = 'ALL';
+            renderTournaments();
+        }
+
+        function handleSaveTournament(e) {
+            e.preventDefault();
+            const name = document.getElementById('t-name').value.trim();
+            const date = document.getElementById('t-date').value;
+            const format = document.getElementById('t-format').value;
+            const location = document.getElementById('t-location').value.trim();
+            const notes = document.getElementById('t-notes').value.trim();
+
+            if (!name || !date || !location) return;
+
+            const initialStatuses = {};
+            state.members.forEach(m => {
+                initialStatuses[m.id] = 'AVAILABLE';
+            });
+
+            const newTournament = {
+                id: 't_' + Date.now(),
+                name,
+                date,
+                format,
+                location,
+                notes,
+                statuses: initialStatuses
+            };
+
+            state.tournaments.unshift(newTournament);
+            state.selectedTournamentId = newTournament.id;
+
+            saveStorage();
+            renderTournaments();
+            closeModal('modal-tournament');
+            document.getElementById('form-tournament').reset();
+            showToast("Nouveau tournoi ajouté !", "success");
+        }
+
+        function deleteTournament(id) {
+            const t = state.tournaments.find(item => item.id === id);
+            if (!t) return;
+
+            if (confirm(`Voulez-vous supprimer le tournoi "${t.name}" ?`)) {
+                state.tournaments = state.tournaments.filter(item => item.id !== id);
+                state.selectedTournamentId = state.tournaments.length > 0 ? state.tournaments[0].id : null;
+                saveStorage();
+                renderTournaments();
+                showToast("Tournoi supprimé.", "info");
+            }
+        }
+
+        function renderTournamentDetail() {
+            const container = document.getElementById('tournament-detail-container');
+            const currentTournament = state.tournaments.find(t => t.id === state.selectedTournamentId);
+
+            if (!currentTournament) {
+                container.innerHTML = `
+                    <div class="flex-1 flex flex-col items-center justify-center p-8 text-center bg-stone-50">
+                        <i class="fa-solid fa-bullseye text-3xl text-wood-400 mb-2"></i>
+                        <h3 class="font-heading font-bold text-stone-700 text-lg">Sélectionnez un tournoi</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            const statuses = currentTournament.statuses || {};
+            
+            let countRegistered = 0;
+            let countAvailable = 0;
+            let countAbsent = 0;
+
+            state.members.forEach(m => {
+                const st = statuses[m.id] || 'AVAILABLE';
+                if (st === 'REGISTERED') countRegistered++;
+                else if (st === 'AVAILABLE') countAvailable++;
+                else if (st === 'ABSENT') countAbsent++;
+            });
+
+            let filteredMembers = state.members.filter(m => {
+                const st = statuses[m.id] || 'AVAILABLE';
+                if (state.activeFilter === 'REGISTERED') return st === 'REGISTERED';
+                if (state.activeFilter === 'AVAILABLE') return st === 'AVAILABLE';
+                if (state.activeFilter === 'ABSENT') return st === 'ABSENT';
+                return true;
+            });
+
+            container.innerHTML = `
+                <!-- Detail Header -->
+                <div class="p-6 bg-wood-50 border-b border-wood-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="bg-wood-800 text-amber-200 text-xs font-semibold px-2.5 py-0.5 rounded-md">
+                                    Format ${currentTournament.format}
+                                </span>
+                                <span class="text-stone-400 text-xs">•</span>
+                                <span class="text-stone-600 text-xs font-semibold flex items-center gap-1">
+                                    <i class="fa-regular fa-calendar text-wood-600"></i> ${formatDate(currentTournament.date)}
+                                </span>
+                            </div>
+                            <h2 class="text-xl sm:text-2xl font-heading font-bold text-wood-900">${currentTournament.name}</h2>
+                            <p class="text-stone-600 text-sm mt-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-location-dot text-grass-600"></i> ${currentTournament.location}
+                            </p>
+                        </div>
+                        <button onclick="deleteTournament('${currentTournament.id}')" 
+                            class="px-3 py-1.5 text-xs text-red-600 bg-red-50 hover:bg-red-100 rounded-lg font-semibold transition-colors flex items-center gap-1 border border-red-200">
+                            <i class="fa-solid fa-trash-can"></i> Supprimer
+                        </button>
+                    </div>
+
+                    ${currentTournament.notes ? `
+                        <div class="mt-4 p-3 bg-white/80 rounded-xl border border-wood-200 text-xs text-stone-600 flex items-start gap-2">
+                            <i class="fa-solid fa-circle-info text-wood-600 mt-0.5"></i>
+                            <span>${escapeHtml(currentTournament.notes)}</span>
+                        </div>
+                    ` : ''}
+
+                    <!-- Stats summary -->
+                    <div class="grid grid-cols-3 gap-3 mt-5">
+                        <div onclick="setFilter('REGISTERED')" class="cursor-pointer p-3 rounded-xl border transition-all ${state.activeFilter === 'REGISTERED' ? 'bg-grass-50 border-grass-500 shadow-sm' : 'bg-white border-stone-200 hover:border-grass-300'}">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-grass-800 uppercase">Inscrits</span>
+                                <i class="fa-solid fa-circle-check text-grass-600 text-sm"></i>
+                            </div>
+                            <div class="text-2xl font-heading font-bold text-grass-900 mt-1">${countRegistered}</div>
+                        </div>
+
+                        <div onclick="setFilter('AVAILABLE')" class="cursor-pointer p-3 rounded-xl border transition-all ${state.activeFilter === 'AVAILABLE' ? 'bg-amber-50 border-amber-500 shadow-sm' : 'bg-white border-stone-200 hover:border-amber-300'}">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-amber-800 uppercase">Dispo (à relancer)</span>
+                                <i class="fa-regular fa-clock text-amber-600 text-sm"></i>
+                            </div>
+                            <div class="text-2xl font-heading font-bold text-amber-900 mt-1">${countAvailable}</div>
+                        </div>
+
+                        <div onclick="setFilter('ABSENT')" class="cursor-pointer p-3 rounded-xl border transition-all ${state.activeFilter === 'ABSENT' ? 'bg-red-50 border-red-400 shadow-sm' : 'bg-white border-stone-200 hover:border-red-300'}">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-red-800 uppercase">Absents</span>
+                                <i class="fa-solid fa-circle-xmark text-red-500 text-sm"></i>
+                            </div>
+                            <div class="text-2xl font-heading font-bold text-red-900 mt-1">${countAbsent}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="px-6 py-3 bg-stone-50 border-b border-stone-200 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-1">
+                        <button onclick="setFilter('ALL')" class="px-3 py-1 rounded-lg text-xs font-semibold transition-all ${state.activeFilter === 'ALL' ? 'bg-wood-800 text-white' : 'text-stone-600 hover:bg-stone-200'}">
+                            Tous (${state.members.length})
+                        </button>
+                        <button onclick="setFilter('REGISTERED')" class="px-3 py-1 rounded-lg text-xs font-semibold transition-all ${state.activeFilter === 'REGISTERED' ? 'bg-grass-600 text-white' : 'text-stone-600 hover:bg-stone-200'}">
+                            Inscrits (${countRegistered})
+                        </button>
+                        <button onclick="setFilter('AVAILABLE')" class="px-3 py-1 rounded-lg text-xs font-semibold transition-all ${state.activeFilter === 'AVAILABLE' ? 'bg-amber-600 text-white' : 'text-stone-600 hover:bg-stone-200'}">
+                            Dispo non inscrits (${countAvailable})
+                        </button>
+                        <button onclick="setFilter('ABSENT')" class="px-3 py-1 rounded-lg text-xs font-semibold transition-all ${state.activeFilter === 'ABSENT' ? 'bg-red-600 text-white' : 'text-stone-600 hover:bg-stone-200'}">
+                            Absents (${countAbsent})
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Members Status List -->
+                <div class="flex-1 p-6 overflow-y-auto max-h-[500px]">
+                    ${state.members.length === 0 ? `
+                        <div class="text-center py-12 text-stone-400">
+                            <p class="text-sm">Aucun membre enregistré.</p>
+                        </div>
+                    ` : filteredMembers.length === 0 ? `
+                        <div class="text-center py-12 text-stone-400">
+                            <p class="text-sm">Aucun membre ne correspond à ce statut.</p>
+                        </div>
+                    ` : `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${filteredMembers.map(m => {
+                                const st = statuses[m.id] || 'AVAILABLE';
+                                const initials = m.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                                
+                                return `
+                                    <div class="p-3 rounded-xl border border-stone-200 bg-white flex items-center justify-between hover:border-wood-300 transition-all shadow-sm">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-full bg-wood-100 text-wood-800 font-bold text-xs flex items-center justify-center border border-wood-200">
+                                                ${initials}
+                                            </div>
+                                            <div>
+                                                <h5 class="font-bold text-stone-800 text-sm leading-snug">${m.name}</h5>
+                                                <span class="text-[10px] text-stone-400">${m.role}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center bg-stone-100 p-1 rounded-xl border border-stone-200 gap-1">
+                                            <button onclick="updateStatus('${currentTournament.id}', '${m.id}', 'REGISTERED')" 
+                                                title="Inscrit"
+                                                class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                                                    st === 'REGISTERED' 
+                                                        ? 'bg-grass-600 text-white shadow-sm' 
+                                                        : 'text-stone-500 hover:text-grass-700 hover:bg-stone-200'
+                                                }">
+                                                <i class="fa-solid fa-check"></i>
+                                                <span class="hidden sm:inline">Inscrit</span>
+                                            </button>
+
+                                            <button onclick="updateStatus('${currentTournament.id}', '${m.id}', 'AVAILABLE')" 
+                                                title="Disponible"
+                                                class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                                                    st === 'AVAILABLE' 
+                                                        ? 'bg-amber-500 text-white shadow-sm' 
+                                                        : 'text-stone-500 hover:text-amber-700 hover:bg-stone-200'
+                                                }">
+                                                <i class="fa-regular fa-clock"></i>
+                                                <span class="hidden sm:inline">Dispo</span>
+                                            </button>
+
+                                            <button onclick="updateStatus('${currentTournament.id}', '${m.id}', 'ABSENT')" 
+                                                title="Absent"
+                                                class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                                                    st === 'ABSENT' 
+                                                        ? 'bg-red-500 text-white shadow-sm' 
+                                                        : 'text-stone-500 hover:text-red-700 hover:bg-stone-200'
+                                                }">
+                                                <i class="fa-solid fa-xmark"></i>
+                                                <span class="hidden sm:inline">Absent</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function setFilter(filter) {
+            state.activeFilter = filter;
+            renderTournamentDetail();
+        }
+
+        function updateStatus(tournamentId, memberId, newStatus) {
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            if (!tournament) return;
+
+            if (!tournament.statuses) tournament.statuses = {};
+            tournament.statuses[memberId] = newStatus;
+
+            saveStorage();
+            renderTournaments();
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-grass-700' : type === 'error' ? 'bg-red-600' : 'bg-wood-800';
+            
+            toast.className = `${bgColor} text-white px-4 py-3 rounded-xl shadow-lg font-medium text-sm flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto`;
+            toast.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
