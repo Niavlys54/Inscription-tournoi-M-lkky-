@@ -11,27 +11,18 @@
             theme: {
                 extend: {
                     colors: {
-                        clubblue: {
-                            DEFAULT: '#2c4a7c',
-                            dark: '#1b3054',
-                        },
-                        clubred: {
-                            DEFAULT: '#b92b27',
-                        },
-                        clubyellow: {
-                            DEFAULT: '#f4c430',
-                            light: '#fdf8e2',
-                        }
+                        clubblue: { DEFAULT: '#2c4a7c', dark: '#1b3054' },
+                        clubyellow: { DEFAULT: '#f4c430', light: '#fdf8e2' }
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-stone-100 text-stone-800 min-h-screen font-sans pb-12">
+<body class="bg-amber-50/40 text-stone-800 min-h-screen font-sans pb-12">
 
     <!-- Header Navigation -->
-    <header class="bg-clubblue-dark text-white shadow-md sticky top-0 z-50 border-b-4 border-clubyellow">
+    <header class="bg-clubblue-dark text-white shadow-lg sticky top-0 z-50 border-b-4 border-clubyellow">
         <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center space-x-3">
                 <div class="bg-clubyellow text-clubblue-dark rounded-xl w-11 h-11 flex flex-col items-center justify-center font-black shadow border border-yellow-500">
@@ -39,16 +30,13 @@
                     <span class="text-sm leading-none">54</span>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-wide text-white flex items-center gap-2">
-                        AS Pagny Mölkky
-                        <span class="bg-clubred text-white text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">1938</span>
-                    </h1>
-                    <p class="text-xs text-clubyellow font-medium">Club de Mölkky • Planning & Tournois</p>
+                    <h1 class="text-xl font-bold leading-tight tracking-wide text-white">AS Pagny Mölkky</h1>
+                    <p class="text-xs text-clubyellow font-medium">Club de Mölkky (54) • Planning & Tournois</p>
                 </div>
             </div>
 
             <div class="flex items-center space-x-2 text-sm">
-                <button id="admin-toggle-btn" onclick="toggleAdminMode()" class="bg-clubblue hover:bg-blue-800 text-white px-3.5 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 border border-blue-400/30 shadow-2xs">
+                <button id="admin-toggle-btn" onclick="toggleAdminMode()" class="bg-clubblue hover:bg-blue-800 text-white px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 border border-blue-400/40 shadow-sm">
                     <i class="fa-solid fa-lock text-xs" id="admin-icon"></i>
                     <span id="admin-btn-text">Mode Admin</span>
                 </button>
@@ -57,10 +45,10 @@
         
         <div class="bg-clubblue text-white">
             <div class="max-w-5xl mx-auto px-4 flex space-x-4">
-                <button onclick="switchTab('tournaments')" id="tab-tournaments" class="py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2 transition">
+                <button onclick="switchTab('tournaments')" id="tab-tournaments" class="py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2">
                     <i class="fa-solid fa-trophy"></i> Tournois
                 </button>
-                <button onclick="switchTab('members')" id="tab-members" class="py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition">
+                <button onclick="switchTab('members')" id="tab-members" class="py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2">
                     <i class="fa-solid fa-users"></i> Membres (<span id="member-count">14</span>)
                 </button>
             </div>
@@ -71,12 +59,12 @@
 
         <!-- TAB: TOURNOIS -->
         <section id="view-tournaments" class="space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-xs border border-stone-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-stone-200">
                 <div>
                     <h2 class="text-lg font-bold text-stone-800">Calendrier des Tournois</h2>
                     <p class="text-xs text-stone-500">Indiquez directement votre disponibilité pour chaque tournoi.</p>
                 </div>
-                <button onclick="openModal('modal-tournament')" class="admin-only hidden bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-4 py-2 rounded-lg shadow-2xs transition text-sm flex items-center gap-2 self-start sm:self-auto">
+                <button onclick="openModal('modal-tournament')" class="admin-only hidden bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-4 py-2 rounded-lg shadow transition text-sm flex items-center gap-2 self-start sm:self-auto">
                     <i class="fa-solid fa-plus"></i> Ajouter un Tournoi
                 </button>
             </div>
@@ -88,7 +76,7 @@
 
         <!-- TAB: MEMBRES -->
         <section id="view-members" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-xs border border-stone-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-stone-200">
                 <div>
                     <h2 class="text-lg font-bold text-stone-800">Membres du Club AS Pagny Mölkky</h2>
                     <p class="text-xs text-stone-500">Effectif complet des 14 membres enregistrés.</p>
@@ -97,7 +85,7 @@
                     <button onclick="resetDefaultData()" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium px-3 py-2 rounded-lg text-xs flex items-center gap-1 transition">
                         <i class="fa-solid fa-rotate-left"></i> Recharger 14 Membres
                     </button>
-                    <button onclick="openModal('modal-member')" class="admin-only hidden bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-4 py-2 rounded-lg shadow-2xs transition text-sm flex items-center gap-2">
+                    <button onclick="openModal('modal-member')" class="admin-only hidden bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-4 py-2 rounded-lg shadow transition text-sm flex items-center gap-2">
                         <i class="fa-solid fa-user-plus"></i> Nouveau Membre
                     </button>
                 </div>
@@ -111,7 +99,7 @@
     </main>
 
     <!-- MODAL: NOUVEAU TOURNOI -->
-    <div id="modal-tournament" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+    <div id="modal-tournament" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="font-bold text-lg text-stone-800">Ajouter un Tournoi</h3>
@@ -143,4 +131,235 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('modal-tournament')" class="px-4 py-2 text-sm font-medium text-stone-600">Annuler</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-blue
+                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-blue-800 text-white rounded-lg shadow">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: NOUVEAU MEMBRE -->
+    <div id="modal-member" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-lg text-stone-800">Ajouter un Membre</h3>
+                <button onclick="closeModal('modal-member')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="form-member" onsubmit="saveMember(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-stone-600 uppercase mb-1">Nom et Prénom</label>
+                    <input type="text" id="m-name" required placeholder="Ex: Jean Dupont" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-stone-600 uppercase mb-1">Rôle / Fonction dans le club</label>
+                    <input type="text" id="m-role" placeholder="Ex: Joueur, Trésorier, etc." class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeModal('modal-member')" class="px-4 py-2 text-sm font-medium text-stone-600">Annuler</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-blue-800 text-white rounded-lg shadow">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_MEMBERS = [
+            { id: '1', name: 'Cyril Fortin', role: 'Président' },
+            { id: '2', name: 'Sylvain Gaugain', role: 'Vice Président' },
+            { id: '3', name: 'Laura Gaugain', role: 'Secrétaire' },
+            { id: '4', name: 'Inès Chaouch', role: 'Trésorière' },
+            { id: '5', name: 'Arnaud Pierre', role: 'Communication' },
+            { id: '6', name: 'Yvon Nicolay', role: 'Membre' },
+            { id: '7', name: 'François Perrin', role: 'Membre' },
+            { id: '8', name: 'Jacques Gaugain', role: 'Membre' },
+            { id: '9', name: 'Seb Bausch', role: 'Membre' },
+            { id: '10', name: 'Bryan Bausch', role: 'Membre' },
+            { id: '11', name: 'Logan Gangloff', role: 'Membre' },
+            { id: '12', name: 'Patrick Gangloff', role: 'Membre' },
+            { id: '13', name: 'Béa Gangloff', role: 'Membre' },
+            { id: '14', name: 'Nathalie Mercier', role: 'Membre' }
+        ];
+
+        let state = { isAdmin: false, adminPassword: 'admin54', members: [], tournaments: [] };
+
+        function initApp() {
+            const savedMembers = localStorage.getItem('as_pagny_members');
+            const savedTournaments = localStorage.getItem('as_pagny_tournaments');
+            state.members = (savedMembers && JSON.parse(savedMembers).length > 0) ? JSON.parse(savedMembers) : DEFAULT_MEMBERS;
+            state.tournaments = (savedTournaments) ? JSON.parse(savedTournaments) : [];
+            saveData();
+            render();
+        }
+
+        function saveData() {
+            localStorage.setItem('as_pagny_members', JSON.stringify(state.members));
+            localStorage.setItem('as_pagny_tournaments', JSON.stringify(state.tournaments));
+        }
+
+        function resetDefaultData() {
+            if(confirm("Recharger la liste officielle des 14 membres ?")) {
+                state.members = DEFAULT_MEMBERS;
+                saveData();
+                render();
+            }
+        }
+
+        function toggleAdminMode() {
+            if (state.isAdmin) {
+                state.isAdmin = false;
+                alert("Mode Administrateur désactivé.");
+            } else {
+                const pass = prompt("Mot de passe administrateur (par défaut: admin54) :");
+                if (pass === state.adminPassword) {
+                    state.isAdmin = true;
+                    alert("Mode Administrateur activé !");
+                } else if (pass !== null) {
+                    alert("Mot de passe incorrect.");
+                }
+            }
+            render();
+        }
+
+        function switchTab(tab) {
+            document.getElementById('view-tournaments').classList.toggle('hidden', tab !== 'tournaments');
+            document.getElementById('view-members').classList.toggle('hidden', tab !== 'members');
+            document.getElementById('tab-tournaments').className = tab === 'tournaments' ? 'py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2';
+            document.getElementById('tab-members').className = tab === 'members' ? 'py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2';
+        }
+
+        function setStatus(tournamentId, memberId, newStatus) {
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            if (tournament) {
+                if (!tournament.statuses) tournament.statuses = {};
+                tournament.statuses[memberId] = newStatus;
+                saveData();
+                render();
+            }
+        }
+
+        function saveTournament(e) {
+            e.preventDefault();
+            state.tournaments.unshift({
+                id: Date.now().toString(),
+                name: document.getElementById('t-name').value,
+                date: document.getElementById('t-date').value,
+                format: document.getElementById('t-format').value,
+                location: document.getElementById('t-location').value,
+                statuses: {}
+            });
+            saveData();
+            closeModal('modal-tournament');
+            document.getElementById('form-tournament').reset();
+            render();
+        }
+
+        function deleteTournament(id) {
+            if (confirm("Supprimer ce tournoi ?")) {
+                state.tournaments = state.tournaments.filter(t => t.id !== id);
+                saveData();
+                render();
+            }
+        }
+
+        function saveMember(e) {
+            e.preventDefault();
+            state.members.push({ id: Date.now().toString(), name: document.getElementById('m-name').value, role: document.getElementById('m-role').value || 'Membre' });
+            saveData();
+            closeModal('modal-member');
+            document.getElementById('form-member').reset();
+            render();
+        }
+
+        function deleteMember(id) {
+            if (confirm("Supprimer ce membre ?")) {
+                state.members = state.members.filter(m => m.id !== id);
+                saveData();
+                render();
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function render() {
+            document.getElementById('admin-btn-text').textContent = state.isAdmin ? "Admin Actif" : "Mode Admin";
+            document.getElementById('admin-icon').className = state.isAdmin ? "fa-solid fa-lock-open text-xs text-yellow-300" : "fa-solid fa-lock text-xs";
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !state.isAdmin));
+            document.getElementById('member-count').textContent = state.members.length;
+
+            document.getElementById('members-grid').innerHTML = state.members.map(m => `
+                <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-clubyellow-light text-blue-900 font-bold flex items-center justify-center text-sm border border-yellow-300">${m.name.split(' ').map(n=>n[0]).join('')}</div>
+                        <div>
+                            <div class="font-bold text-stone-800 text-sm">${m.name}</div>
+                            <div class="text-xs text-clubblue bg-blue-50 px-2 py-0.5 rounded-full inline-block mt-0.5 border border-blue-100 font-medium">${m.role}</div>
+                        </div>
+                    </div>
+                    ${state.isAdmin ? `<button onclick="deleteMember('${m.id}')" class="text-stone-300 hover:text-red-600 p-1"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                </div>
+            `).join('');
+
+            const tournamentsList = document.getElementById('tournaments-list');
+            if (state.tournaments.length === 0) {
+                tournamentsList.innerHTML = `<div class="bg-white p-8 rounded-xl text-center text-stone-400 border border-stone-200">Aucun tournoi programmé. Activez le mode admin pour en ajouter un !</div>`;
+                return;
+            }
+
+            tournamentsList.innerHTML = state.tournaments.map(t => {
+                const statuses = t.statuses || {};
+                let registered = 0, available = 0, absent = 0;
+                state.members.forEach(m => {
+                    const st = statuses[m.id] || 'none';
+                    if (st === 'registered') registered++;
+                    else if (st === 'available') available++;
+                    else if (st === 'absent') absent++;
+                });
+
+                return `
+                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
+                        <div class="bg-clubblue-dark text-white p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-clubyellow">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-clubyellow text-clubblue-dark font-bold text-xs px-2 py-0.5 rounded">${t.format}</span>
+                                    <h3 class="font-bold text-lg">${t.name}</h3>
+                                </div>
+                                <div class="text-xs text-blue-200 flex items-center gap-4 mt-1">
+                                    <span><i class="fa-regular fa-calendar mr-1"></i> ${new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                    ${t.location ? `<span><i class="fa-solid fa-location-dot mr-1"></i> ${t.location}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs flex-wrap">
+                                <span class="bg-emerald-900 text-emerald-200 border border-emerald-700 px-2.5 py-1 rounded-lg">🟢 ${registered} Inscrits</span>
+                                <span class="bg-amber-900 text-amber-200 border border-amber-700 px-2.5 py-1 rounded-lg">🟡 ${available} Dispos</span>
+                                <span class="bg-rose-900 text-rose-200 border border-rose-700 px-2.5 py-1 rounded-lg">🔴 ${absent} Absents</span>
+                                ${state.isAdmin ? `<button onclick="deleteTournament('${t.id}')" class="ml-2 text-rose-300 hover:text-white p-1"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-stone-50/50">
+                            <h4 class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-3">Disponibilités des Membres</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                                ${state.members.map(m => {
+                                    const st = statuses[m.id] || 'none';
+                                    return `
+                                        <div class="bg-white p-2.5 rounded-lg border border-stone-200 flex items-center justify-between shadow-sm">
+                                            <span class="text-xs font-semibold text-stone-800">${m.name}</span>
+                                            <div class="flex items-center space-x-1">
+                                                <button onclick="setStatus('${t.id}', '${m.id}', 'registered')" title="Inscrit" class="px-2 py-1 text-xs rounded border transition ${st === 'registered' ? 'bg-emerald-600 text-white font-bold border-emerald-600 shadow-sm' : 'bg-stone-50 text-stone-400 hover:bg-stone-100 border-stone-200'}">Inscrit</button>
+                                                <button onclick="setStatus('${t.id}', '${m.id}', 'available')" title="Disponible" class="px-2 py-1 text-xs rounded border transition ${st === 'available' ? 'bg-amber-500 text-stone-900 font-bold border-amber-500 shadow-sm' : 'bg-stone-50 text-stone-400 hover:bg-stone-100 border-stone-200'}">Dispo</button>
+                                                <button onclick="setStatus('${t.id}', '${m.id}', 'absent')" title="Absent" class="px-2 py-1 text-xs rounded border transition ${st === 'absent' ? 'bg-rose-600 text-white font-bold border-rose-600 shadow-sm' : 'bg-stone-50 text-stone-400 hover:bg-stone-100 border-stone-200'}">Absent</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
