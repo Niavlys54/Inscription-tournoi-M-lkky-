@@ -18,8 +18,8 @@
         <div style="max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 12px; user-select: none;">
                 <div style="background: white; padding: 4px; border-radius: 12px; border: 1px solid rgba(220,38,38,0.4); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://raw.githubusercontent.com/niavlys54/Inscription-tournoi-M-lkky-/main/logo.png" 
-                         onerror="this.onerror=null; this.src='https://i.ibb.co/L50Q28f/logo-pagny.png';" 
+                    <!-- Vrai Logo Officiel du Club -->
+                    <img src="https://i.ibb.co/L50Q28f/logo-pagny.png" 
                          alt="AS Pagny Mölkky 1938" 
                          style="height: 48px; width: auto; object-fit: contain;">
                 </div>
@@ -180,7 +180,6 @@
     </div>
 
     <script>
-        // Configuration Firebase partagée
         const firebaseConfig = {
             apiKey: "AIzaSyDemoConfigKeyForASPagnyMolkky54",
             authDomain: "as-pagny-molkky.firebaseapp.com",
@@ -214,7 +213,6 @@
         let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
-            // Écoute en direct des changements dans la base Firebase
             db.ref('members').on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
@@ -241,7 +239,7 @@
         }
 
         function resetDefaultData() {
-            if(confirm("Recharger la liste officielle des 14 membres dans la base partagée ?")) {
+            if(confirm("Recharger la liste officielle des 14 membres avec leurs rôles d'origine ?")) {
                 db.ref('members').set(DEFAULT_MEMBERS);
             }
         }
@@ -418,7 +416,7 @@
                             <div style="width: 40px; height: 40px; border-radius: 50%; background: #eff6ff; color: #1d4ed8; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; border: 1px solid #bfdbfe;">${m.name.split(' ').map(n=>n[0]).join('')}</div>
                             <div>
                                 <div style="font-weight: bold; color: #1e293b; font-size: 0.875rem;">${m.name}</div>
-                                <div style="font-size: 0.75px; color: #dc2626; background: #fef2f2; padding: 2px 8px; border-radius: 9999px; display: inline-block; margin-top: 2px; border: 1px solid #fee2e2; font-weight: 500;">${m.role}</div>
+                                <div style="font-size: 0.75rem; color: #dc2626; background: #fef2f2; padding: 2px 8px; border-radius: 9999px; display: inline-block; margin-top: 2px; border: 1px solid #fee2e2; font-weight: 500;">${m.role}</div>
                             </div>
                         </div>
                         ${state.isAdmin ? `<button onclick="deleteMember('${m.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 1rem;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>` : ''}
