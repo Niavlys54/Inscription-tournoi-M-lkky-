@@ -92,7 +92,7 @@
     <!-- MODALE TOURNOI -->
     <div id="modal-tournament" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
-            <div style="display: flex; justify-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
                 <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;">Ajouter un Tournoi</h3>
                 <button onclick="closeModal('modal-tournament')" style="background: none; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -256,6 +256,18 @@
                 tournament.statuses[memberId] = newStatus;
                 saveData();
                 render();
+            }
+        }
+
+        function toggleAvailabilityMenu(tournamentId) {
+            const container = document.getElementById(`avail-container-${tournamentId}`);
+            const icon = document.getElementById(`avail-icon-${tournamentId}`);
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                icon.className = 'fa-solid fa-chevron-up';
+            } else {
+                container.style.display = 'none';
+                icon.className = 'fa-solid fa-chevron-down';
             }
         }
 
@@ -482,22 +494,29 @@
                                 </div>
                             ` : ''}
 
-                            <div style="padding: 16px; background-color: #f8fafc;">
-                                <h4 style="font-size: 0.75rem; font-weight: bold; color: #64748b; text-transform: uppercase; margin: 0 0 12px 0;">Disponibilités des Membres</h4>
-                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
-                                    ${state.members.map(m => {
-                                        const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
-                                        return `
-                                            <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">${m.name}</span>
-                                                <div style="display: flex; gap: 4px;">
-                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'registered')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#059669' : '#f8fafc'}; color: ${st === 'registered' ? 'white' : '#64748b'}; font-weight: ${st === 'registered' ? 'bold' : 'normal'}; cursor: pointer;">Inscrit</button>
-                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'available')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'available' ? '#f59e0b' : '#cbd5e1'}; background: ${st === 'available' ? '#f59e0b' : '#f8fafc'}; color: ${st === 'available' ? '#1e293b' : '#64748b'}; font-weight: ${st === 'available' ? 'bold' : 'normal'}; cursor: pointer;">Dispo</button>
-                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'absent')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'absent' ? '#e11d48' : '#cbd5e1'}; background: ${st === 'absent' ? '#e11d48' : '#f8fafc'}; color: ${st === 'absent' ? 'white' : '#64748b'}; font-weight: ${st === 'absent' ? 'bold' : 'normal'}; cursor: pointer;">Absent</button>
+                            <!-- MENU REPLIANT DES DISPONIBILITÉS -->
+                            <div style="background-color: #f8fafc;">
+                                <button onclick="toggleAvailabilityMenu('${t.id}')" style="width: 100%; background: #e2e8f0; border: none; padding: 12px 16px; font-weight: bold; font-size: 0.75rem; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                    <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> Gérer / Voir les disponibilités des membres</span>
+                                    <i class="fa-solid fa-chevron-down" id="avail-icon-${t.id}"></i>
+                                </button>
+                                
+                                <div id="avail-container-${t.id}" style="display: none; padding: 16px; border-top: 1px solid #cbd5e1;">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
+                                        ${state.members.map(m => {
+                                            const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
+                                            return `
+                                                <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                                    <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">${m.name}</span>
+                                                    <div style="display: flex; gap: 4px;">
+                                                        <button onclick="setStatus('${t.id}', '${m.id}', 'registered')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#059669' : '#f8fafc'}; color: ${st === 'registered' ? 'white' : '#64748b'}; font-weight: ${st === 'registered' ? 'bold' : 'normal'}; cursor: pointer;">Inscrit</button>
+                                                        <button onclick="setStatus('${t.id}', '${m.id}', 'available')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'available' ? '#f59e0b' : '#cbd5e1'}; background: ${st === 'available' ? '#f59e0b' : '#f8fafc'}; color: ${st === 'available' ? '#1e293b' : '#64748b'}; font-weight: ${st === 'available' ? 'bold' : 'normal'}; cursor: pointer;">Dispo</button>
+                                                        <button onclick="setStatus('${t.id}', '${m.id}', 'absent')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'absent' ? '#e11d48' : '#cbd5e1'}; background: ${st === 'absent' ? '#e11d48' : '#f8fafc'}; color: ${st === 'absent' ? 'white' : '#64748b'}; font-weight: ${st === 'absent' ? 'bold' : 'normal'}; cursor: pointer;">Absent</button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        `;
-                                    }).join('')}
+                                            `;
+                                        }).join('')}
+                                    </div>
                                 </div>
                             </div>
                         </div>
