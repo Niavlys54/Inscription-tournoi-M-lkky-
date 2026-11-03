@@ -194,16 +194,6 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre' }
         ];
 
-        const ADMIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
-
-        async function hashString(str) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
         let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
@@ -228,22 +218,19 @@
             }
         }
 
-        async function toggleAdminMode() {
+        function toggleAdminMode() {
             if (state.isAdmin) {
                 state.isAdmin = false;
                 alert("Mode Administrateur désactivé.");
                 render();
             } else {
                 const pass = prompt("Mot de passe administrateur :");
-                if (pass) {
-                    const hashedInput = await hashString(pass);
-                    if (hashedInput === ADMIN_HASH) {
-                        state.isAdmin = true;
-                        alert("Mode Administrateur activé !");
-                        render();
-                    } else {
-                        alert("Mot de passe incorrect.");
-                    }
+                if (pass === "admin54") {
+                    state.isAdmin = true;
+                    alert("Mode Administrateur activé !");
+                    render();
+                } else if (pass !== null) {
+                    alert("Mot de passe incorrect.");
                 }
             }
         }
