@@ -11,9 +11,16 @@
             theme: {
                 extend: {
                     colors: {
-                        clubblue: { DEFAULT: '#1e3a8a', dark: '#0f172a' },
-                        clubyellow: { DEFAULT: '#f59e0b', light: '#fef3c7' },
-                        clubred: { DEFAULT: '#dc2626' }
+                        clubblue: {
+                            light: '#2563eb',
+                            DEFAULT: '#1d4ed8',
+                            dark: '#0f172a',
+                        },
+                        clubred: {
+                            light: '#ef4444',
+                            DEFAULT: '#dc2626',
+                            dark: '#991b1b',
+                        }
                     }
                 }
             }
@@ -23,35 +30,38 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen font-sans pb-12">
 
     <!-- Header Navigation -->
-    <header class="bg-clubblue-dark text-white shadow-md sticky top-0 z-50 border-b-4 border-clubyellow">
-        <div class="max-w-5xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+    <header class="bg-clubblue-dark text-white shadow-md sticky top-0 z-50 border-b-4 border-clubred">
+        <div class="max-w-5xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3">
+            <!-- Vrai Logo Officiel du Club -->
             <div class="flex items-center space-x-3 select-none">
-                <div class="bg-white p-1 rounded-xl shadow-md border border-clubyellow/50 flex items-center justify-center">
-                    <svg class="w-10 h-10" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M100 10 L190 50 L190 140 Q100 230 100 230 Q100 230 10 140 L10 50 Z" fill="#FFCC00" stroke="#1E3A8A" stroke-width="6"/>
-                        <path d="M15 52 L185 52 L185 138 Q100 222 100 222 Q100 222 15 138 Z" fill="#F5B000"/>
-                        <path d="M25 80 L175 130 L165 150 L15 100 Z" fill="#E50012"/>
-                        <circle cx="50" cy="95" r="4" fill="white"/><circle cx="65" cy="100" r="4" fill="white"/><circle cx="80" cy="105" r="4" fill="white"/>
-                        <path d="M80 50 Q110 35 140 40 Q170 45 160 65 Q140 70 120 60 Q100 75 75 70 Z" fill="#1E3A8A"/>
-                        <text x="100" y="150" font-family="Impact, Arial Black, sans-serif" font-size="28" font-weight="bold" fill="black" text-anchor="middle">A.S.</text>
-                        <text x="100" y="185" font-family="Impact, Arial Black, sans-serif" font-size="38" font-weight="bold" fill="black" text-anchor="middle">PAGNY</text>
-                        <text x="100" y="208" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="black" text-anchor="middle">1938</text>
-                    </svg>
+                <div class="bg-white p-1 rounded-xl shadow-md border border-clubred/40 flex items-center justify-center">
+                    <img src="https://raw.githubusercontent.com/niavlys54/Inscription-tournoi-M-lkky-/main/logo.png" 
+                         onerror="this.onerror=null; this.src='https://i.ibb.co/L50Q28f/logo-pagny.png';" 
+                         alt="AS Pagny Mölkky 1938" 
+                         class="h-12 w-auto object-contain">
                 </div>
                 <div>
                     <h1 class="text-xl font-black tracking-wide text-white flex items-center gap-2">
                         AS PAGNY MÖLKKY
-                        <span class="bg-clubred text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">54</span>
+                        <span class="bg-clubred text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-xs">54</span>
                     </h1>
-                    <p class="text-xs text-clubyellow font-medium">Saison 2026 • Planning & Inscriptions</p>
+                    <p class="text-xs text-blue-200 font-medium">Club de Mölkky • Saison 2026</p>
                 </div>
+            </div>
+
+            <!-- Bouton Admin Direct -->
+            <div class="flex items-center space-x-2 text-sm">
+                <button id="admin-toggle-btn" onclick="toggleAdminMode()" class="bg-clubblue hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-lg font-medium transition flex items-center gap-2 border border-blue-400/30 shadow-xs">
+                    <i class="fa-solid fa-lock text-xs text-yellow-300" id="admin-icon"></i>
+                    <span id="admin-btn-text">Mode Admin</span>
+                </button>
             </div>
         </div>
         
         <div class="bg-clubblue text-white">
             <div class="max-w-5xl mx-auto px-4 flex space-x-4">
-                <button onclick="switchTab('tournaments')" id="tab-tournaments" class="py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2 transition">
-                    <i class="fa-solid fa-trophy text-clubyellow"></i> Tournois
+                <button onclick="switchTab('tournaments')" id="tab-tournaments" class="py-2.5 px-3 border-b-2 border-clubred font-bold text-sm text-white flex items-center gap-2 transition">
+                    <i class="fa-solid fa-trophy text-red-400"></i> Tournois
                 </button>
                 <button onclick="switchTab('members')" id="tab-members" class="py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition">
                     <i class="fa-solid fa-users"></i> Membres (<span id="member-count">14</span>)
@@ -64,13 +74,13 @@
 
         <!-- ONGLET: TOURNOIS -->
         <section id="view-tournaments" class="space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-xs border border-slate-200">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800">Calendrier des Tournois</h2>
-                    <p class="text-xs text-slate-500">Cochez votre présence pour chaque événement du club ou ajoutez un nouveau tournoi.</p>
+                    <p class="text-xs text-slate-500">Cochez votre présence pour chaque événement du club.</p>
                 </div>
-                <button onclick="openModal('modal-tournament')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg shadow transition text-sm flex items-center gap-2 self-start sm:self-auto">
-                    <i class="fa-solid fa-plus"></i> Ajouter un Tournoi
+                <button onclick="openModal('modal-tournament')" class="admin-only hidden bg-clubred hover:bg-clubred-dark text-white font-medium px-4 py-2 rounded-lg shadow-xs transition text-sm flex items-center gap-2 self-start sm:self-auto">
+                    <i class="fa-solid fa-plus"></i> Nouveau Tournoi
                 </button>
             </div>
 
@@ -81,16 +91,16 @@
 
         <!-- ONGLET: MEMBRES -->
         <section id="view-members" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-xs border border-slate-200">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800">Membres du Club AS Pagny Mölkky</h2>
                     <p class="text-xs text-slate-500">Effectif officiel des 14 joueurs inscrits.</p>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="resetDefaultData()" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium px-3 py-2 rounded-lg text-xs flex items-center gap-1 transition">
-                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser les 14 membres
+                    <button onclick="resetDefaultData()" class="admin-only hidden bg-blue-50 hover:bg-blue-100 text-clubblue border border-blue-200 font-medium px-3 py-2 rounded-lg text-xs flex items-center gap-1 transition">
+                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser l'effectif
                     </button>
-                    <button onclick="openModal('modal-member')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg shadow transition text-sm flex items-center gap-2">
+                    <button onclick="openModal('modal-member')" class="admin-only hidden bg-clubred hover:bg-clubred-dark text-white font-medium px-4 py-2 rounded-lg shadow-xs transition text-sm flex items-center gap-2">
                         <i class="fa-solid fa-user-plus"></i> Nouveau Membre
                     </button>
                 </div>
@@ -113,7 +123,7 @@
             <form id="form-tournament" onsubmit="saveTournament(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nom du Tournoi</label>
-                    <input type="text" id="t-name" required placeholder="Ex: Open de Moselle" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                    <input type="text" id="t-name" required placeholder="Ex: Open de France" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -136,7 +146,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('modal-tournament')" class="px-4 py-2 text-sm font-medium text-slate-600">Annuler</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-blue-900 text-white rounded-lg shadow">Enregistrer</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-clubblue-dark text-white rounded-lg shadow-xs">Enregistrer</button>
                 </div>
             </form>
         </div>
@@ -160,7 +170,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('modal-member')" class="px-4 py-2 text-sm font-medium text-slate-600">Annuler</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-blue-900 text-white rounded-lg shadow">Ajouter</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-clubblue-dark text-white rounded-lg shadow-xs">Ajouter</button>
                 </div>
             </form>
         </div>
@@ -184,7 +194,17 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre' }
         ];
 
-        let state = { members: [], tournaments: [] };
+        const ADMIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+
+        async function hashString(str) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
             const savedMembers = localStorage.getItem('as_pagny_members');
@@ -208,11 +228,31 @@
             }
         }
 
+        async function toggleAdminMode() {
+            if (state.isAdmin) {
+                state.isAdmin = false;
+                alert("Mode Administrateur désactivé.");
+                render();
+            } else {
+                const pass = prompt("Mot de passe administrateur :");
+                if (pass) {
+                    const hashedInput = await hashString(pass);
+                    if (hashedInput === ADMIN_HASH) {
+                        state.isAdmin = true;
+                        alert("Mode Administrateur activé !");
+                        render();
+                    } else {
+                        alert("Mot de passe incorrect.");
+                    }
+                }
+            }
+        }
+
         function switchTab(tab) {
             document.getElementById('view-tournaments').classList.toggle('hidden', tab !== 'tournaments');
             document.getElementById('view-members').classList.toggle('hidden', tab !== 'members');
-            document.getElementById('tab-tournaments').className = tab === 'tournaments' ? 'py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2 transition' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition';
-            document.getElementById('tab-members').className = tab === 'members' ? 'py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2 transition' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition';
+            document.getElementById('tab-tournaments').className = tab === 'tournaments' ? 'py-2.5 px-3 border-b-2 border-clubred font-bold text-sm text-white flex items-center gap-2 transition' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition';
+            document.getElementById('tab-members').className = tab === 'members' ? 'py-2.5 px-3 border-b-2 border-clubred font-bold text-sm text-white flex items-center gap-2 transition' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition';
         }
 
         function setStatus(tournamentId, memberId, newStatus) {
@@ -270,21 +310,30 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         function render() {
+            const btnText = document.getElementById('admin-btn-text');
+            const btnIcon = document.getElementById('admin-icon');
+            if (btnText && btnIcon) {
+                btnText.textContent = state.isAdmin ? "Admin Actif" : "Mode Admin";
+                btnIcon.className = state.isAdmin ? "fa-solid fa-lock-open text-xs text-emerald-400" : "fa-solid fa-lock text-xs text-yellow-300";
+            }
+            
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !state.isAdmin));
+            
             const countEl = document.getElementById('member-count');
             if (countEl) countEl.textContent = state.members.length;
 
             const membersGrid = document.getElementById('members-grid');
             if (membersGrid) {
                 membersGrid.innerHTML = state.members.map(m => `
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-clubyellow-light text-blue-900 font-bold flex items-center justify-center text-sm border border-amber-300">${m.name.split(' ').map(n=>n[0]).join('')}</div>
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-clubblue font-bold flex items-center justify-center text-sm border border-blue-200">${m.name.split(' ').map(n=>n[0]).join('')}</div>
                             <div>
                                 <div class="font-bold text-slate-800 text-sm">${m.name}</div>
-                                <div class="text-xs text-clubblue bg-blue-50 px-2 py-0.5 rounded-full inline-block mt-0.5 border border-blue-100 font-medium">${m.role}</div>
+                                <div class="text-xs text-clubred bg-red-50 px-2 py-0.5 rounded-full inline-block mt-0.5 border border-red-100 font-medium">${m.role}</div>
                             </div>
                         </div>
-                        <button onclick="deleteMember('${m.id}')" class="text-slate-300 hover:text-red-600 p-1" title="Supprimer le membre"><i class="fa-solid fa-trash-can"></i></button>
+                        ${state.isAdmin ? `<button onclick="deleteMember('${m.id}')" class="text-slate-300 hover:text-red-600 p-1" title="Supprimer le membre"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                     </div>
                 `).join('');
             }
@@ -292,7 +341,7 @@
             const tournamentsList = document.getElementById('tournaments-list');
             if (tournamentsList) {
                 if (state.tournaments.length === 0) {
-                    tournamentsList.innerHTML = `<div class="bg-white p-8 rounded-xl text-center text-slate-400 border border-slate-200">Aucun tournoi au calendrier pour le moment. Cliquez sur <strong>"Ajouter un Tournoi"</strong> ci-dessus pour en créer un !</div>`;
+                    tournamentsList.innerHTML = `<div class="bg-white p-8 rounded-xl text-center text-slate-400 border border-slate-200">Aucun tournoi au calendrier pour le moment.</div>`;
                     return;
                 }
 
@@ -307,11 +356,11 @@
                     });
 
                     return `
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="bg-clubblue-dark text-white p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-clubyellow">
+                        <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+                            <div class="bg-clubblue-dark text-white p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-clubred">
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <span class="bg-clubyellow text-clubblue-dark font-bold text-xs px-2 py-0.5 rounded">${t.format}</span>
+                                        <span class="bg-clubred text-white font-bold text-xs px-2 py-0.5 rounded">${t.format}</span>
                                         <h3 class="font-bold text-lg">${t.name}</h3>
                                     </div>
                                     <div class="text-xs text-blue-200 flex items-center gap-4 mt-1">
@@ -323,7 +372,7 @@
                                     <span class="bg-emerald-900 text-emerald-200 border border-emerald-700 px-2.5 py-1 rounded-lg">🟢 ${registered} Inscrits</span>
                                     <span class="bg-amber-900 text-amber-200 border border-amber-700 px-2.5 py-1 rounded-lg">🟡 ${available} Dispos</span>
                                     <span class="bg-rose-900 text-rose-200 border border-rose-700 px-2.5 py-1 rounded-lg">🔴 ${absent} Absents</span>
-                                    <button onclick="deleteTournament('${t.id}')" class="ml-2 text-rose-300 hover:text-white p-1" title="Supprimer le tournoi"><i class="fa-solid fa-trash-can"></i></button>
+                                    ${state.isAdmin ? `<button onclick="deleteTournament('${t.id}')" class="ml-2 text-rose-300 hover:text-white p-1" title="Supprimer le tournoi"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                                 </div>
                             </div>
 
