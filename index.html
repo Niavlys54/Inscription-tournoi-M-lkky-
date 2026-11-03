@@ -18,7 +18,6 @@
         <div style="max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 12px; user-select: none;">
                 <div style="background: white; padding: 4px; border-radius: 12px; border: 1px solid rgba(220,38,38,0.4); display: flex; align-items: center; justify-content: center;">
-                    <!-- Logo Officiel hébergé sur votre GitHub -->
                     <img src="https://raw.githubusercontent.com/niavlys54/Inscription-tournoi-M-lkky-/main/logo.PNG" 
                          onerror="this.onerror=null; this.src='https://i.ibb.co/L50Q28f/logo-pagny.png';" 
                          alt="AS Pagny Mölkky 1938" 
@@ -47,7 +46,7 @@
                     <i class="fa-solid fa-trophy" style="color: #f87171;"></i> Tournois
                 </button>
                 <button onclick="switchTab('members')" id="tab-members" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-users"></i> Membres (<span id="member-count">14</span>)
+                    <i class="fa-solid fa-users"></i> Joueurs (<span id="member-count">14</span>)
                 </button>
             </div>
         </div>
@@ -60,7 +59,7 @@
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
                     <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier des Tournois</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités et équipes partagées en direct pour tout le club.</p>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités et équipes partagées en direct pour le club et ses invités.</p>
                 </div>
                 <button onclick="openTournamentModal()" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-plus"></i> Nouveau Tournoi
@@ -72,17 +71,20 @@
 
         <!-- ONGLET: MEMBRES -->
         <section id="view-members" style="display: none; flex-direction: column; gap: 24px;">
-            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
+            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
                 <div>
-                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Membres du Club AS Pagny Mölkky</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Effectif officiel du club.</p>
+                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Effectif & Joueurs Extérieurs</h2>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Membres officiels de l'AS Pagny Mölkky et invités occasionnels.</p>
                 </div>
-                <div style="display: flex; gap: 8px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button onclick="resetDefaultData()" class="admin-only" style="display: none; background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 500; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
                         <i class="fa-solid fa-rotate-left"></i> Réinitialiser
                     </button>
                     <button onclick="openModal('modal-member')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem;">
                         <i class="fa-solid fa-user-plus"></i> Nouveau Membre
+                    </button>
+                    <button onclick="openGuestModal()" style="background-color: #ea580c; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-user-tag"></i> + Invité / Externe
                     </button>
                 </div>
             </div>
@@ -92,7 +94,7 @@
 
     </main>
 
-    <!-- MODALE TOURNOI (Création & Modification) -->
+    <!-- MODALE TOURNOI -->
     <div id="modal-tournament" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
@@ -165,21 +167,22 @@
     <div id="modal-member" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
-                <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;">Ajouter un Membre</h3>
+                <h3 id="member-modal-title" style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;">Ajouter un Membre</h3>
                 <button onclick="closeModal('modal-member')" style="background: none; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-member" onsubmit="saveMember(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="hidden" id="m-is-guest" value="false">
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Nom et Prénom</label>
-                    <input type="text" id="m-name" required placeholder="Ex: Nom Prénom" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
+                    <input type="text" id="m-name" required placeholder="Ex: Jean Dupont" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Rôle</label>
+                    <label id="m-role-label" style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Rôle</label>
                     <input type="text" id="m-role" placeholder="Ex: Joueur" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
                     <button type="button" onclick="closeModal('modal-member')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
-                    <button type="submit" style="background: #1d4ed8; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Ajouter</button>
+                    <button type="submit" id="m-submit-btn" style="background: #1d4ed8; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Ajouter</button>
                 </div>
             </form>
         </div>
@@ -201,20 +204,20 @@
         const db = firebase.database();
 
         const DEFAULT_MEMBERS = [
-            { id: '1', name: 'Cyril Fortin', role: 'Président' },
-            { id: '2', name: 'Sylvain Gaugain', role: 'Vice Président' },
-            { id: '3', name: 'Laura Gaugain', role: 'Secrétaire' },
-            { id: '4', name: 'Inès Chaouch', role: 'Trésorière' },
-            { id: '5', name: 'Arnaud Pierre', role: 'Communication' },
-            { id: '6', name: 'Yvon Nicolay', role: 'Membre' },
-            { id: '7', name: 'François Perrin', role: 'Membre' },
-            { id: '8', name: 'Jacques Gaugain', role: 'Membre' },
-            { id: '9', name: 'Seb Bausch', role: 'Membre' },
-            { id: '10', name: 'Bryan Bausch', role: 'Membre' },
-            { id: '11', name: 'Logan Gangloff', role: 'Membre' },
-            { id: '12', name: 'Patrick Gangloff', role: 'Membre' },
-            { id: '13', name: 'Béa Gangloff', role: 'Membre' },
-            { id: '14', name: 'Nathalie Mercier', role: 'Membre' }
+            { id: '1', name: 'Cyril Fortin', role: 'Président', isGuest: false },
+            { id: '2', name: 'Sylvain Gaugain', role: 'Vice Président', isGuest: false },
+            { id: '3', name: 'Laura Gaugain', role: 'Secrétaire', isGuest: false },
+            { id: '4', name: 'Inès Chaouch', role: 'Trésorière', isGuest: false },
+            { id: '5', name: 'Arnaud Pierre', role: 'Communication', isGuest: false },
+            { id: '6', name: 'Yvon Nicolay', role: 'Membre', isGuest: false },
+            { id: '7', name: 'François Perrin', role: 'Membre', isGuest: false },
+            { id: '8', name: 'Jacques Gaugain', role: 'Membre', isGuest: false },
+            { id: '9', name: 'Seb Bausch', role: 'Membre', isGuest: false },
+            { id: '10', name: 'Bryan Bausch', role: 'Membre', isGuest: false },
+            { id: '11', name: 'Logan Gangloff', role: 'Membre', isGuest: false },
+            { id: '12', name: 'Patrick Gangloff', role: 'Membre', isGuest: false },
+            { id: '13', name: 'Béa Gangloff', role: 'Membre', isGuest: false },
+            { id: '14', name: 'Nathalie Mercier', role: 'Membre', isGuest: false }
         ];
 
         let state = { isAdmin: false, members: [], tournaments: [] };
@@ -359,7 +362,7 @@
                     html += `
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: #334155; cursor: pointer;">
                             <input type="checkbox" name="team_player" value="${m.id}" style="width: 16px; height: 16px;">
-                            <span>${m.name}</span>
+                            <span>${m.name} ${m.isGuest ? '<span style="font-size: 10px; color: #ea580c; font-weight: bold;">(Invité)</span>' : ''}</span>
                         </label>
                     `;
                 }
@@ -402,21 +405,38 @@
             }
         }
 
+        function openGuestModal() {
+            document.getElementById('member-modal-title').textContent = "Ajouter un Joueur Extérieur";
+            document.getElementById('m-is-guest').value = "true";
+            document.getElementById('m-role-label').textContent = "Club d'origine / Origine";
+            document.getElementById('m-role').placeholder = "Ex: Club de Metz (ou Invité)";
+            document.getElementById('m-submit-btn').style.backgroundColor = "#ea580c";
+            openModal('modal-member');
+        }
+
         function saveMember(e) {
             e.preventDefault();
+            const isGuest = document.getElementById('m-is-guest').value === "true";
             const newMember = {
                 id: Date.now().toString(),
                 name: document.getElementById('m-name').value,
-                role: document.getElementById('m-role').value || 'Membre'
+                role: document.getElementById('m-role').value || (isGuest ? 'Invité' : 'Membre'),
+                isGuest: isGuest
             };
             const updatedMembers = [...state.members, newMember];
             db.ref('members').set(updatedMembers);
             closeModal('modal-member');
+            
+            // Reset modal defaults
             document.getElementById('form-member').reset();
+            document.getElementById('m-is-guest').value = "false";
+            document.getElementById('member-modal-title').textContent = "Ajouter un Membre";
+            document.getElementById('m-role-label').textContent = "Rôle";
+            document.getElementById('m-submit-btn').style.backgroundColor = "#1d4ed8";
         }
 
         function deleteMember(id) {
-            if (confirm("Supprimer ce membre ?")) {
+            if (confirm("Supprimer ce joueur ?")) {
                 const updatedMembers = state.members.filter(m => m.id !== id);
                 db.ref('members').set(updatedMembers);
             }
@@ -443,18 +463,27 @@
 
             const membersGrid = document.getElementById('members-grid');
             if (membersGrid) {
-                membersGrid.innerHTML = state.members.map(m => `
-                    <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #eff6ff; color: #1d4ed8; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; border: 1px solid #bfdbfe;">${m.name.split(' ').map(n=>n[0]).join('')}</div>
-                            <div>
-                                <div style="font-weight: bold; color: #1e293b; font-size: 0.875rem;">${m.name}</div>
-                                <div style="font-size: 0.75rem; color: #dc2626; background: #fef2f2; padding: 2px 8px; border-radius: 9999px; display: inline-block; margin-top: 2px; border: 1px solid #fee2e2; font-weight: 500;">${m.role}</div>
+                membersGrid.innerHTML = state.members.map(m => {
+                    const isGuest = m.isGuest === true;
+                    return `
+                        <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid ${isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: ${isGuest ? '#fff7ed' : '#eff6ff'}; color: ${isGuest ? '#ea580c' : '#1d4ed8'}; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; border: 1px solid ${isGuest ? '#fed7aa' : '#bfdbfe'};">
+                                    ${m.name.split(' ').map(n=>n[0]).join('')}
+                                </div>
+                                <div>
+                                    <div style="font-weight: bold; color: #1e293b; font-size: 0.875rem;">
+                                        ${m.name}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: ${isGuest ? '#c2410c' : '#dc2626'}; background: ${isGuest ? '#fff7ed' : '#fef2f2'}; padding: 2px 8px; border-radius: 9999px; display: inline-block; margin-top: 2px; border: 1px solid ${isGuest ? '#ffedd5' : '#fee2e2'}; font-weight: 500;">
+                                        ${isGuest ? '📍 ' : ''}${m.role}
+                                    </div>
+                                </div>
                             </div>
+                            ${(state.isAdmin || isGuest) ? `<button onclick="deleteMember('${m.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 1rem;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                         </div>
-                        ${state.isAdmin ? `<button onclick="deleteMember('${m.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 1rem;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>` : ''}
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
 
             const tournamentsList = document.getElementById('tournaments-list');
@@ -532,7 +561,7 @@
                                             ${teams.map(tm => {
                                                 const playerNames = (tm.playerIds || []).map(pid => {
                                                     const mem = state.members.find(m => m.id === pid);
-                                                    return mem ? mem.name : '';
+                                                    return mem ? (mem.name + (mem.isGuest ? ' (Ext.)' : '')) : '';
                                                 }).filter(Boolean).join(' & ');
                                                 return `
                                                     <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
@@ -552,7 +581,7 @@
                             <!-- MENU REPLIANT DES DISPONIBILITÉS -->
                             <div style="background-color: #f8fafc;">
                                 <button onclick="toggleAvailabilityMenu('${t.id}')" style="width: 100%; background: #e2e8f0; border: none; padding: 12px 16px; font-weight: bold; font-size: 0.75rem; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                                    <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> Gérer / Voir les disponibilités des membres</span>
+                                    <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> Gérer / Voir les disponibilités des joueurs</span>
                                     <i class="fa-solid fa-chevron-down" id="avail-icon-${t.id}"></i>
                                 </button>
                                 
@@ -561,8 +590,10 @@
                                         ${state.members.map(m => {
                                             const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
                                             return `
-                                                <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                                                    <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">${m.name}</span>
+                                                <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid ${m.isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between;">
+                                                    <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">
+                                                        ${m.name} ${m.isGuest ? '<span style="font-size: 10px; color: #ea580c;">(Ext.)</span>' : ''}
+                                                    </span>
                                                     <div style="display: flex; gap: 4px;">
                                                         <button onclick="setStatus('${t.id}', '${m.id}', 'registered')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#059669' : '#f8fafc'}; color: ${st === 'registered' ? 'white' : '#64748b'}; font-weight: ${st === 'registered' ? 'bold' : 'normal'}; cursor: pointer;">Inscrit</button>
                                                         <button onclick="setStatus('${t.id}', '${m.id}', 'available')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'available' ? '#f59e0b' : '#cbd5e1'}; background: ${st === 'available' ? '#f59e0b' : '#f8fafc'}; color: ${st === 'available' ? '#1e293b' : '#64748b'}; font-weight: ${st === 'available' ? 'bold' : 'normal'}; cursor: pointer;">Dispo</button>
