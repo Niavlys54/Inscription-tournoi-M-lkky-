@@ -6,13 +6,16 @@
     <title>AS Pagny Mölkky - Gestion Club</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- SDK Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body style="background-color: #f1f5f9; color: #1e293b; font-family: sans-serif; margin: 0; padding-bottom: 50px;">
 
     <!-- Header Navigation -->
     <header style="background-color: #0f172a; color: white; position: sticky; top: 0; z-index: 50; border-bottom: 4px solid #dc2626; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
         <div style="max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
-            <!-- Logo & Titre -->
             <div style="display: flex; align-items: center; gap: 12px; user-select: none;">
                 <div style="background: white; padding: 4px; border-radius: 12px; border: 1px solid rgba(220,38,38,0.4); display: flex; align-items: center; justify-content: center;">
                     <img src="https://raw.githubusercontent.com/niavlys54/Inscription-tournoi-M-lkky-/main/logo.png" 
@@ -25,11 +28,10 @@
                         AS PAGNY MÖLKKY
                         <span style="background-color: #dc2626; color: white; font-size: 10px; padding: 2px 8px; border-radius: 9999px; font-weight: bold; text-transform: uppercase;">54</span>
                     </h1>
-                    <p style="font-size: 0.75px; color: #93c5fd; margin: 2px 0 0 0; font-weight: 500;">Club de Mölkky • Saison 2026</p>
+                    <p style="font-size: 0.75rem; color: #93c5fd; margin: 2px 0 0 0; font-weight: 500;">Club de Mölkky • Saison 2026</p>
                 </div>
             </div>
 
-            <!-- Bouton Admin Direct -->
             <div>
                 <button onclick="toggleAdminMode()" id="admin-btn" style="background-color: #1d4ed8; color: white; padding: 6px 14px; border-radius: 8px; font-weight: 500; font-size: 0.875rem; border: 1px solid rgba(96,165,250,0.3); cursor: pointer; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-lock" id="admin-icon" style="color: #fde047; font-size: 12px;"></i>
@@ -57,7 +59,7 @@
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
                     <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier des Tournois</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Cochez votre présence et gérez les équipes constituées.</p>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités et équipes partagées en direct pour tout le club.</p>
                 </div>
                 <button onclick="openModal('modal-tournament')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-plus"></i> Nouveau Tournoi
@@ -72,7 +74,7 @@
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
                     <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Membres du Club AS Pagny Mölkky</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Effectif officiel des 14 joueurs inscrits.</p>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Effectif officiel du club.</p>
                 </div>
                 <div style="display: flex; gap: 8px;">
                     <button onclick="resetDefaultData()" class="admin-only" style="display: none; background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 500; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
@@ -99,7 +101,7 @@
             <form onsubmit="saveTournament(event)" style="display: flex; flex-direction: column; gap: 12px;">
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Nom du Tournoi</label>
-                    <input type="text" id="t-name" required placeholder="Ex: Open de France" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
+                    <input type="text" id="t-name" required placeholder="Ex: Black Mölkky Boulay" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div>
@@ -118,7 +120,7 @@
                 </div>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Lieu</label>
-                    <input type="text" id="t-location" placeholder="Ex: Pagny-sur-Moselle" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
+                    <input type="text" id="t-location" placeholder="Ex: Complexe Isabelle Wendling" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
                     <button type="button" onclick="closeModal('modal-tournament')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
@@ -178,6 +180,20 @@
     </div>
 
     <script>
+        // Configuration Firebase partagée
+        const firebaseConfig = {
+            apiKey: "AIzaSyDemoConfigKeyForASPagnyMolkky54",
+            authDomain: "as-pagny-molkky.firebaseapp.com",
+            databaseURL: "https://as-pagny-molkky-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "as-pagny-molkky",
+            storageBucket: "as-pagny-molkky.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:demoapppagny54"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         const DEFAULT_MEMBERS = [
             { id: '1', name: 'Cyril Fortin', role: 'Président' },
             { id: '2', name: 'Sylvain Gaugain', role: 'Vice Président' },
@@ -198,24 +214,35 @@
         let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
-            const savedMembers = localStorage.getItem('as_pagny_members');
-            const savedTournaments = localStorage.getItem('as_pagny_tournaments');
-            state.members = (savedMembers && JSON.parse(savedMembers).length > 0) ? JSON.parse(savedMembers) : DEFAULT_MEMBERS;
-            state.tournaments = (savedTournaments) ? JSON.parse(savedTournaments) : [];
-            saveData();
-            render();
-        }
+            // Écoute en direct des changements dans la base Firebase
+            db.ref('members').on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.members = Array.isArray(val) ? val : Object.values(val);
+                } else {
+                    state.members = DEFAULT_MEMBERS;
+                    db.ref('members').set(DEFAULT_MEMBERS);
+                }
+                render();
+            });
 
-        function saveData() {
-            localStorage.setItem('as_pagny_members', JSON.stringify(state.members));
-            localStorage.setItem('as_pagny_tournaments', JSON.stringify(state.tournaments));
+            db.ref('tournaments').on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.tournaments = Object.keys(val).map(key => ({
+                        id: key,
+                        ...val[key]
+                    })).sort((a,b) => b.id - a.id);
+                } else {
+                    state.tournaments = [];
+                }
+                render();
+            });
         }
 
         function resetDefaultData() {
-            if(confirm("Recharger la liste officielle des 14 membres ?")) {
-                state.members = DEFAULT_MEMBERS;
-                saveData();
-                render();
+            if(confirm("Recharger la liste officielle des 14 membres dans la base partagée ?")) {
+                db.ref('members').set(DEFAULT_MEMBERS);
             }
         }
 
@@ -250,13 +277,7 @@
         }
 
         function setStatus(tournamentId, memberId, newStatus) {
-            const tournament = state.tournaments.find(t => t.id === tournamentId);
-            if (tournament) {
-                if (!tournament.statuses) tournament.statuses = {};
-                tournament.statuses[memberId] = newStatus;
-                saveData();
-                render();
-            }
+            db.ref(`tournaments/${tournamentId}/statuses/${memberId}`).set(newStatus);
         }
 
         function toggleAvailabilityMenu(tournamentId) {
@@ -273,26 +294,23 @@
 
         function saveTournament(e) {
             e.preventDefault();
-            state.tournaments.unshift({
-                id: Date.now().toString(),
+            const newId = Date.now().toString();
+            const tournamentData = {
                 name: document.getElementById('t-name').value,
                 date: document.getElementById('t-date').value,
                 format: document.getElementById('t-format').value,
                 location: document.getElementById('t-location').value,
                 statuses: {},
                 teams: []
-            });
-            saveData();
+            };
+            db.ref(`tournaments/${newId}`).set(tournamentData);
             closeModal('modal-tournament');
             document.getElementById('form-tournament').reset();
-            render();
         }
 
         function deleteTournament(id) {
-            if (confirm("Supprimer ce tournoi ?")) {
-                state.tournaments = state.tournaments.filter(t => t.id !== id);
-                saveData();
-                render();
+            if (confirm("Supprimer ce tournoi pour l'ensemble du club ?")) {
+                db.ref(`tournaments/${id}`).remove();
             }
         }
 
@@ -305,7 +323,7 @@
             
             let html = '';
             state.members.forEach(m => {
-                const st = tournament.statuses && tournament.statuses[m.id];
+                const st = tournament && tournament.statuses && tournament.statuses[m.id];
                 if (st === 'registered') {
                     html += `
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: #334155; cursor: pointer;">
@@ -337,45 +355,39 @@
                 return;
             }
 
-            const tournament = state.tournaments.find(t => t.id === tournamentId);
-            if (tournament) {
-                if (!tournament.teams) tournament.teams = [];
-                tournament.teams.push({
-                    id: Date.now().toString(),
-                    name: teamName,
-                    playerIds: playerIds
-                });
-                saveData();
-                closeModal('modal-team');
-                render();
-            }
+            const teamId = Date.now().toString();
+            db.ref(`tournaments/${tournamentId}/teams/${teamId}`).set({
+                id: teamId,
+                name: teamName,
+                playerIds: playerIds
+            });
+
+            closeModal('modal-team');
         }
 
         function deleteTeam(tournamentId, teamId) {
             if (confirm("Supprimer cette équipe ?")) {
-                const tournament = state.tournaments.find(t => t.id === tournamentId);
-                if (tournament && tournament.teams) {
-                    tournament.teams = tournament.teams.filter(tm => tm.id !== teamId);
-                    saveData();
-                    render();
-                }
+                db.ref(`tournaments/${tournamentId}/teams/${teamId}`).remove();
             }
         }
 
         function saveMember(e) {
             e.preventDefault();
-            state.members.push({ id: Date.now().toString(), name: document.getElementById('m-name').value, role: document.getElementById('m-role').value || 'Membre' });
-            saveData();
+            const newMember = {
+                id: Date.now().toString(),
+                name: document.getElementById('m-name').value,
+                role: document.getElementById('m-role').value || 'Membre'
+            };
+            const updatedMembers = [...state.members, newMember];
+            db.ref('members').set(updatedMembers);
             closeModal('modal-member');
             document.getElementById('form-member').reset();
-            render();
         }
 
         function deleteMember(id) {
             if (confirm("Supprimer ce membre ?")) {
-                state.members = state.members.filter(m => m.id !== id);
-                saveData();
-                render();
+                const updatedMembers = state.members.filter(m => m.id !== id);
+                db.ref('members').set(updatedMembers);
             }
         }
 
@@ -432,7 +444,8 @@
                     });
 
                     const isTeamFormat = t.format === 'Doublette' || t.format === 'Triplette' || t.format === 'Quadrette';
-                    const teams = t.teams || [];
+                    const teamsObj = t.teams || {};
+                    const teams = Object.values(teamsObj);
 
                     return `
                         <div style="background: white; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);">
@@ -475,7 +488,7 @@
                                     ` : `
                                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;">
                                             ${teams.map(tm => {
-                                                const playerNames = tm.playerIds.map(pid => {
+                                                const playerNames = (tm.playerIds || []).map(pid => {
                                                     const mem = state.members.find(m => m.id === pid);
                                                     return mem ? mem.name : '';
                                                 }).filter(Boolean).join(' & ');
