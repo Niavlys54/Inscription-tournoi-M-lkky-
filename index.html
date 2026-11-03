@@ -6,10 +6,6 @@
     <title>AS Pagny Mölkky - Gestion Club</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- SDK Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body style="background-color: #f1f5f9; color: #1e293b; font-family: sans-serif; margin: 0; padding-bottom: 50px;">
 
@@ -59,7 +55,7 @@
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
                     <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier des Tournois</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités et équipes partagées en direct pour tout le club.</p>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Gérez vos tournois, disponibilités et équipes en toute simplicité.</p>
                 </div>
                 <button onclick="openModal('modal-tournament')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-plus"></i> Nouveau Tournoi
@@ -180,19 +176,6 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDemoConfigKeyForASPagnyMolkky54",
-            authDomain: "as-pagny-molkky.firebaseapp.com",
-            databaseURL: "https://as-pagny-molkky-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "as-pagny-molkky",
-            storageBucket: "as-pagny-molkky.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:demoapppagny54"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
         const DEFAULT_MEMBERS = [
             { id: '1', name: 'Cyril Fortin', role: 'Président' },
             { id: '2', name: 'Sylvain Gaugain', role: 'Vice Président' },
@@ -213,34 +196,25 @@
         let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
-            db.ref('members').on('value', (snapshot) => {
-                const val = snapshot.val();
-                if (val) {
-                    state.members = Array.isArray(val) ? val : Object.values(val);
-                } else {
-                    state.members = DEFAULT_MEMBERS;
-                    db.ref('members').set(DEFAULT_MEMBERS);
-                }
-                render();
-            });
+            const savedMembers = localStorage.getItem('as_pagny_members');
+            const savedTournaments = localStorage.getItem('as_pagny_tournaments');
 
-            db.ref('tournaments').on('value', (snapshot) => {
-                const val = snapshot.val();
-                if (val) {
-                    state.tournaments = Object.keys(val).map(key => ({
-                        id: key,
-                        ...val[key]
-                    })).sort((a,b) => b.id - a.id);
-                } else {
-                    state.tournaments = [];
-                }
-                render();
-            });
+            state.members = (savedMembers && JSON.parse(savedMembers).length > 0) ? JSON.parse(savedMembers) : DEFAULT_MEMBERS;
+            state.tournaments = (savedTournaments) ? JSON.parse(savedTournaments) : [];
+            saveData();
+            render();
+        }
+
+        function saveData() {
+            localStorage.setItem('as_pagny_members', JSON.stringify(state.members));
+            localStorage.setItem('as_pagny_tournaments', JSON.stringify(state.tournaments));
         }
 
         function resetDefaultData() {
             if(confirm("Recharger la liste officielle des 14 membres avec leurs rôles d'origine ?")) {
-                db.ref('members').set(DEFAULT_MEMBERS);
+                state.members = DEFAULT_MEMBERS;
+                saveData();
+                render();
             }
         }
 
@@ -275,7 +249,13 @@
         }
 
         function setStatus(tournamentId, memberId, newStatus) {
-            db.ref(`tournaments/${tournamentId}/statuses/${memberId}`).set(newStatus);
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            if (tournament) {
+                if (!tournament.statuses) tournament.statuses = {};
+                tournament.statuses[memberId] = newStatus;
+                saveData();
+                render();
+            }
         }
 
         function toggleAvailabilityMenu(tournamentId) {
@@ -292,23 +272,26 @@
 
         function saveTournament(e) {
             e.preventDefault();
-            const newId = Date.now().toString();
-            const tournamentData = {
+            state.tournaments.unshift({
+                id: Date.now().toString(),
                 name: document.getElementById('t-name').value,
                 date: document.getElementById('t-date').value,
                 format: document.getElementById('t-format').value,
                 location: document.getElementById('t-location').value,
                 statuses: {},
                 teams: []
-            };
-            db.ref(`tournaments/${newId}`).set(tournamentData);
+            });
+            saveData();
             closeModal('modal-tournament');
             document.getElementById('form-tournament').reset();
+            render();
         }
 
         function deleteTournament(id) {
-            if (confirm("Supprimer ce tournoi pour l'ensemble du club ?")) {
-                db.ref(`tournaments/${id}`).remove();
+            if (confirm("Supprimer ce tournoi ?")) {
+                state.tournaments = state.tournaments.filter(t => t.id !== id);
+                saveData();
+                render();
             }
         }
 
@@ -353,39 +336,49 @@
                 return;
             }
 
-            const teamId = Date.now().toString();
-            db.ref(`tournaments/${tournamentId}/teams/${teamId}`).set({
-                id: teamId,
-                name: teamName,
-                playerIds: playerIds
-            });
-
-            closeModal('modal-team');
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            if (tournament) {
+                if (!tournament.teams) tournament.teams = [];
+                tournament.teams.push({
+                    id: Date.now().toString(),
+                    name: teamName,
+                    playerIds: playerIds
+                });
+                saveData();
+                closeModal('modal-team');
+                render();
+            }
         }
 
         function deleteTeam(tournamentId, teamId) {
             if (confirm("Supprimer cette équipe ?")) {
-                db.ref(`tournaments/${tournamentId}/teams/${teamId}`).remove();
+                const tournament = state.tournaments.find(t => t.id === tournamentId);
+                if (tournament && tournament.teams) {
+                    tournament.teams = tournament.teams.filter(tm => tm.id !== teamId);
+                    saveData();
+                    render();
+                }
             }
         }
 
         function saveMember(e) {
             e.preventDefault();
-            const newMember = {
+            state.members.push({
                 id: Date.now().toString(),
                 name: document.getElementById('m-name').value,
                 role: document.getElementById('m-role').value || 'Membre'
-            };
-            const updatedMembers = [...state.members, newMember];
-            db.ref('members').set(updatedMembers);
+            });
+            saveData();
             closeModal('modal-member');
             document.getElementById('form-member').reset();
+            render();
         }
 
         function deleteMember(id) {
             if (confirm("Supprimer ce membre ?")) {
-                const updatedMembers = state.members.filter(m => m.id !== id);
-                db.ref('members').set(updatedMembers);
+                state.members = state.members.filter(m => m.id !== id);
+                saveData();
+                render();
             }
         }
 
@@ -442,8 +435,7 @@
                     });
 
                     const isTeamFormat = t.format === 'Doublette' || t.format === 'Triplette' || t.format === 'Quadrette';
-                    const teamsObj = t.teams || {};
-                    const teams = Object.values(teamsObj);
+                    const teams = t.teams || [];
 
                     return `
                         <div style="background: white; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);">
