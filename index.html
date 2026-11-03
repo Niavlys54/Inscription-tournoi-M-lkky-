@@ -6,133 +6,109 @@
     <title>AS Pagny Mölkky - Gestion Club</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        clubblue: {
-                            light: '#2563eb',
-                            DEFAULT: '#1d4ed8',
-                            dark: '#0f172a',
-                        },
-                        clubred: {
-                            light: '#ef4444',
-                            DEFAULT: '#dc2626',
-                            dark: '#991b1b',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen font-sans pb-12">
+<body style="background-color: #f1f5f9; color: #1e293b; font-family: sans-serif; margin: 0; padding-bottom: 50px;">
 
     <!-- Header Navigation -->
-    <header class="bg-clubblue-dark text-white shadow-md sticky top-0 z-50 border-b-4 border-clubred">
-        <div class="max-w-5xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3">
-            <!-- Vrai Logo Officiel du Club -->
-            <div class="flex items-center space-x-3 select-none">
-                <div class="bg-white p-1 rounded-xl shadow-md border border-clubred/40 flex items-center justify-center">
+    <header style="background-color: #0f172a; color: white; position: sticky; top: 0; z-index: 50; border-bottom: 4px solid #dc2626; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+        <div style="max-width: 1000px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+            <!-- Logo & Titre -->
+            <div style="display: flex; align-items: center; gap: 12px; user-select: none;">
+                <div style="background: white; padding: 4px; border-radius: 12px; border: 1px solid rgba(220,38,38,0.4); display: flex; align-items: center; justify-content: center;">
                     <img src="https://raw.githubusercontent.com/niavlys54/Inscription-tournoi-M-lkky-/main/logo.png" 
                          onerror="this.onerror=null; this.src='https://i.ibb.co/L50Q28f/logo-pagny.png';" 
                          alt="AS Pagny Mölkky 1938" 
-                         class="h-12 w-auto object-contain">
+                         style="height: 48px; width: auto; object-fit: contain;">
                 </div>
                 <div>
-                    <h1 class="text-xl font-black tracking-wide text-white flex items-center gap-2">
+                    <h1 style="font-size: 1.25rem; font-weight: 900; letter-spacing: 0.05em; margin: 0; display: flex; align-items: center; gap: 8px; color: white;">
                         AS PAGNY MÖLKKY
-                        <span class="bg-clubred text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-xs">54</span>
+                        <span style="background-color: #dc2626; color: white; font-size: 10px; padding: 2px 8px; border-radius: 9999px; font-weight: bold; text-transform: uppercase;">54</span>
                     </h1>
-                    <p class="text-xs text-blue-200 font-medium">Club de Mölkky • Saison 2026</p>
+                    <p style="font-size: 0.75px; color: #93c5fd; margin: 2px 0 0 0; font-weight: 500;">Club de Mölkky • Saison 2026</p>
                 </div>
             </div>
 
             <!-- Bouton Admin Direct -->
-            <div class="flex items-center space-x-2 text-sm">
-                <button id="admin-toggle-btn" onclick="toggleAdminMode()" class="bg-clubblue hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-lg font-medium transition flex items-center gap-2 border border-blue-400/30 shadow-xs">
-                    <i class="fa-solid fa-lock text-xs text-yellow-300" id="admin-icon"></i>
+            <div>
+                <button onclick="toggleAdminMode()" id="admin-btn" style="background-color: #1d4ed8; color: white; padding: 6px 14px; border-radius: 8px; font-weight: 500; font-size: 0.875rem; border: 1px solid rgba(96,165,250,0.3); cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-lock" id="admin-icon" style="color: #fde047; font-size: 12px;"></i>
                     <span id="admin-btn-text">Mode Admin</span>
                 </button>
             </div>
         </div>
         
-        <div class="bg-clubblue text-white">
-            <div class="max-w-5xl mx-auto px-4 flex space-x-4">
-                <button onclick="switchTab('tournaments')" id="tab-tournaments" class="py-2.5 px-3 border-b-2 border-clubred font-bold text-sm text-white flex items-center gap-2 transition">
-                    <i class="fa-solid fa-trophy text-red-400"></i> Tournois
+        <div style="background-color: #1d4ed8;">
+            <div style="max-width: 1000px; margin: 0 auto; padding: 0 16px; display: flex; gap: 16px;">
+                <button onclick="switchTab('tournaments')" id="tab-tournaments" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid #dc2626; font-weight: bold; font-size: 0.875rem; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-trophy" style="color: #f87171;"></i> Tournois
                 </button>
-                <button onclick="switchTab('members')" id="tab-members" class="py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition">
+                <button onclick="switchTab('members')" id="tab-members" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-users"></i> Membres (<span id="member-count">14</span>)
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-6">
+    <main style="max-width: 1000px; margin: 0 auto; padding: 24px 16px;">
 
         <!-- ONGLET: TOURNOIS -->
-        <section id="view-tournaments" class="space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-xs border border-slate-200">
+        <section id="view-tournaments" style="display: flex; flex-direction: column; gap: 24px;">
+            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
-                    <h2 class="text-lg font-bold text-slate-800">Calendrier des Tournois</h2>
-                    <p class="text-xs text-slate-500">Cochez votre présence pour chaque événement du club.</p>
+                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier des Tournois</h2>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Cochez votre présence et gérez les équipes constituées.</p>
                 </div>
-                <button onclick="openModal('modal-tournament')" class="admin-only hidden bg-clubred hover:bg-clubred-dark text-white font-medium px-4 py-2 rounded-lg shadow-xs transition text-sm flex items-center gap-2 self-start sm:self-auto">
+                <button onclick="openModal('modal-tournament')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-plus"></i> Nouveau Tournoi
                 </button>
             </div>
 
-            <div id="tournaments-list" class="space-y-6">
-                <!-- Injection via JavaScript -->
-            </div>
+            <div id="tournaments-list" style="display: flex; flex-direction: column; gap: 24px;"></div>
         </section>
 
         <!-- ONGLET: MEMBRES -->
-        <section id="view-members" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-xs border border-slate-200">
+        <section id="view-members" style="display: none; flex-direction: column; gap: 24px;">
+            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
-                    <h2 class="text-lg font-bold text-slate-800">Membres du Club AS Pagny Mölkky</h2>
-                    <p class="text-xs text-slate-500">Effectif officiel des 14 joueurs inscrits.</p>
+                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Membres du Club AS Pagny Mölkky</h2>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Effectif officiel des 14 joueurs inscrits.</p>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="resetDefaultData()" class="admin-only hidden bg-blue-50 hover:bg-blue-100 text-clubblue border border-blue-200 font-medium px-3 py-2 rounded-lg text-xs flex items-center gap-1 transition">
-                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser l'effectif
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="resetDefaultData()" class="admin-only" style="display: none; background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 500; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
+                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser
                     </button>
-                    <button onclick="openModal('modal-member')" class="admin-only hidden bg-clubred hover:bg-clubred-dark text-white font-medium px-4 py-2 rounded-lg shadow-xs transition text-sm flex items-center gap-2">
+                    <button onclick="openModal('modal-member')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem;">
                         <i class="fa-solid fa-user-plus"></i> Nouveau Membre
                     </button>
                 </div>
             </div>
 
-            <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Injection via JavaScript -->
-            </div>
+            <div id="members-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
         </section>
 
     </main>
 
-    <!-- FENÊTRE MODALE: AJOUTER TOURNOI -->
-    <div id="modal-tournament" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="font-bold text-lg text-slate-800">Ajouter un Tournoi</h3>
-                <button onclick="closeModal('modal-tournament')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <!-- MODALE TOURNOI -->
+    <div id="modal-tournament" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;">Ajouter un Tournoi</h3>
+                <button onclick="closeModal('modal-tournament')" style="background: none; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="form-tournament" onsubmit="saveTournament(event)" class="space-y-3">
+            <form onsubmit="saveTournament(event)" style="display: flex; flex-direction: column; gap: 12px;">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nom du Tournoi</label>
-                    <input type="text" id="t-name" required placeholder="Ex: Open de France" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Nom du Tournoi</label>
+                    <input type="text" id="t-name" required placeholder="Ex: Open de France" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
-                <div class="grid grid-cols-2 gap-2">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Date</label>
-                        <input type="date" id="t-date" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Date</label>
+                        <input type="date" id="t-date" required style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Format</label>
-                        <select id="t-format" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Format</label>
+                        <select id="t-format" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box; background: white;">
                             <option value="Doublette">Doublette (2)</option>
                             <option value="Triplette">Triplette (3)</option>
                             <option value="Quadrette">Quadrette (4)</option>
@@ -141,36 +117,61 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Lieu</label>
-                    <input type="text" id="t-location" placeholder="Ex: Pagny-sur-Moselle" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Lieu</label>
+                    <input type="text" id="t-location" placeholder="Ex: Pagny-sur-Moselle" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" onclick="closeModal('modal-tournament')" class="px-4 py-2 text-sm font-medium text-slate-600">Annuler</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-clubblue-dark text-white rounded-lg shadow-xs">Enregistrer</button>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
+                    <button type="button" onclick="closeModal('modal-tournament')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
+                    <button type="submit" style="background: #1d4ed8; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Enregistrer</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- FENÊTRE MODALE: AJOUTER MEMBRE -->
-    <div id="modal-member" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="font-bold text-lg text-slate-800">Ajouter un Membre</h3>
-                <button onclick="closeModal('modal-member')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <!-- MODALE EQUIPE -->
+    <div id="modal-team" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;">Composer une Équipe</h3>
+                <button onclick="closeModal('modal-team')" style="background: none; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <form id="form-member" onsubmit="saveMember(event)" class="space-y-3">
+            <form onsubmit="saveTeam(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="hidden" id="team-tournament-id">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nom et Prénom</label>
-                    <input type="text" id="m-name" required placeholder="Ex: Nom Prénom" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Nom de l'équipe (ou Duo)</label>
+                    <input type="text" id="team-name" required placeholder="Ex: Équipe 1 - Cyril & Sylvain" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Rôle</label>
-                    <input type="text" id="m-role" placeholder="Ex: Joueur" class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 6px;">Sélectionnez les joueurs inscrits :</label>
+                    <div id="team-players-checkboxes" style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; background: #f8fafc;"></div>
                 </div>
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" onclick="closeModal('modal-member')" class="px-4 py-2 text-sm font-medium text-slate-600">Annuler</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium bg-clubblue hover:bg-clubblue-dark text-white rounded-lg shadow-xs">Ajouter</button>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
+                    <button type="button" onclick="closeModal('modal-team')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
+                    <button type="submit" style="background: #1d4ed8; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODALE MEMBRE -->
+    <div id="modal-member" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;">Ajouter un Membre</h3>
+                <button onclick="closeModal('modal-member')" style="background: none; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="saveMember(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Nom et Prénom</label>
+                    <input type="text" id="m-name" required placeholder="Ex: Nom Prénom" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Rôle</label>
+                    <input type="text" id="m-role" placeholder="Ex: Joueur" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
+                    <button type="button" onclick="closeModal('modal-member')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
+                    <button type="submit" style="background: #1d4ed8; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Ajouter</button>
                 </div>
             </form>
         </div>
@@ -236,10 +237,16 @@
         }
 
         function switchTab(tab) {
-            document.getElementById('view-tournaments').classList.toggle('hidden', tab !== 'tournaments');
-            document.getElementById('view-members').classList.toggle('hidden', tab !== 'members');
-            document.getElementById('tab-tournaments').className = tab === 'tournaments' ? 'py-2.5 px-3 border-b-2 border-clubred font-bold text-sm text-white flex items-center gap-2 transition' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition';
-            document.getElementById('tab-members').className = tab === 'members' ? 'py-2.5 px-3 border-b-2 border-clubred font-bold text-sm text-white flex items-center gap-2 transition' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2 transition';
+            document.getElementById('view-tournaments').style.display = tab === 'tournaments' ? 'flex' : 'none';
+            document.getElementById('view-members').style.display = tab === 'members' ? 'flex' : 'none';
+            
+            document.getElementById('tab-tournaments').style.borderBottom = tab === 'tournaments' ? '2px solid #dc2626' : '2px solid transparent';
+            document.getElementById('tab-tournaments').style.fontWeight = tab === 'tournaments' ? 'bold' : '500';
+            document.getElementById('tab-tournaments').style.color = tab === 'tournaments' ? 'white' : '#bfdbfe';
+
+            document.getElementById('tab-members').style.borderBottom = tab === 'members' ? '2px solid #dc2626' : '2px solid transparent';
+            document.getElementById('tab-members').style.fontWeight = tab === 'members' ? 'bold' : '500';
+            document.getElementById('tab-members').style.color = tab === 'members' ? 'white' : '#bfdbfe';
         }
 
         function setStatus(tournamentId, memberId, newStatus) {
@@ -260,7 +267,8 @@
                 date: document.getElementById('t-date').value,
                 format: document.getElementById('t-format').value,
                 location: document.getElementById('t-location').value,
-                statuses: {}
+                statuses: {},
+                teams: []
             });
             saveData();
             closeModal('modal-tournament');
@@ -273,6 +281,72 @@
                 state.tournaments = state.tournaments.filter(t => t.id !== id);
                 saveData();
                 render();
+            }
+        }
+
+        function openTeamModal(tournamentId) {
+            document.getElementById('team-tournament-id').value = tournamentId;
+            document.getElementById('team-name').value = '';
+            
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            const container = document.getElementById('team-players-checkboxes');
+            
+            let html = '';
+            state.members.forEach(m => {
+                const st = tournament.statuses && tournament.statuses[m.id];
+                if (st === 'registered') {
+                    html += `
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: #334155; cursor: pointer;">
+                            <input type="checkbox" name="team_player" value="${m.id}" style="width: 16px; height: 16px;">
+                            <span>${m.name}</span>
+                        </label>
+                    `;
+                }
+            });
+
+            if (html === '') {
+                html = `<p style="font-size: 0.75rem; color: #e11d48; font-weight: 500; margin: 0;">Aucun joueur inscrit. Cochez d'abord des inscrits dans la liste !</p>`;
+            }
+
+            container.innerHTML = html;
+            openModal('modal-team');
+        }
+
+        function saveTeam(e) {
+            e.preventDefault();
+            const tournamentId = document.getElementById('team-tournament-id').value;
+            const teamName = document.getElementById('team-name').value;
+            
+            const checkboxes = document.querySelectorAll('input[name="team_player"]:checked');
+            const playerIds = Array.from(checkboxes).map(cb => cb.value);
+
+            if (playerIds.length === 0) {
+                alert("Veuillez sélectionner au moins un joueur.");
+                return;
+            }
+
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            if (tournament) {
+                if (!tournament.teams) tournament.teams = [];
+                tournament.teams.push({
+                    id: Date.now().toString(),
+                    name: teamName,
+                    playerIds: playerIds
+                });
+                saveData();
+                closeModal('modal-team');
+                render();
+            }
+        }
+
+        function deleteTeam(tournamentId, teamId) {
+            if (confirm("Supprimer cette équipe ?")) {
+                const tournament = state.tournaments.find(t => t.id === tournamentId);
+                if (tournament && tournament.teams) {
+                    tournament.teams = tournament.teams.filter(tm => tm.id !== teamId);
+                    saveData();
+                    render();
+                }
             }
         }
 
@@ -293,18 +367,21 @@
             }
         }
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function render() {
             const btnText = document.getElementById('admin-btn-text');
             const btnIcon = document.getElementById('admin-icon');
             if (btnText && btnIcon) {
                 btnText.textContent = state.isAdmin ? "Admin Actif" : "Mode Admin";
-                btnIcon.className = state.isAdmin ? "fa-solid fa-lock-open text-xs text-emerald-400" : "fa-solid fa-lock text-xs text-yellow-300";
+                btnIcon.className = state.isAdmin ? "fa-solid fa-lock-open" : "fa-solid fa-lock";
+                btnIcon.style.color = state.isAdmin ? "#34d399" : "#fde047";
             }
             
-            document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !state.isAdmin));
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = state.isAdmin ? 'flex' : 'none';
+            });
             
             const countEl = document.getElementById('member-count');
             if (countEl) countEl.textContent = state.members.length;
@@ -312,15 +389,15 @@
             const membersGrid = document.getElementById('members-grid');
             if (membersGrid) {
                 membersGrid.innerHTML = state.members.map(m => `
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-blue-50 text-clubblue font-bold flex items-center justify-center text-sm border border-blue-200">${m.name.split(' ').map(n=>n[0]).join('')}</div>
+                    <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #eff6ff; color: #1d4ed8; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; border: 1px solid #bfdbfe;">${m.name.split(' ').map(n=>n[0]).join('')}</div>
                             <div>
-                                <div class="font-bold text-slate-800 text-sm">${m.name}</div>
-                                <div class="text-xs text-clubred bg-red-50 px-2 py-0.5 rounded-full inline-block mt-0.5 border border-red-100 font-medium">${m.role}</div>
+                                <div style="font-weight: bold; color: #1e293b; font-size: 0.875rem;">${m.name}</div>
+                                <div style="font-size: 0.75px; color: #dc2626; background: #fef2f2; padding: 2px 8px; border-radius: 9999px; display: inline-block; margin-top: 2px; border: 1px solid #fee2e2; font-weight: 500;">${m.role}</div>
                             </div>
                         </div>
-                        ${state.isAdmin ? `<button onclick="deleteMember('${m.id}')" class="text-slate-300 hover:text-red-600 p-1" title="Supprimer le membre"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                        ${state.isAdmin ? `<button onclick="deleteMember('${m.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 1rem;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                     </div>
                 `).join('');
             }
@@ -328,7 +405,7 @@
             const tournamentsList = document.getElementById('tournaments-list');
             if (tournamentsList) {
                 if (state.tournaments.length === 0) {
-                    tournamentsList.innerHTML = `<div class="bg-white p-8 rounded-xl text-center text-slate-400 border border-slate-200">Aucun tournoi au calendrier pour le moment.</div>`;
+                    tournamentsList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi au calendrier pour le moment.</div>`;
                     return;
                 }
 
@@ -342,39 +419,81 @@
                         else if (st === 'absent') absent++;
                     });
 
+                    const isTeamFormat = t.format === 'Doublette' || t.format === 'Triplette' || t.format === 'Quadrette';
+                    const teams = t.teams || [];
+
                     return `
-                        <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-                            <div class="bg-clubblue-dark text-white p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-clubred">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="bg-clubred text-white font-bold text-xs px-2 py-0.5 rounded">${t.format}</span>
-                                        <h3 class="font-bold text-lg">${t.name}</h3>
+                        <div style="background: white; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);">
+                            <div style="background-color: #0f172a; color: white; padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 2px solid #dc2626;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="background-color: #dc2626; color: white; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">${t.format}</span>
+                                            <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0;">${t.name}</h3>
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: #bfdbfe; display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap;">
+                                            <span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                            ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${t.location}</span>` : ''}
+                                        </div>
                                     </div>
-                                    <div class="text-xs text-blue-200 flex items-center gap-4 mt-1">
-                                        <span><i class="fa-regular fa-calendar mr-1"></i> ${new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                                        ${t.location ? `<span><i class="fa-solid fa-location-dot mr-1"></i> ${t.location}</span>` : ''}
-                                    </div>
+                                    ${state.isAdmin ? `<button onclick="deleteTournament('${t.id}')" style="background:none; border:none; color:#fca5a5; cursor:pointer;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                                 </div>
-                                <div class="flex items-center gap-2 text-xs flex-wrap">
-                                    <span class="bg-emerald-900 text-emerald-200 border border-emerald-700 px-2.5 py-1 rounded-lg">🟢 ${registered} Inscrits</span>
-                                    <span class="bg-amber-900 text-amber-200 border border-amber-700 px-2.5 py-1 rounded-lg">🟡 ${available} Dispos</span>
-                                    <span class="bg-rose-900 text-rose-200 border border-rose-700 px-2.5 py-1 rounded-lg">🔴 ${absent} Absents</span>
-                                    ${state.isAdmin ? `<button onclick="deleteTournament('${t.id}')" class="ml-2 text-rose-300 hover:text-white p-1" title="Supprimer le tournoi"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                                <div style="display: flex; gap: 8px; font-size: 0.75rem; flex-wrap: wrap;">
+                                    <span style="background: #064e3b; color: #a7f3d0; border: 1px solid #047857; padding: 4px 10px; border-radius: 8px;">🟢 ${registered} Inscrits</span>
+                                    <span style="background: #78350f; color: #fde68a; border: 1px solid #b45309; padding: 4px 10px; border-radius: 8px;">🟡 ${available} Dispos</span>
+                                    <span style="background: #881337; color: #fecdd3; border: 1px solid #9f1239; padding: 4px 10px; border-radius: 8px;">🔴 ${absent} Absents</span>
                                 </div>
                             </div>
 
-                            <div class="p-4 bg-slate-50">
-                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Disponibilités des Membres</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                            ${isTeamFormat ? `
+                                <div style="padding: 16px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="fa-solid fa-people-group" style="color: #1d4ed8;"></i>
+                                            <h4 style="font-size: 0.75rem; font-weight: bold; color: #334155; text-transform: uppercase; margin: 0;">Équipes constituées (${teams.length})</h4>
+                                        </div>
+                                        ${state.isAdmin ? `
+                                            <button onclick="openTeamModal('${t.id}')" style="background: #1d4ed8; color: white; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                                <i class="fa-solid fa-user-plus"></i> Composer une équipe
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                    ${teams.length === 0 ? `
+                                        <p style="font-size: 0.75rem; color: #64748b; font-style: italic; margin: 0;">Aucune équipe formée pour le moment.</p>
+                                    ` : `
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;">
+                                            ${teams.map(tm => {
+                                                const playerNames = tm.playerIds.map(pid => {
+                                                    const mem = state.members.find(m => m.id === pid);
+                                                    return mem ? mem.name : '';
+                                                }).filter(Boolean).join(' & ');
+                                                return `
+                                                    <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
+                                                        <div>
+                                                            <div style="font-size: 0.75rem; font-weight: bold; color: #1d4ed8;">${tm.name}</div>
+                                                            <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;"><i class="fa-solid fa-user-check" style="color: #059669; margin-right: 4px;"></i> ${playerNames}</div>
+                                                        </div>
+                                                        ${state.isAdmin ? `<button onclick="deleteTeam('${t.id}', '${tm.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 0.75rem;"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    `}
+                                </div>
+                            ` : ''}
+
+                            <div style="padding: 16px; background-color: #f8fafc;">
+                                <h4 style="font-size: 0.75rem; font-weight: bold; color: #64748b; text-transform: uppercase; margin: 0 0 12px 0;">Disponibilités des Membres</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
                                     ${state.members.map(m => {
                                         const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
                                         return `
-                                            <div class="bg-white p-2.5 rounded-lg border border-slate-200 flex items-center justify-between shadow-xs">
-                                                <span class="text-xs font-semibold text-slate-800">${m.name}</span>
-                                                <div class="flex items-center space-x-1">
-                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'registered')" title="Inscrit" class="px-2 py-1 text-xs rounded border transition ${st === 'registered' ? 'bg-emerald-600 text-white font-bold border-emerald-600 shadow-xs' : 'bg-slate-50 text-slate-400 hover:bg-slate-100 border-slate-200'}">Inscrit</button>
-                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'available')" title="Disponible" class="px-2 py-1 text-xs rounded border transition ${st === 'available' ? 'bg-amber-500 text-slate-900 font-bold border-amber-500 shadow-xs' : 'bg-slate-50 text-slate-400 hover:bg-slate-100 border-slate-200'}">Dispo</button>
-                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'absent')" title="Absent" class="px-2 py-1 text-xs rounded border transition ${st === 'absent' ? 'bg-rose-600 text-white font-bold border-rose-600 shadow-xs' : 'bg-slate-50 text-slate-400 hover:bg-slate-100 border-slate-200'}">Absent</button>
+                                            <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">${m.name}</span>
+                                                <div style="display: flex; gap: 4px;">
+                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'registered')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#059669' : '#f8fafc'}; color: ${st === 'registered' ? 'white' : '#64748b'}; font-weight: ${st === 'registered' ? 'bold' : 'normal'}; cursor: pointer;">Inscrit</button>
+                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'available')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'available' ? '#f59e0b' : '#cbd5e1'}; background: ${st === 'available' ? '#f59e0b' : '#f8fafc'}; color: ${st === 'available' ? '#1e293b' : '#64748b'}; font-weight: ${st === 'available' ? 'bold' : 'normal'}; cursor: pointer;">Dispo</button>
+                                                    <button onclick="setStatus('${t.id}', '${m.id}', 'absent')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'absent' ? '#e11d48' : '#cbd5e1'}; background: ${st === 'absent' ? '#e11d48' : '#f8fafc'}; color: ${st === 'absent' ? 'white' : '#64748b'}; font-weight: ${st === 'absent' ? 'bold' : 'normal'}; cursor: pointer;">Absent</button>
                                                 </div>
                                             </div>
                                         `;
