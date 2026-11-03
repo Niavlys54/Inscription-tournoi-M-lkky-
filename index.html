@@ -24,7 +24,8 @@
     <!-- Header Navigation -->
     <header class="bg-clubblue-dark text-white shadow-lg sticky top-0 z-50 border-b-4 border-clubyellow">
         <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center space-x-3">
+            <!-- Logo cliquable 3 fois pour activer l'admin discrètement -->
+            <div class="flex items-center space-x-3 cursor-pointer select-none" onclick="secretAdminTrigger()" title="Cliquez 3 fois ici pour l'Admin">
                 <div class="bg-clubyellow text-clubblue-dark rounded-xl w-11 h-11 flex flex-col items-center justify-center font-black shadow border border-yellow-500">
                     <span class="text-xs leading-none">AS</span>
                     <span class="text-sm leading-none">54</span>
@@ -35,11 +36,9 @@
                 </div>
             </div>
 
+            <!-- Indicateur discret de l'état Admin -->
             <div class="flex items-center space-x-2 text-sm">
-                <button id="admin-toggle-btn" onclick="toggleAdminMode()" class="bg-clubblue hover:bg-blue-800 text-white px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 border border-blue-400/40 shadow-sm">
-                    <i class="fa-solid fa-lock text-xs" id="admin-icon"></i>
-                    <span id="admin-btn-text">Mode Admin</span>
-                </button>
+                <span id="admin-badge" class="hidden bg-emerald-600 text-white text-xs px-2.5 py-1 rounded-full font-bold shadow">Mode Admin Actif</span>
             </div>
         </div>
         
@@ -82,7 +81,7 @@
                     <p class="text-xs text-stone-500">Effectif complet des 14 membres enregistrés.</p>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="resetDefaultData()" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium px-3 py-2 rounded-lg text-xs flex items-center gap-1 transition">
+                    <button onclick="resetDefaultData()" class="admin-only hidden bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium px-3 py-2 rounded-lg text-xs items-center gap-1 transition">
                         <i class="fa-solid fa-rotate-left"></i> Recharger 14 Membres
                     </button>
                     <button onclick="openModal('modal-member')" class="admin-only hidden bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-4 py-2 rounded-lg shadow transition text-sm flex items-center gap-2">
@@ -180,6 +179,8 @@
         ];
 
         let state = { isAdmin: false, adminPassword: 'admin54', members: [], tournaments: [] };
+        let clickCount = 0;
+        let clickTimer = null;
 
         function initApp() {
             const savedMembers = localStorage.getItem('as_pagny_members');
@@ -203,163 +204,32 @@
             }
         }
 
-        function toggleAdminMode() {
-            if (state.isAdmin) {
-                state.isAdmin = false;
-                alert("Mode Administrateur désactivé.");
-            } else {
-                const pass = prompt("Mot de passe administrateur (par défaut: admin54) :");
-                if (pass === state.adminPassword) {
-                    state.isAdmin = true;
-                    alert("Mode Administrateur activé !");
-                } else if (pass !== null) {
-                    alert("Mot de passe incorrect.");
+        // Astuce secrète : cliquez 3 fois sur le logo "AS 54" en haut à gauche pour activer/désactiver l'admin
+        function secretAdminTrigger() {
+            clickCount++;
+            if (clickCount === 1) {
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+            } else if (clickCount === 3) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                
+                if (state.isAdmin) {
+                    state.isAdmin = false;
+                    alert("Mode Administrateur désactivé.");
+                } else {
+                    const pass = prompt("Mot de passe administrateur :");
+                    if (pass === state.adminPassword) {
+                        state.isAdmin = true;
+                        alert("Mode Administrateur activé !");
+                    } else if (pass !== null) {
+                        alert("Mot de passe incorrect.");
+                    }
                 }
+                render();
             }
-            render();
         }
 
         function switchTab(tab) {
             document.getElementById('view-tournaments').classList.toggle('hidden', tab !== 'tournaments');
             document.getElementById('view-members').classList.toggle('hidden', tab !== 'members');
-            document.getElementById('tab-tournaments').className = tab === 'tournaments' ? 'py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2';
-            document.getElementById('tab-members').className = tab === 'members' ? 'py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2' : 'py-2.5 px-3 border-b-2 border-transparent font-medium text-sm text-blue-200 hover:text-white flex items-center gap-2';
-        }
-
-        function setStatus(tournamentId, memberId, newStatus) {
-            const tournament = state.tournaments.find(t => t.id === tournamentId);
-            if (tournament) {
-                if (!tournament.statuses) tournament.statuses = {};
-                tournament.statuses[memberId] = newStatus;
-                saveData();
-                render();
-            }
-        }
-
-        function saveTournament(e) {
-            e.preventDefault();
-            state.tournaments.unshift({
-                id: Date.now().toString(),
-                name: document.getElementById('t-name').value,
-                date: document.getElementById('t-date').value,
-                format: document.getElementById('t-format').value,
-                location: document.getElementById('t-location').value,
-                statuses: {}
-            });
-            saveData();
-            closeModal('modal-tournament');
-            document.getElementById('form-tournament').reset();
-            render();
-        }
-
-        function deleteTournament(id) {
-            if (confirm("Supprimer ce tournoi ?")) {
-                state.tournaments = state.tournaments.filter(t => t.id !== id);
-                saveData();
-                render();
-            }
-        }
-
-        function saveMember(e) {
-            e.preventDefault();
-            state.members.push({ id: Date.now().toString(), name: document.getElementById('m-name').value, role: document.getElementById('m-role').value || 'Membre' });
-            saveData();
-            closeModal('modal-member');
-            document.getElementById('form-member').reset();
-            render();
-        }
-
-        function deleteMember(id) {
-            if (confirm("Supprimer ce membre ?")) {
-                state.members = state.members.filter(m => m.id !== id);
-                saveData();
-                render();
-            }
-        }
-
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-        function render() {
-            document.getElementById('admin-btn-text').textContent = state.isAdmin ? "Admin Actif" : "Mode Admin";
-            document.getElementById('admin-icon').className = state.isAdmin ? "fa-solid fa-lock-open text-xs text-yellow-300" : "fa-solid fa-lock text-xs";
-            document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !state.isAdmin));
-            document.getElementById('member-count').textContent = state.members.length;
-
-            document.getElementById('members-grid').innerHTML = state.members.map(m => `
-                <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-full bg-clubyellow-light text-blue-900 font-bold flex items-center justify-center text-sm border border-yellow-300">${m.name.split(' ').map(n=>n[0]).join('')}</div>
-                        <div>
-                            <div class="font-bold text-stone-800 text-sm">${m.name}</div>
-                            <div class="text-xs text-clubblue bg-blue-50 px-2 py-0.5 rounded-full inline-block mt-0.5 border border-blue-100 font-medium">${m.role}</div>
-                        </div>
-                    </div>
-                    ${state.isAdmin ? `<button onclick="deleteMember('${m.id}')" class="text-stone-300 hover:text-red-600 p-1"><i class="fa-solid fa-trash-can"></i></button>` : ''}
-                </div>
-            `).join('');
-
-            const tournamentsList = document.getElementById('tournaments-list');
-            if (state.tournaments.length === 0) {
-                tournamentsList.innerHTML = `<div class="bg-white p-8 rounded-xl text-center text-stone-400 border border-stone-200">Aucun tournoi programmé. Activez le mode admin pour en ajouter un !</div>`;
-                return;
-            }
-
-            tournamentsList.innerHTML = state.tournaments.map(t => {
-                const statuses = t.statuses || {};
-                let registered = 0, available = 0, absent = 0;
-                state.members.forEach(m => {
-                    const st = statuses[m.id] || 'none';
-                    if (st === 'registered') registered++;
-                    else if (st === 'available') available++;
-                    else if (st === 'absent') absent++;
-                });
-
-                return `
-                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden">
-                        <div class="bg-clubblue-dark text-white p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-clubyellow">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="bg-clubyellow text-clubblue-dark font-bold text-xs px-2 py-0.5 rounded">${t.format}</span>
-                                    <h3 class="font-bold text-lg">${t.name}</h3>
-                                </div>
-                                <div class="text-xs text-blue-200 flex items-center gap-4 mt-1">
-                                    <span><i class="fa-regular fa-calendar mr-1"></i> ${new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                                    ${t.location ? `<span><i class="fa-solid fa-location-dot mr-1"></i> ${t.location}</span>` : ''}
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 text-xs flex-wrap">
-                                <span class="bg-emerald-900 text-emerald-200 border border-emerald-700 px-2.5 py-1 rounded-lg">🟢 ${registered} Inscrits</span>
-                                <span class="bg-amber-900 text-amber-200 border border-amber-700 px-2.5 py-1 rounded-lg">🟡 ${available} Dispos</span>
-                                <span class="bg-rose-900 text-rose-200 border border-rose-700 px-2.5 py-1 rounded-lg">🔴 ${absent} Absents</span>
-                                ${state.isAdmin ? `<button onclick="deleteTournament('${t.id}')" class="ml-2 text-rose-300 hover:text-white p-1"><i class="fa-solid fa-trash-can"></i></button>` : ''}
-                            </div>
-                        </div>
-
-                        <div class="p-4 bg-stone-50/50">
-                            <h4 class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-3">Disponibilités des Membres</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                                ${state.members.map(m => {
-                                    const st = statuses[m.id] || 'none';
-                                    return `
-                                        <div class="bg-white p-2.5 rounded-lg border border-stone-200 flex items-center justify-between shadow-sm">
-                                            <span class="text-xs font-semibold text-stone-800">${m.name}</span>
-                                            <div class="flex items-center space-x-1">
-                                                <button onclick="setStatus('${t.id}', '${m.id}', 'registered')" title="Inscrit" class="px-2 py-1 text-xs rounded border transition ${st === 'registered' ? 'bg-emerald-600 text-white font-bold border-emerald-600 shadow-sm' : 'bg-stone-50 text-stone-400 hover:bg-stone-100 border-stone-200'}">Inscrit</button>
-                                                <button onclick="setStatus('${t.id}', '${m.id}', 'available')" title="Disponible" class="px-2 py-1 text-xs rounded border transition ${st === 'available' ? 'bg-amber-500 text-stone-900 font-bold border-amber-500 shadow-sm' : 'bg-stone-50 text-stone-400 hover:bg-stone-100 border-stone-200'}">Dispo</button>
-                                                <button onclick="setStatus('${t.id}', '${m.id}', 'absent')" title="Absent" class="px-2 py-1 text-xs rounded border transition ${st === 'absent' ? 'bg-rose-600 text-white font-bold border-rose-600 shadow-sm' : 'bg-stone-50 text-stone-400 hover:bg-stone-100 border-stone-200'}">Absent</button>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
-</body>
-</html>
+            document.getElementById('tab-tournaments').className = tab === 'tournaments' ? 'py-2.5 px-3 border-b-2 border-clubyellow font-bold text-sm text-white flex items-center gap-2
