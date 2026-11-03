@@ -62,7 +62,7 @@
                     <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier des Tournois</h2>
                     <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités et équipes partagées en direct pour tout le club.</p>
                 </div>
-                <button onclick="openModal('modal-tournament')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
+                <button onclick="openTournamentModal()" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-plus"></i> Nouveau Tournoi
                 </button>
             </div>
@@ -92,32 +92,37 @@
 
     </main>
 
-    <!-- MODALE TOURNOI -->
+    <!-- MODALE TOURNOI (Création & Modification) -->
     <div id="modal-tournament" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
-                <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;">Ajouter un Tournoi</h3>
+                <h3 id="tournament-modal-title" style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;">Ajouter un Tournoi</h3>
                 <button onclick="closeModal('modal-tournament')" style="background: none; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form id="form-tournament" onsubmit="saveTournament(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="hidden" id="t-id">
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Nom du Tournoi</label>
-                    <input type="text" id="t-name" required placeholder="Ex: Black Mölkky Boulay" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
+                    <input type="text" id="t-name" required placeholder="Ex: Open de Mölkky" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div>
-                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Date</label>
+                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Date Début</label>
                         <input type="date" id="t-date" required style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                     </div>
                     <div>
-                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Format</label>
-                        <select id="t-format" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box; background: white;">
-                            <option value="Doublette">Doublette (2)</option>
-                            <option value="Triplette">Triplette (3)</option>
-                            <option value="Quadrette">Quadrette (4)</option>
-                            <option value="Individuel">Individuel (1)</option>
-                        </select>
+                        <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Date Fin (Optionnel)</label>
+                        <input type="date" id="t-end-date" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                     </div>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Format</label>
+                    <select id="t-format" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box; background: white;">
+                        <option value="Doublette">Doublette (2)</option>
+                        <option value="Triplette">Triplette (3)</option>
+                        <option value="Quadrette">Quadrette (4)</option>
+                        <option value="Individuel">Individuel (1)</option>
+                    </select>
                 </div>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Lieu</label>
@@ -181,7 +186,6 @@
     </div>
 
     <script>
-        // Configuration Firebase officielle du club
         const firebaseConfig = {
             apiKey: "AIzaSyBo2PoQprbmJRBKKJaH8pRMG9G-2bJr7mw",
             authDomain: "as-pagny-molkky.firebaseapp.com",
@@ -216,7 +220,6 @@
         let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
-            // Écoute en direct des membres sur Firebase
             db.ref('members').on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
@@ -228,7 +231,6 @@
                 render();
             });
 
-            // Écoute en direct des tournois sur Firebase
             db.ref('tournaments').on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
@@ -295,18 +297,44 @@
             }
         }
 
+        function openTournamentModal(id = null) {
+            if (id) {
+                const t = state.tournaments.find(item => item.id === id);
+                if (t) {
+                    document.getElementById('tournament-modal-title').textContent = "Modifier le Tournoi";
+                    document.getElementById('t-id').value = t.id;
+                    document.getElementById('t-name').value = t.name;
+                    document.getElementById('t-date').value = t.date;
+                    document.getElementById('t-end-date').value = t.endDate || '';
+                    document.getElementById('t-format').value = t.format;
+                    document.getElementById('t-location').value = t.location || '';
+                }
+            } else {
+                document.getElementById('tournament-modal-title').textContent = "Ajouter un Tournoi";
+                document.getElementById('form-tournament').reset();
+                document.getElementById('t-id').value = '';
+            }
+            openModal('modal-tournament');
+        }
+
         function saveTournament(e) {
             e.preventDefault();
-            const newId = Date.now().toString();
+            const idInput = document.getElementById('t-id').value;
+            const tournamentId = idInput ? idInput : Date.now().toString();
+            
+            const existingTournament = state.tournaments.find(t => t.id === tournamentId);
+
             const tournamentData = {
                 name: document.getElementById('t-name').value,
                 date: document.getElementById('t-date').value,
+                endDate: document.getElementById('t-end-date').value,
                 format: document.getElementById('t-format').value,
                 location: document.getElementById('t-location').value,
-                statuses: {},
-                teams: []
+                statuses: existingTournament ? (existingTournament.statuses || {}) : {},
+                teams: existingTournament ? (existingTournament.teams || {}) : {}
             };
-            db.ref(`tournaments/${newId}`).set(tournamentData);
+
+            db.ref(`tournaments/${tournamentId}`).set(tournamentData);
             closeModal('modal-tournament');
             document.getElementById('form-tournament').reset();
         }
@@ -450,6 +478,12 @@
                     const teamsObj = t.teams || {};
                     const teams = Object.values(teamsObj);
 
+                    let dateDisplay = new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                    if (t.endDate) {
+                        const dateEndFormatted = new Date(t.endDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+                        dateDisplay = `Du ${dateDisplay} au ${dateEndFormatted}`;
+                    }
+
                     return `
                         <div style="background: white; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);">
                             <div style="background-color: #0f172a; color: white; padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 2px solid #dc2626;">
@@ -460,11 +494,16 @@
                                             <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0;">${t.name}</h3>
                                         </div>
                                         <div style="font-size: 0.75rem; color: #bfdbfe; display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap;">
-                                            <span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                            <span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${dateDisplay}</span>
                                             ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${t.location}</span>` : ''}
                                         </div>
                                     </div>
-                                    ${state.isAdmin ? `<button onclick="deleteTournament('${t.id}')" style="background:none; border:none; color:#fca5a5; cursor:pointer;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                                    ${state.isAdmin ? `
+                                        <div style="display: flex; gap: 8px;">
+                                            <button onclick="openTournamentModal('${t.id}')" style="background:none; border:none; color:#93c5fd; cursor:pointer;" title="Modifier"><i class="fa-solid fa-pen-to-square"></i></button>
+                                            <button onclick="deleteTournament('${t.id}')" style="background:none; border:none; color:#fca5a5; cursor:pointer;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>
+                                        </div>
+                                    ` : ''}
                                 </div>
                                 <div style="display: flex; gap: 8px; font-size: 0.75rem; flex-wrap: wrap;">
                                     <span style="background: #064e3b; color: #a7f3d0; border: 1px solid #047857; padding: 4px 10px; border-radius: 8px;">🟢 ${registered} Inscrits</span>
