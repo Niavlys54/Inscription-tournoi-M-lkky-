@@ -240,7 +240,7 @@
                     state.tournaments = Object.keys(val).map(key => ({
                         id: key,
                         ...val[key]
-                    })).sort((a,b) => b.id - a.id);
+                    })).sort((a,b) => new Date(a.date) - new Date(b.date)); // Tri chronologique (du plus proche au plus lointain)
                 } else {
                     state.tournaments = [];
                 }
