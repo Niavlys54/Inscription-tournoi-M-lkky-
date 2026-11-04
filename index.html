@@ -28,7 +28,7 @@
                         AS PAGNY MÖLKKY
                         <span style="background-color: #dc2626; color: white; font-size: 10px; padding: 2px 8px; border-radius: 9999px; font-weight: bold; text-transform: uppercase;">54</span>
                     </h1>
-                    <p style="font-size: 0.75rem; color: #93c5fd; margin: 2px 0 0 0; font-weight: 500;">Club de Mölkky • Saison 2026</p>
+                    <p style="font-size: 0.75rem; color: #93c5fd; margin: 2px 0 0 0; font-weight: 500;">Club de Mölkky • Saison 2026/2027</p>
                 </div>
             </div>
 
@@ -427,7 +427,6 @@
             db.ref('members').set(updatedMembers);
             closeModal('modal-member');
             
-            // Reset modal defaults
             document.getElementById('form-member').reset();
             document.getElementById('m-is-guest').value = "false";
             document.getElementById('member-modal-title').textContent = "Ajouter un Membre";
@@ -548,11 +547,9 @@
                                             <i class="fa-solid fa-people-group" style="color: #1d4ed8;"></i>
                                             <h4 style="font-size: 0.75rem; font-weight: bold; color: #334155; text-transform: uppercase; margin: 0;">Équipes constituées (${teams.length})</h4>
                                         </div>
-                                        ${state.isAdmin ? `
-                                            <button onclick="openTeamModal('${t.id}')" style="background: #1d4ed8; color: white; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                                                <i class="fa-solid fa-user-plus"></i> Composer une équipe
-                                            </button>
-                                        ` : ''}
+                                        <button onclick="openTeamModal('${t.id}')" style="background: #1d4ed8; color: white; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                            <i class="fa-solid fa-user-plus"></i> Composer une équipe
+                                        </button>
                                     </div>
                                     ${teams.length === 0 ? `
                                         <p style="font-size: 0.75rem; color: #64748b; font-style: italic; margin: 0;">Aucune équipe formée pour le moment.</p>
