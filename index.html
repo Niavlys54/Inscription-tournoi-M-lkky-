@@ -66,8 +66,8 @@
                     <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités, inscriptions et équipes en direct.</p>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button onclick="loadDefaultTournaments()" class="admin-only" style="display: none; background-color: #f59e0b; color: white; font-weight: 500; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.75rem; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser les tournois par défaut
+                    <button onclick="clearAllTournaments()" class="admin-only" style="display: none; background-color: #ef4444; color: white; font-weight: 500; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.75rem; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-trash"></i> Vider tous les tournois
                     </button>
                     <button onclick="openTournamentModal()" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
                         <i class="fa-solid fa-plus"></i> Nouveau Tournoi
@@ -81,8 +81,8 @@
         <!-- ONGLET: STATS / BILAN JOUEURS ( STRICTEMENT ADMIN ) -->
         <section id="view-player-stats" style="display: none; flex-direction: column; gap: 24px;">
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1;">
-                <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;"><i class="fa-solid fa-medal" style="color: #f59e0b;"></i> Performances Joueur par Joueur (Saison 2026) - Dossier Admin Privé</h2>
-                <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Récapitulatif interne des victoires et podiums des membres (invisible des visiteurs pour éviter les jalousies).</p>
+                <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;"><i class="fa-solid fa-medal" style="color: #f59e0b;"></i> Performances Joueur par Joueur (Dossier Admin Privé)</h2>
+                <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Récapitulatif interne des victoires et podiums des membres.</p>
             </div>
             <div id="player-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
         </section>
@@ -274,28 +274,6 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre', isGuest: false }
         ];
 
-        // TES VRAIS TOURNOIS À VENIR (SANS POLLUER AVEC LES ANCIENS RÉSULTATS)
-        const DEFAULT_TOURNAMENTS = {
-            "t_nov_1": {
-                name: "Prochain Tournoi / Concours d'Hiver",
-                date: "2026-11-15",
-                format: "Doublette",
-                location: "À définir",
-                statuses: {},
-                teams: {},
-                results: null
-            },
-            "t_dec_1": {
-                name: "Tournoi de fin d'année",
-                date: "2026-12-13",
-                format: "Triplette",
-                location: "À définir",
-                statuses: {},
-                teams: {},
-                results: null
-            }
-        };
-
         let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
@@ -318,19 +296,19 @@
                         ...val[key]
                     })).sort((a,b) => new Date(a.date) - new Date(b.date));
                 } else {
-                    state.tournaments = Object.keys(DEFAULT_TOURNAMENTS).map(key => ({
-                        id: key,
-                        ...DEFAULT_TOURNAMENTS[key]
-                    }));
-                    db.ref('tournaments').set(DEFAULT_TOURNAMENTS);
+                    state.tournaments = [];
                 }
                 render();
             });
         }
 
-        function loadDefaultTournaments() {
-            if(confirm("Réinitialiser les tournois par défaut ?")) {
-                db.ref('tournaments').set(DEFAULT_TOURNAMENTS);
+        function clearAllTournaments() {
+            if(confirm("Voulez-vous vraiment effacer TOUS les tournois de la base de données ?")) {
+                db.ref('tournaments').remove().then(() => {
+                    alert("Tous les tournois ont été effacés avec succès !");
+                }).catch(error => {
+                    db.ref('tournaments').set(null);
+                });
             }
         }
 
@@ -439,7 +417,7 @@
         }
 
         function deleteTournament(id) {
-            if (confirm("Supprimer ce tournoi pour l'ensemble du club ?")) {
+            if (confirm("Supprimer ce tournoi ?")) {
                 db.ref(`tournaments/${id}`).remove();
             }
         }
@@ -612,26 +590,7 @@
             // RENDU ONGLET BILAN JOUEURS (STATS) - UNIQUEMENT SI ADMIN ACTIF
             const statsGrid = document.getElementById('player-stats-grid');
             if (statsGrid && state.isAdmin) {
-                const officialStats = {
-                    "Arnaud Pierre": { wins: 6, podiums: 7, text: "Mirabelle, Macheren, Montois, Pagny Indiv, Interclub Marly" },
-                    "Cyril Fortin": { wins: 2, podiums: 3, text: "Mirabelle, Consolante Marly, Podium Florange" },
-                    "Sylvain Gaugain": { wins: 1, podiums: 4, text: "Podiums Mirabelle, Octobre Rose, Bessenay, Florange" },
-                    "Laura Gaugain": { wins: 1, podiums: 5, text: "Podiums Mirabelle, Macheren, Paris, Bessenay, Consolante Marly" },
-                    "Seb Bausch": { wins: 2, podiums: 4, text: "Macheren, Interclub Marly, Podium Crusnes (Enfant)" },
-                    "Inès Chaouch": { wins: 0, podiums: 2, text: "Podium Macheren (3ème)" },
-                    "Logan Gangloff": { wins: 0, podiums: 1, text: "2ème Consolante Pagny Indiv" },
-                    "Bryan Bausch": { wins: 0, podiums: 1, text: "2ème Catégorie Jeunes Pagny Indiv" },
-                    "Bryana Gangloff": { wins: 0, podiums: 1, text: "3ème Tournoi Enfant Crusnes" },
-                    "Yvon Nicolay": { wins: 0, podiums: 1, text: "7ème Bazar Florange" },
-                    "Jacques Gaugain": { wins: 0, podiums: 1, text: "Meilleur 4ème Mirabelle" },
-                    "Patrick Gangloff": { wins: 0, podiums: 0, text: "7/7 en poules Mirabelle" },
-                    "Béa Gangloff": { wins: 0, podiums: 0, text: "Quarts Or Crusnes, 11ème Octobre Rose" },
-                    "François Perrin": { wins: 1, podiums: 1, text: "Jeu du fil rouge Pagny Indiv" },
-                    "Nathalie Mercier": { wins: 0, podiums: 0, text: "Membre actif" }
-                };
-
                 statsGrid.innerHTML = state.members.map(m => {
-                    const st = officialStats[m.name] || { wins: 0, podiums: 0, text: "Participant régulier" };
                     return `
                         <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                             <div style="display: flex; align-items: center; gap: 12px;">
@@ -643,12 +602,8 @@
                                     <div style="font-size: 0.75rem; color: #64748b;">${m.role}</div>
                                 </div>
                             </div>
-                            <div style="display: flex; gap: 8px; font-size: 0.75rem;">
-                                <span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 6px; font-weight: bold; border: 1px solid #fde68a;">🏆 ${st.wins} Victoire(s)</span>
-                                <span style="background: #f0fdf4; color: #166534; padding: 4px 8px; border-radius: 6px; font-weight: bold; border: 1px solid #dcfce7;">🏅 ${st.podiums} Podiums</span>
-                            </div>
                             <div style="font-size: 0.75rem; color: #475569; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                                <strong>Faits marquants :</strong> ${st.text}
+                                <em>Dossier prêt à recevoir les statistiques de la saison.</em>
                             </div>
                         </div>
                     `;
@@ -659,7 +614,7 @@
             const tournamentsList = document.getElementById('tournaments-list');
             if (tournamentsList) {
                 if (state.tournaments.length === 0) {
-                    tournamentsList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi au calendrier pour le moment.</div>`;
+                    tournamentsList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi au calendrier. Active le mode admin pour en ajouter !</div>`;
                     return;
                 }
 
