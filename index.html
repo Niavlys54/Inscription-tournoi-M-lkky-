@@ -43,9 +43,11 @@
         <div style="background-color: #1d4ed8;">
             <div style="max-width: 1000px; margin: 0 auto; padding: 0 16px; display: flex; gap: 16px; overflow-x: auto;">
                 <button onclick="switchTab('tournaments')" id="tab-tournaments" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid #dc2626; font-weight: bold; font-size: 0.875rem; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <i class="fa-solid fa-trophy" style="color: #f87171;"></i> Tournois
+                    <i class="fa-solid fa-trophy" style="color: #f87171;"></i> Tournois à venir
                 </button>
-                <!-- Bilan Joueurs strictement réservé à l'admin (invisible pour les visiteurs) -->
+                <button onclick="switchTab('archives')" id="tab-archives" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                    <i class="fa-solid fa-box-archive" style="color: #fde047;"></i> Archives & Résultats
+                </button>
                 <button onclick="switchTab('player-stats')" id="tab-player-stats" class="admin-only" style="display: none; background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; align-items: center; gap: 8px; white-space: nowrap;">
                     <i class="fa-solid fa-chart-simple" style="color: #fde047;"></i> Bilan Joueurs (Admin)
                 </button>
@@ -58,11 +60,11 @@
 
     <main style="max-width: 1000px; margin: 0 auto; padding: 24px 16px;">
 
-        <!-- ONGLET: TOURNOIS -->
+        <!-- ONGLET: TOURNOIS À VENIR -->
         <section id="view-tournaments" style="display: flex; flex-direction: column; gap: 24px;">
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
                 <div>
-                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier & Tournois</h2>
+                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier des Tournois à Venir</h2>
                     <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités, inscriptions et équipes en direct.</p>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -76,6 +78,15 @@
             </div>
 
             <div id="tournaments-list" style="display: flex; flex-direction: column; gap: 24px;"></div>
+        </section>
+
+        <!-- ONGLET: ARCHIVES & RÉSULTATS -->
+        <section id="view-archives" style="display: none; flex-direction: column; gap: 24px;">
+            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1;">
+                <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;"><i class="fa-solid fa-box-archive" style="color: #ca8a04;"></i> Historique & Résultats des Tournois Passés</h2>
+                <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Tous les tournois terminés et leurs résultats encodés sont archivés ici automatiquement.</p>
+            </div>
+            <div id="archives-list" style="display: flex; flex-direction: column; gap: 24px;"></div>
         </section>
 
         <!-- ONGLET: STATS / BILAN JOUEURS ( STRICTEMENT ADMIN ) -->
@@ -294,7 +305,7 @@
                     state.tournaments = Object.keys(val).map(key => ({
                         id: key,
                         ...val[key]
-                    })).sort((a, b) => new Date(a.date) - new Date(b.date)); // TRI CHRONOLOGIQUE STRICT
+                    })).sort((a, b) => new Date(a.date) - new Date(b.date));
                 } else {
                     state.tournaments = [];
                 }
@@ -338,12 +349,17 @@
 
         function switchTab(tab) {
             document.getElementById('view-tournaments').style.display = tab === 'tournaments' ? 'flex' : 'none';
+            document.getElementById('view-archives').style.display = tab === 'archives' ? 'flex' : 'none';
             document.getElementById('view-player-stats').style.display = tab === 'player-stats' ? 'flex' : 'none';
             document.getElementById('view-members').style.display = tab === 'members' ? 'flex' : 'none';
             
             document.getElementById('tab-tournaments').style.borderBottom = tab === 'tournaments' ? '2px solid #dc2626' : '2px solid transparent';
             document.getElementById('tab-tournaments').style.fontWeight = tab === 'tournaments' ? 'bold' : '500';
             document.getElementById('tab-tournaments').style.color = tab === 'tournaments' ? 'white' : '#bfdbfe';
+
+            document.getElementById('tab-archives').style.borderBottom = tab === 'archives' ? '2px solid #dc2626' : '2px solid transparent';
+            document.getElementById('tab-archives').style.fontWeight = tab === 'archives' ? 'bold' : '500';
+            document.getElementById('tab-archives').style.color = tab === 'archives' ? 'white' : '#bfdbfe';
 
             const tabStats = document.getElementById('tab-player-stats');
             if (tabStats) {
@@ -610,148 +626,173 @@
                 }).join('');
             }
 
-            // RENDU ONGLET TOURNOIS (TRIÉS CHRONOLOGIQUEMENT)
+            // SÉPARATION TOURNOIS À VENIR / ARCHIVES
+            const activeTournaments = [];
+            const archivedTournaments = [];
+
+            state.tournaments.forEach(t => {
+                // Si un résultat est encodé, on le bascule automatiquement dans les archives
+                if (t.results && t.results.phase) {
+                    archivedTournaments.push(t);
+                } else {
+                    activeTournaments.push(t);
+                }
+            });
+
+            // RENDU ONGLET TOURNOIS À VENIR
             const tournamentsList = document.getElementById('tournaments-list');
             if (tournamentsList) {
-                if (state.tournaments.length === 0) {
-                    tournamentsList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi au calendrier. Active le mode admin pour en ajouter !</div>`;
-                    return;
+                if (activeTournaments.length === 0) {
+                    tournamentsList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi à venir au calendrier. Active le mode admin pour en ajouter !</div>`;
+                } else {
+                    tournamentsList.innerHTML = activeTournaments.map(t => renderTournamentCard(t, false)).join('');
                 }
+            }
 
-                tournamentsList.innerHTML = state.tournaments.map(t => {
-                    const statuses = t.statuses || {};
-                    let registered = 0, available = 0, absent = 0;
-                    state.members.forEach(m => {
-                        const st = statuses[m.id] || 'none';
-                        if (st === 'registered') registered++;
-                        else if (st === 'available') available++;
-                        else if (st === 'absent') absent++;
-                    });
+            // RENDU ONGLET ARCHIVES & RÉSULTATS
+            const archivesList = document.getElementById('archives-list');
+            if (archivesList) {
+                if (archivedTournaments.length === 0) {
+                    archivesList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi archivé pour le moment. Dès que tu ajoutes des résultats sur un tournoi, il s'installera ici.</div>`;
+                } else {
+                    archivesList.innerHTML = archivedTournaments.map(t => renderTournamentCard(t, true)).join('');
+                }
+            }
+        }
 
-                    const isTeamFormat = t.format === 'Doublette' || t.format === 'Triplette' || t.format === 'Quadrette';
-                    const teamsObj = t.teams || {};
-                    const teams = Object.values(teamsObj);
-                    const results = t.results;
+        function renderTournamentCard(t, isArchive) {
+            const statuses = t.statuses || {};
+            let registered = 0, available = 0, absent = 0;
+            state.members.forEach(m => {
+                const st = statuses[m.id] || 'none';
+                if (st === 'registered') registered++;
+                else if (st === 'available') available++;
+                else if (st === 'absent') absent++;
+            });
 
-                    let dateDisplay = new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                    if (t.endDate) {
-                        const dateEndFormatted = new Date(t.endDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
-                        dateDisplay = `Du ${dateDisplay} au ${dateEndFormatted}`;
-                    }
+            const isTeamFormat = t.format === 'Doublette' || t.format === 'Triplette' || t.format === 'Quadrette';
+            const teamsObj = t.teams || {};
+            const teams = Object.values(teamsObj);
+            const results = t.results;
 
-                    return `
-                        <div style="background: white; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);">
-                            <div style="background-color: #0f172a; color: white; padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 2px solid #dc2626;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-                                    <div>
-                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                            <span style="background-color: #dc2626; color: white; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">${t.format}</span>
-                                            <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0;">${t.name}</h3>
-                                        </div>
-                                        <div style="font-size: 0.75rem; color: #bfdbfe; display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap;">
-                                            <span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${dateDisplay}</span>
-                                            ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${t.location}</span>` : ''}
-                                        </div>
-                                    </div>
-                                    ${state.isAdmin ? `
-                                        <div style="display: flex; gap: 8px;">
-                                            <button onclick="openTournamentModal('${t.id}')" style="background:none; border:none; color:#93c5fd; cursor:pointer;" title="Modifier"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button onclick="deleteTournament('${t.id}')" style="background:none; border:none; color:#fca5a5; cursor:pointer;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>
-                                        </div>
-                                    ` : ''}
+            let dateDisplay = new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            if (t.endDate) {
+                const dateEndFormatted = new Date(t.endDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+                dateDisplay = `Du ${dateDisplay} au ${dateEndFormatted}`;
+            }
+
+            return `
+                <div style="background: white; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);">
+                    <div style="background-color: #0f172a; color: white; padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 2px solid ${isArchive ? '#ca8a04' : '#dc2626'};">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="background-color: ${isArchive ? '#ca8a04' : '#dc2626'}; color: white; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">${t.format}</span>
+                                    <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0;">${t.name}</h3>
+                                    ${isArchive ? '<span style="background: #fef08a; color: #713f12; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">Archivé 🏆</span>' : ''}
                                 </div>
-                                <div style="display: flex; gap: 8px; font-size: 0.75rem; flex-wrap: wrap;">
-                                    <span style="background: #064e3b; color: #a7f3d0; border: 1px solid #047857; padding: 4px 10px; border-radius: 8px;">🟢 ${registered} Inscrits</span>
-                                    <span style="background: #78350f; color: #fde68a; border: 1px solid #b45309; padding: 4px 10px; border-radius: 8px;">🟡 ${available} Dispos</span>
-                                    <span style="background: #881337; color: #fecdd3; border: 1px solid #9f1239; padding: 4px 10px; border-radius: 8px;">🔴 ${absent} Absents</span>
+                                <div style="font-size: 0.75rem; color: #bfdbfe; display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap;">
+                                    <span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${dateDisplay}</span>
+                                    ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${t.location}</span>` : ''}
                                 </div>
                             </div>
-
-                            <!-- SECTION RÉSULTATS (VISIBLE UNIQUEMENT EN MODE ADMIN) -->
                             ${state.isAdmin ? `
-                                <div style="background-color: #fefce8; border-bottom: 1px solid #fef08a; padding: 12px 16px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                        <span style="font-size: 0.75rem; font-weight: bold; color: #854d0e; text-transform: uppercase;"><i class="fa-solid fa-chart-line" style="margin-right: 4px;"></i> Résultats & Bilan (Privé Admin)</span>
-                                        <button onclick="openResultsModal('${t.id}')" style="background: #ca8a04; color: white; border: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen"></i> ${results ? 'Modifier les résultats' : 'Ajouter les résultats'}</button>
-                                    </div>
-                                    ${results ? `
-                                        <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
-                                            <div><strong>Matin (Poules) :</strong> ${results.poules || 'Non renseigné'}</div>
-                                            <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${results.phase}</span></div>
-                                            ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${results.details}</div>` : ''}
-                                        </div>
-                                    ` : `
-                                        <div style="font-size: 0.75rem; color: #a16207; font-style: italic;">Aucun résultat enregistré pour le moment.</div>
-                                    `}
+                                <div style="display: flex; gap: 8px;">
+                                    <button onclick="openTournamentModal('${t.id}')" style="background:none; border:none; color:#93c5fd; cursor:pointer;" title="Modifier"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button onclick="deleteTournament('${t.id}')" style="background:none; border:none; color:#fca5a5; cursor:pointer;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>
                                 </div>
                             ` : ''}
+                        </div>
+                        <div style="display: flex; gap: 8px; font-size: 0.75rem; flex-wrap: wrap;">
+                            <span style="background: #064e3b; color: #a7f3d0; border: 1px solid #047857; padding: 4px 10px; border-radius: 8px;">🟢 ${registered} Inscrits</span>
+                            <span style="background: #78350f; color: #fde68a; border: 1px solid #b45309; padding: 4px 10px; border-radius: 8px;">🟡 ${available} Dispos</span>
+                            <span style="background: #881337; color: #fecdd3; border: 1px solid #9f1239; padding: 4px 10px; border-radius: 8px;">🔴 ${absent} Absents</span>
+                        </div>
+                    </div>
 
-                            ${isTeamFormat ? `
-                                <div style="padding: 16px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                            <i class="fa-solid fa-people-group" style="color: #1d4ed8;"></i>
-                                            <h4 style="font-size: 0.75rem; font-weight: bold; color: #334155; text-transform: uppercase; margin: 0;">Équipes constituées (${teams.length})</h4>
-                                        </div>
-                                        <button onclick="openTeamModal('${t.id}')" style="background: #1d4ed8; color: white; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px;">
-                                            <i class="fa-solid fa-user-plus"></i> Composer une équipe
-                                        </button>
-                                    </div>
-                                    ${teams.length === 0 ? `
-                                        <p style="font-size: 0.75rem; color: #64748b; font-style: italic; margin: 0;">Aucune équipe formée pour le moment.</p>
-                                    ` : `
-                                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;">
-                                            ${teams.map(tm => {
-                                                const playerNames = (tm.playerIds || []).map(pid => {
-                                                    const mem = state.members.find(m => m.id === pid);
-                                                    return mem ? (mem.name + (mem.isGuest ? ' (Ext.)' : '')) : '';
-                                                }).filter(Boolean).join(' & ');
-                                                return `
-                                                    <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
-                                                        <div>
-                                                            <div style="font-size: 0.75rem; font-weight: bold; color: #1d4ed8;">${tm.name}</div>
-                                                            <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;"><i class="fa-solid fa-user-check" style="color: #059669; margin-right: 4px;"></i> ${playerNames}</div>
-                                                        </div>
-                                                        ${state.isAdmin ? `<button onclick="deleteTeam('${t.id}', '${tm.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 0.75rem;"><i class="fa-solid fa-trash-can"></i></button>` : ''}
-                                                    </div>
-                                                `;
-                                            }).join('')}
-                                        </div>
-                                    `}
+                    <!-- SECTION RÉSULTATS -->
+                    <div style="background-color: #fefce8; border-bottom: 1px solid #fef08a; padding: 12px 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; font-weight: bold; color: #854d0e; text-transform: uppercase;"><i class="fa-solid fa-chart-line" style="margin-right: 4px;"></i> Résultats & Bilan</span>
+                            ${state.isAdmin ? `<button onclick="openResultsModal('${t.id}')" style="background: #ca8a04; color: white; border: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen"></i> ${results ? 'Modifier les résultats' : 'Ajouter les résultats'}</button>` : ''}
+                        </div>
+                        ${results ? `
+                            <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
+                                <div><strong>Matin (Poules) :</strong> ${results.poules || 'Non renseigné'}</div>
+                                <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${results.phase}</span></div>
+                                ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${results.details}</div>` : ''}
+                            </div>
+                        ` : `
+                            <div style="font-size: 0.75rem; color: #a16207; font-style: italic;">Aucun résultat encodé pour l'instant. Renseigne les résultats pour archiver ce tournoi.</div>
+                        `}
+                    </div>
+
+                    ${isTeamFormat ? `
+                        <div style="padding: 16px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-people-group" style="color: #1d4ed8;"></i>
+                                    <h4 style="font-size: 0.75rem; font-weight: bold; color: #334155; text-transform: uppercase; margin: 0;">Équipes engagées (${teams.length})</h4>
                                 </div>
-                            ` : ''}
-
-                            <!-- MENU REPLIANT DES DISPONIBILITÉS -->
-                            <div style="background-color: #f8fafc;">
-                                <button onclick="toggleAvailabilityMenu('${t.id}')" style="width: 100%; background: #e2e8f0; border: none; padding: 12px 16px; font-weight: bold; font-size: 0.75rem; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                                    <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> Gérer / Voir les disponibilités des joueurs</span>
-                                    <i class="fa-solid fa-chevron-down" id="avail-icon-${t.id}"></i>
-                                </button>
-                                
-                                <div id="avail-container-${t.id}" style="display: none; padding: 16px; border-top: 1px solid #cbd5e1;">
-                                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
-                                        ${state.members.map(m => {
-                                            const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
-                                            return `
-                                                <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid ${m.isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between;">
-                                                    <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">
-                                                        ${m.name} ${m.isGuest ? '<span style="font-size: 10px; color: #ea580c;">(Ext.)</span>' : ''}
-                                                    </span>
-                                                    <div style="display: flex; gap: 4px;">
-                                                        <button onclick="setStatus('${t.id}', '${m.id}', 'registered')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#059669' : '#f8fafc'}; color: ${st === 'registered' ? 'white' : '#64748b'}; font-weight: ${st === 'registered' ? 'bold' : 'normal'}; cursor: pointer;">Inscrit</button>
-                                                        <button onclick="setStatus('${t.id}', '${m.id}', 'available')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'available' ? '#f59e0b' : '#cbd5e1'}; background: ${st === 'available' ? '#f59e0b' : '#f8fafc'}; color: ${st === 'available' ? '#1e293b' : '#64748b'}; font-weight: ${st === 'available' ? 'bold' : 'normal'}; cursor: pointer;">Dispo</button>
-                                                        <button onclick="setStatus('${t.id}', '${m.id}', 'absent')" style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'absent' ? '#e11d48' : '#cbd5e1'}; background: ${st === 'absent' ? '#e11d48' : '#f8fafc'}; color: ${st === 'absent' ? 'white' : '#64748b'}; font-weight: ${st === 'absent' ? 'bold' : 'normal'}; cursor: pointer;">Absent</button>
-                                                    </div>
+                                ${state.isAdmin && !isArchive ? `
+                                    <button onclick="openTeamModal('${t.id}')" style="background: #1d4ed8; color: white; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fa-solid fa-user-plus"></i> Composer une équipe
+                                    </button>
+                                ` : ''}
+                            </div>
+                            ${teams.length === 0 ? `
+                                <p style="font-size: 0.75rem; color: #64748b; font-style: italic; margin: 0;">Aucune équipe formée.</p>
+                            ` : `
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;">
+                                    ${teams.map(tm => {
+                                        const playerNames = (tm.playerIds || []).map(pid => {
+                                            const mem = state.members.find(m => m.id === pid);
+                                            return mem ? (mem.name + (mem.isGuest ? ' (Ext.)' : '')) : '';
+                                        }).filter(Boolean).join(' & ');
+                                        return `
+                                            <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
+                                                <div>
+                                                    <div style="font-size: 0.75rem; font-weight: bold; color: #1d4ed8;">${tm.name}</div>
+                                                    <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;"><i class="fa-solid fa-user-check" style="color: #059669; margin-right: 4px;"></i> ${playerNames}</div>
                                                 </div>
-                                            `;
-                                        }).join('')}
-                                    </div>
+                                                ${(state.isAdmin && !isArchive) ? `<button onclick="deleteTeam('${t.id}', '${tm.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 0.75rem;"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                                            </div>
+                                        `;
+                                    }).join('')}
                                 </div>
+                            `}
+                        </div>
+                    ` : ''}
+
+                    <!-- MENU REPLIANT DES DISPONIBILITÉS -->
+                    <div style="background-color: #f8fafc;">
+                        <button onclick="toggleAvailabilityMenu('${t.id}')" style="width: 100%; background: #e2e8f0; border: none; padding: 12px 16px; font-weight: bold; font-size: 0.75rem; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> ${isArchive ? 'Voir les inscriptions et la liste' : 'Gérer / Voir les disponibilités des joueurs'}</span>
+                            <i class="fa-solid fa-chevron-down" id="avail-icon-${t.id}"></i>
+                        </button>
+                        
+                        <div id="avail-container-${t.id}" style="display: none; padding: 16px; border-top: 1px solid #cbd5e1;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
+                                ${state.members.map(m => {
+                                    const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
+                                    return `
+                                        <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid ${m.isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between;">
+                                            <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">
+                                                ${m.name} ${m.isGuest ? '<span style="font-size: 10px; color: #ea580c;">(Ext.)</span>' : ''}
+                                            </span>
+                                            <div style="display: flex; gap: 4px;">
+                                                <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'registered')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#059669' : '#f8fafc'}; color: ${st === 'registered' ? 'white' : '#64748b'}; font-weight: ${st === 'registered' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Inscrit</button>
+                                                <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'available')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'available' ? '#f59e0b' : '#cbd5e1'}; background: ${st === 'available' ? '#f59e0b' : '#f8fafc'}; color: ${st === 'available' ? '#1e293b' : '#64748b'}; font-weight: ${st === 'available' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Dispo</button>
+                                                <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'absent')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'absent' ? '#e11d48' : '#cbd5e1'}; background: ${st === 'absent' ? '#e11d48' : '#f8fafc'}; color: ${st === 'absent' ? 'white' : '#64748b'}; font-weight: ${st === 'absent' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Absent</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
-                    `;
-                }).join('');
-            }
+                    </div>
+                </div>
+            `;
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
