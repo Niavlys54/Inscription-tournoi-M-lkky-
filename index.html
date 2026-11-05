@@ -41,16 +41,12 @@
         </div>
         
         <div style="background-color: #1d4ed8;">
-            <div style="max-width: 1000px; margin: 0 auto; padding: 0 16px; display: flex; gap: 16px; overflow-x: auto;">
-                <button onclick="switchTab('tournaments')" id="tab-tournaments" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid #dc2626; font-weight: bold; font-size: 0.875rem; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+            <div style="max-width: 1000px; margin: 0 auto; padding: 0 16px; display: flex; gap: 16px;">
+                <button onclick="switchTab('tournaments')" id="tab-tournaments" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid #dc2626; font-weight: bold; font-size: 0.875rem; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-trophy" style="color: #f87171;"></i> Tournois
                 </button>
-                <!-- Bilan Joueurs strictement réservé à l'admin (invisible pour les visiteurs) -->
-                <button onclick="switchTab('player-stats')" id="tab-player-stats" class="admin-only" style="display: none; background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; align-items: center; gap: 8px; white-space: nowrap;">
-                    <i class="fa-solid fa-chart-simple" style="color: #fde047;"></i> Bilan Joueurs (Admin)
-                </button>
-                <button onclick="switchTab('members')" id="tab-members" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <i class="fa-solid fa-users"></i> Effectif (<span id="member-count">14</span>)
+                <button onclick="switchTab('members')" id="tab-members" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-users"></i> Joueurs (<span id="member-count">14</span>)
                 </button>
             </div>
         </div>
@@ -60,31 +56,17 @@
 
         <!-- ONGLET: TOURNOIS -->
         <section id="view-tournaments" style="display: flex; flex-direction: column; gap: 24px;">
-            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
-                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier & Historique des Tournois</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités, équipes et résultats sauvegardés en direct.</p>
+                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier des Tournois</h2>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités et équipes partagées en direct pour le club et ses invités.</p>
                 </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button onclick="load2026History()" class="admin-only" style="display: none; background-color: #f59e0b; color: white; font-weight: 500; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.75rem; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-clock-rotate-left"></i> Recharger Historique & Tournois
-                    </button>
-                    <button onclick="openTournamentModal()" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-plus"></i> Nouveau Tournoi
-                    </button>
-                </div>
+                <button onclick="openTournamentModal()" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-plus"></i> Nouveau Tournoi
+                </button>
             </div>
 
             <div id="tournaments-list" style="display: flex; flex-direction: column; gap: 24px;"></div>
-        </section>
-
-        <!-- ONGLET: STATS / BILAN JOUEURS ( STRICTEMENT ADMIN ) -->
-        <section id="view-player-stats" style="display: none; flex-direction: column; gap: 24px;">
-            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1;">
-                <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;"><i class="fa-solid fa-medal" style="color: #f59e0b;"></i> Performances Joueur par Joueur (Saison 2026) - Vue Admin Privée</h2>
-                <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Récapitulatif interne des victoires et podiums des membres (invisible des visiteurs).</p>
-            </div>
-            <div id="player-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
         </section>
 
         <!-- ONGLET: MEMBRES -->
@@ -96,7 +78,7 @@
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button onclick="resetDefaultData()" class="admin-only" style="display: none; background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 500; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
-                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser Joueurs
+                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser
                     </button>
                     <button onclick="openModal('modal-member')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem;">
                         <i class="fa-solid fa-user-plus"></i> Nouveau Membre
@@ -192,10 +174,10 @@
                 <input type="hidden" id="res-tournament-id">
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">☀️ Résultats des Poules (Matin)</label>
-                    <textarea id="res-poules" rows="3" placeholder="Ex: Poule A : 3 victoires, 1 défaite." style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
+                    <textarea id="res-poules" rows="3" placeholder="Ex: Poule A : 3 victoires, 1 défaite. Classés 2ème de poule." style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">🏆 Phase Finale & Parcours</label>
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">🏆 Phase Finale & Parcours (Après-midi)</label>
                     <select id="res-phase" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box; background: white; margin-bottom: 8px;">
                         <option value="Non sorti des poules">Non sorti des poules</option>
                         <option value="32ème de finale">32ème de finale</option>
@@ -205,9 +187,8 @@
                         <option value="Demi-finale">Demi-finale</option>
                         <option value="Finaliste">Finaliste 🥈</option>
                         <option value="Vainqueur">Vainqueur 🏆</option>
-                        <option value="Podium / Bilan Club">Podium / Bilan Club 🥇🥈🥉</option>
                     </select>
-                    <textarea id="res-details" rows="4" placeholder="Détails (ex: scores, duos...)" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
+                    <textarea id="res-details" rows="2" placeholder="Détails (ex: scores des matchs, adversaires...)" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
                     <button type="button" onclick="closeModal('modal-results')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
@@ -274,128 +255,6 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre', isGuest: false }
         ];
 
-        // HISTORIQUE COMPLET ET TOURNOIS À VENIR (2024 - 2026 / 2027)
-        const HISTORIC_2026_TOURNAMENTS = {
-            "t_mirabelle_2026": {
-                name: "11ème Édition de la Mirabelle",
-                date: "2026-08-29",
-                endDate: "2026-08-30",
-                format: "Doublette",
-                location: "Metz (Metz Mölkky Club)",
-                results: {
-                    poules: "Arnaud & Cyril (7/7 v.) et Seb & Patrick (7/7 v.) 1ers ! Laura & Sylvain et Inès & Logan 2èmes (Or). Bryan & Sasha (Argent). Jacques & Yvon (Meilleurs 4èmes, Or). Béa & Bryana (Bronze).",
-                    phase: "Vainqueur 🏆",
-                    details: "🥇 Arnaud & Cyril WINNERS ! (Victoire en finale contre Brandon & Xavier après une remontée légendaire à 30-2)\n🥉 Laura & Sylvain 3èmes du podium Or ! (3e triplé consécutif du club)\n- Seb & Patrick, Inès & Logan, Jacques & Yvon (32èmes Or)\n- Bryan & Sasha (32èmes Argent)\n- Béa & Bryana (Quart Bronze)"
-                }
-            },
-            "t_macheren_2026": {
-                name: "Tournoi Bazar de Macheren",
-                date: "2026-09-12",
-                format: "Doublette",
-                location: "Macheren (Mölkky Club Macheren 2020)",
-                results: {
-                    poules: "Mode Bazar (8 parties au cumul des points) : Laura & Inès 1ères, Arnaud & Seb 3èmes.",
-                    phase: "Vainqueur 🏆",
-                    details: "🥇 Arnaud & Seb Vainqueurs 🏆 (Tenants du titre qui récidivent)\n🥉 Inès & Laura 3èmes du podium après les Finlandaises finales 🥉\n- Sylvain & Thierry 13èmes\n- Yvon & Didier 14èmes\n- Béa & Bryana 24èmes\n- Logan & Bryan 27èmes"
-                }
-            },
-            "t_crusnes_2026": {
-                name: "Tournoi Un Adulte, Un Enfant",
-                date: "2026-09-13",
-                format: "Doublette",
-                location: "Crusnes",
-                results: {
-                    poules: "Seb & Bryana 1ers de poule. Béa & Bryan 3èmes de poule.",
-                    phase: "Podium / Bilan Club 🥇🥈🥉",
-                    details: "🥉 Seb & Bryana 3èmes du Tableau Or 🥉\n- Béa & Bryan quart de finalistes Tableau Or."
-                }
-            },
-            "t_montois_2026": {
-                name: "Tournoi Doublette de Montois-la-Montagne",
-                date: "2026-09-19",
-                format: "Doublette",
-                location: "Montois-la-Montagne",
-                results: {
-                    poules: "9 tours disputés : Arnaud & Tof 2èmes des qualifications.",
-                    phase: "Vainqueur 🏆",
-                    details: "🥇 Arnaud & Tof Vainqueurs 🏆"
-                }
-            },
-            "t_paris_2026": {
-                name: "Tournoi de Paris - Le Bâton Mouche",
-                date: "2026-09-26",
-                format: "Doublette",
-                location: "Paris",
-                results: {
-                    poules: "80 doublettes : Laura & Audrey 5èmes de poule -> Phase Argent.",
-                    phase: "Podium / Bilan Club 🥇🥈🥉",
-                    details: "🥉 Laura & Audrey 3èmes de la Phase Argent après une superbe remontée en phases finales 🥉"
-                }
-            },
-            "t_pagny_indiv_2026": {
-                name: "4ème Tournoi Individuel & Féminin de Pagny",
-                date: "2026-09-27",
-                format: "Individuel",
-                location: "Pagny-sur-Moselle",
-                results: {
-                    poules: "68 joueurs + 12 joueuses (avec invités belges Messancy/Saint-Ghislain et allemands Oscheff Beavers).",
-                    phase: "Vainqueur 🏆",
-                    details: "🥇 Arnaud Vainqueur de la Phase Principale (devient le 4e champion individuel de Pagny) 🏆\n🥈 Logan 2ème de la Phase Consolante !\n🥈 Bryan 2ème chez les Jeunes !\n🥇 François Vainqueur du jeu du fil rouge !"
-                }
-            },
-            "t_octobre_rose_2026": {
-                name: "Tournoi Octobre Rose",
-                date: "2026-10-03",
-                format: "Doublette",
-                location: "Metz (Metz Mölkky Club & Épée Reforgée)",
-                results: {
-                    poules: "48 doublettes : Arnaud & Sylvain 1ers de poule. Seb & Béa, Logan & Inès, Jacques & Cricri 2èmes.",
-                    phase: "Podium / Bilan Club 🥇🥈🥉",
-                    details: "🥉 Arnaud & Sylvain 3èmes du podium principal après la petite finale 🥉\n- Seb & Béa : 11èmes / 48\n- Logan & Inès : 13èmes / 48\n- Jacques & Cricri : 25èmes / 48"
-                }
-            },
-            "t_interclub_marly_2026": {
-                name: "5ème Interclub du Coin - Marly",
-                date: "2026-10-18",
-                format: "Doublette",
-                location: "Marly (Les Molguy du Mölkky)",
-                results: {
-                    poules: "Format LDC (6 matchs) : Arnaud & Seb 1ers (16 pts), Inès & Logan 2èmes, Cyril & Laura 17èmes.",
-                    phase: "Vainqueur 🏆",
-                    details: "🥇 Arnaud & Seb Vainqueurs du Tableau Principal (Or) 🏆\n🥇 Cyril & Laura Vainqueurs de la Consolante 🥇\n- Inès & Logan quarts de finalistes Or (battus par Metz)."
-                }
-            },
-            "t_bessenay_2026": {
-                name: "2ème Tournoi Nocturne de Bessenay",
-                date: "2026-10-31",
-                format: "Doublette",
-                location: "Bessenay (Mölkky Club de Bessenay)",
-                results: {
-                    poules: "32 doublettes : Laura & Sylvain 2èmes de poule (14 pts) -> Phase Or.",
-                    phase: "Demi-finale",
-                    details: "🥉 Laura & Sylvain (Les Lauvains) 3èmes du podium Phase Or 🥉"
-                }
-            },
-            "t_florange_halloween_2026": {
-                name: "3ème Bazar Halloween de Florange",
-                date: "2026-11-01",
-                format: "Doublette",
-                location: "Florange (Mölkky Florange)",
-                results: {
-                    poules: "28 doublettes (7 rondes aux points) : Cyril & Sylvain (681 pts, 4e), Arnaud & Seb (674 pts, 6e), Yvon & Jacques (649 pts, 8e), Inès & Logan (594 pts, 17e).",
-                    phase: "Podium / Bilan Club 🥇🥈🥉",
-                    details: "🥉 Cyril & Sylvain 3èmes du podium final (Finlandaises) 🥉\n- Arnaud & Seb : 5èmes\n- Yvon & Jacques : 7èmes\n- Inès & Logan : 17èmes"
-                }
-            },
-            "t_futur_1": {
-                name: "Tournoi à Venir / Hiver 2026-2027",
-                date: "2026-12-05",
-                format: "Doublette",
-                location: "À définir",
-                results: null
-            }
-        };
-
         let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
@@ -418,18 +277,14 @@
                         ...val[key]
                     })).sort((a,b) => new Date(a.date) - new Date(b.date));
                 } else {
-                    load2026History();
+                    state.tournaments = [];
                 }
                 render();
             });
         }
 
-        function load2026History() {
-            db.ref('tournaments').set(HISTORIC_2026_TOURNAMENTS);
-        }
-
         function resetDefaultData() {
-            if(confirm("Recharger la liste officielle des 14 membres d'origine ?")) {
+            if(confirm("Recharger la liste officielle des 14 membres avec leurs rôles d'origine ?")) {
                 db.ref('members').set(DEFAULT_MEMBERS);
             }
         }
@@ -438,7 +293,6 @@
             if (state.isAdmin) {
                 state.isAdmin = false;
                 alert("Mode Administrateur désactivé.");
-                switchTab('tournaments');
                 render();
             } else {
                 const pass = prompt("Mot de passe administrateur :");
@@ -454,19 +308,11 @@
 
         function switchTab(tab) {
             document.getElementById('view-tournaments').style.display = tab === 'tournaments' ? 'flex' : 'none';
-            document.getElementById('view-player-stats').style.display = tab === 'player-stats' ? 'flex' : 'none';
             document.getElementById('view-members').style.display = tab === 'members' ? 'flex' : 'none';
             
             document.getElementById('tab-tournaments').style.borderBottom = tab === 'tournaments' ? '2px solid #dc2626' : '2px solid transparent';
             document.getElementById('tab-tournaments').style.fontWeight = tab === 'tournaments' ? 'bold' : '500';
             document.getElementById('tab-tournaments').style.color = tab === 'tournaments' ? 'white' : '#bfdbfe';
-
-            const tabStats = document.getElementById('tab-player-stats');
-            if (tabStats) {
-                tabStats.style.borderBottom = tab === 'player-stats' ? '2px solid #dc2626' : '2px solid transparent';
-                tabStats.style.fontWeight = tab === 'player-stats' ? 'bold' : '500';
-                tabStats.style.color = tab === 'player-stats' ? 'white' : '#bfdbfe';
-            }
 
             document.getElementById('tab-members').style.borderBottom = tab === 'members' ? '2px solid #dc2626' : '2px solid transparent';
             document.getElementById('tab-members').style.fontWeight = tab === 'members' ? 'bold' : '500';
@@ -677,7 +523,6 @@
             const countEl = document.getElementById('member-count');
             if (countEl) countEl.textContent = state.members.length;
 
-            // RENDU ONGLET MEMBRES
             const membersGrid = document.getElementById('members-grid');
             if (membersGrid) {
                 membersGrid.innerHTML = state.members.map(m => {
@@ -703,53 +548,6 @@
                 }).join('');
             }
 
-            // RENDU ONGLET BILAN JOUEURS (STATS) - UNIQUEMENT SI ADMIN ACTIF
-            const statsGrid = document.getElementById('player-stats-grid');
-            if (statsGrid && state.isAdmin) {
-                const officialStats = {
-                    "Arnaud Pierre": { wins: 6, podiums: 7, text: "Mirabelle, Macheren, Montois, Pagny Indiv, Interclub Marly" },
-                    "Cyril Fortin": { wins: 2, podiums: 3, text: "Mirabelle, Consolante Marly, Podium Florange" },
-                    "Sylvain Gaugain": { wins: 1, podiums: 4, text: "Podiums Mirabelle, Octobre Rose, Bessenay, Florange" },
-                    "Laura Gaugain": { wins: 1, podiums: 5, text: "Podiums Mirabelle, Macheren, Paris, Bessenay, Consolante Marly" },
-                    "Seb Bausch": { wins: 2, podiums: 4, text: "Macheren, Interclub Marly, Podium Crusnes (Enfant)" },
-                    "Inès Chaouch": { wins: 0, podiums: 2, text: "Podium Macheren (3ème)" },
-                    "Logan Gangloff": { wins: 0, podiums: 1, text: "2ème Consolante Pagny Indiv" },
-                    "Bryan Bausch": { wins: 0, podiums: 1, text: "2ème Catégorie Jeunes Pagny Indiv" },
-                    "Bryana Gangloff": { wins: 0, podiums: 1, text: "3ème Tournoi Enfant Crusnes" },
-                    "Yvon Nicolay": { wins: 0, podiums: 1, text: "7ème Bazar Florange" },
-                    "Jacques Gaugain": { wins: 0, podiums: 1, text: "Meilleur 4ème Mirabelle" },
-                    "Patrick Gangloff": { wins: 0, podiums: 0, text: "7/7 en poules Mirabelle" },
-                    "Béa Gangloff": { wins: 0, podiums: 0, text: "Quarts Or Crusnes, 11ème Octobre Rose" },
-                    "François Perrin": { wins: 1, podiums: 1, text: "Jeu du fil rouge Pagny Indiv" },
-                    "Nathalie Mercier": { wins: 0, podiums: 0, text: "Membre actif" }
-                };
-
-                statsGrid.innerHTML = state.members.map(m => {
-                    const st = officialStats[m.name] || { wins: 0, podiums: 0, text: "Participant régulier" };
-                    return `
-                        <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 44px; height: 44px; border-radius: 50%; background: #eff6ff; color: #1d4ed8; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 1rem; border: 1px solid #bfdbfe;">
-                                    ${m.name.split(' ').map(n=>n[0]).join('')}
-                                </div>
-                                <div>
-                                    <div style="font-weight: bold; color: #1e293b; font-size: 1rem;">${m.name}</div>
-                                    <div style="font-size: 0.75rem; color: #64748b;">${m.role}</div>
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 8px; font-size: 0.75rem;">
-                                <span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 6px; font-weight: bold; border: 1px solid #fde68a;">🏆 ${st.wins} Victoire(s)</span>
-                                <span style="background: #f0fdf4; color: #166534; padding: 4px 8px; border-radius: 6px; font-weight: bold; border: 1px solid #dcfce7;">🏅 ${st.podiums} Podiums</span>
-                            </div>
-                            <div style="font-size: 0.75rem; color: #475569; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                                <strong>Faits marquants :</strong> ${st.text}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            // RENDU ONGLET TOURNOIS
             const tournamentsList = document.getElementById('tournaments-list');
             if (tournamentsList) {
                 if (state.tournaments.length === 0) {
@@ -816,8 +614,8 @@
                                     ${results ? `
                                         <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
                                             <div><strong>Matin (Poules) :</strong> ${results.poules || 'Non renseigné'}</div>
-                                            <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${results.phase}</span></div>
-                                            ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${results.details}</div>` : ''}
+                                            <div><strong>Après-midi (Phase) :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${results.phase}</span></div>
+                                            ${results.details ? `<div><strong>Détails :</strong> ${results.details}</div>` : ''}
                                         </div>
                                     ` : `
                                         <div style="font-size: 0.75rem; color: #a16207; font-style: italic;">Aucun résultat enregistré pour le moment.</div>
