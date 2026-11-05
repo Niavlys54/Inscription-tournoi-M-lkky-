@@ -90,8 +90,6 @@
             <!-- Sous-onglets des Années -->
             <div style="display: flex; gap: 8px; border-bottom: 2px solid #cbd5e1; padding-bottom: 12px;">
                 <button onclick="switchArchiveYear('2026')" id="btn-year-2026" style="background: #1d4ed8; color: white; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; font-size: 0.875rem; cursor: pointer;">Année 2026</button>
-                <button onclick="switchArchiveYear('2025')" id="btn-year-2025" style="background: #e2e8f0; color: #475569; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; font-size: 0.875rem; cursor: pointer;">Année 2025</button>
-                <button onclick="switchArchiveYear('2024')" id="btn-year-2024" style="background: #e2e8f0; color: #475569; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; font-size: 0.875rem; cursor: pointer;">Année 2024</button>
             </div>
 
             <!-- Conteneur des archives par année -->
@@ -384,7 +382,7 @@
 
         function switchArchiveYear(year) {
             state.currentArchiveYear = year;
-            ['2026', '2025', '2024'].forEach(y => {
+            ['2026'].forEach(y => {
                 const btn = document.getElementById(`btn-year-${y}`);
                 if (y === year) {
                     btn.style.background = '#1d4ed8';
