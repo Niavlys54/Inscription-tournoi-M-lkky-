@@ -294,6 +294,178 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre', isGuest: false }
         ];
 
+        // DONNÉES ARCHIVÉES FIXES DE LA SAISON 2025 (Janvier à Décembre)
+        const ARCHIVES_2025 = [
+            {
+                id: 'arch-2025-dec',
+                name: 'Tournoi Téléthon de Macheren',
+                date: '2025-12-13',
+                format: 'Individuel',
+                location: 'Macheren',
+                results: {
+                    poules: '10 parties en format "bazar" sur moquette (32 joueurs).',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: 'Fabienne 1e (953 pts), Sylvain 2e (942 pts), Jacques 3e (933 pts) après les 10 parties.\nClassement final des finlandaises :\n🥇 Sylvain\n🥈 Jacques\n4e Fabienne\n5e Arnaud\n18e Laura'
+                }
+            },
+            {
+                id: 'arch-2025-nov',
+                name: '6ème Black Mölkky - Mölkky Club Boulay',
+                date: '2025-11-22',
+                format: 'Doublette',
+                location: 'Boulay',
+                results: {
+                    poules: '42 équipes (6 poules de 7). Jacques & Fabienne 1ers, Cyril & François 1ers, Laura & Yvon 2èmes, Arnaud & Sylvain 3èmes.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: 'Arnaud & Sylvain réalisent un beau parcours jusqu’en demies et s’emparent d’une superbe 3ème place 🥉 !\nHommage à Athanasios Dimopoulos (R.I.P).'
+                }
+            },
+            {
+                id: 'arch-2025-oct-hal',
+                name: 'Tournoi Halloween – Florange',
+                date: '2025-10-26',
+                format: 'Doublette',
+                location: 'Florange',
+                results: {
+                    poules: '32 doublettes en mode bazar (8 parties). Cyril & Sylvain 2es, Yvon & Jacques 3es, Laura & Fabienne 4es (meilleur duo féminin).',
+                    phase: 'Vainqueur 🏆',
+                    details: 'Triplé historique 100% AS Pagny sur le podium principal des finlandaises !\n🥇 Cyril & Sylvain\n🥈 Yvon & Jacques\n🥉 Laura & Fabienne (meilleur duo féminin)'
+                }
+            },
+            {
+                id: 'arch-2025-oct-inter',
+                name: '4ème Interclub du coin Lorrain',
+                date: '2025-10-19',
+                format: 'Triplette',
+                location: 'Mousson / Les Molguys',
+                results: {
+                    poules: '20 équipes (Ligue des Champions). Les 3 triplettes de Pagny qualifiées en 8èmes.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: '🏆 Tournoi Principal : Victoire d’Arnaud, François & Nathalie !\n🥇 Consolante : Victoire de Jean-Luc, Fabienne & Jacques dans une finale 100% Pagny.\n🥈 Consolante : 2e place pour Laura, Cyril & Sylvain.'
+                }
+            },
+            {
+                id: 'arch-2025-oct-rose',
+                name: 'Tournoi Octobre Rose – Metz Mölkky Club',
+                date: '2025-10-04',
+                format: 'Doublette',
+                location: 'Metz',
+                results: {
+                    poules: 'Arnaud & Sylvain 1ers (poule). Jacques & Laura et Fabienne & Nathalie 4èmes.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: '🥇 Tournoi Principal : Arnaud & Sylvain vainqueurs !\n🥉 Tournoi Principal : Jacques & Laura 3es.\n🥈 Consolante Argent : Fabienne & Nathalie s’inclinent en finale et prennent la 2e place.'
+                }
+            },
+            {
+                id: 'arch-2025-sep-indiv',
+                name: 'Grand Tournoi Individuel & Féminin de l’AS Pagny',
+                date: '2025-09-28',
+                format: 'Individuel',
+                location: 'Pagny-sur-Moselle',
+                results: {
+                    poules: '79 joueurs et 17 joueuses. Maxence & François 1ers de poule, Yvon 2e.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: 'Tournoi Individuel Principal : 🥈 Maxence (vice-champion) | 🥉 Cyril (3e).\nTournoi Féminin : 🥇 Laura (1e - 146 pts) | 🥈 Fabienne (2e - 136 pts).\nJeu du Fil Rouge : 🥇 François vainqueur.'
+                }
+            },
+            {
+                id: 'arch-2025-sep-lorrain',
+                name: 'Finale du Championnat Lorrain & Master Angers',
+                date: '2025-09-20',
+                format: 'Mixte',
+                location: 'Angers & Pagny',
+                results: {
+                    poules: 'Compétitions multiples (Master Angers & Finale Lorrain à domicile).',
+                    phase: 'Finaliste 🥈',
+                    details: 'Master Angers : Arnaud 1er en Argent 🥇, Sylvain 16e Or, Laura 16e Argent.\nFinale Championnat Lorrain (à domicile) : Défaite de Pagny (Cyril, Yvon, François, Fabienne, Nathalie) 45-42 face à Metz dans la quadruplette décisive 🥈.'
+                }
+            },
+            {
+                id: 'arch-2025-sep-mach',
+                name: 'Tournoi de Macheren (Format Bazar)',
+                date: '2025-09-13',
+                format: 'Doublette',
+                location: 'Macheren',
+                results: {
+                    poules: '29 équipes (10 parties + finlandaise).',
+                    phase: 'Vainqueur 🏆',
+                    details: '🥇 Arnaud & Seb vainqueurs du tournoi !\n🥉 Yvon & Didier 3èmes.\nAlex & David 5èmes, Laura & Aline 9èmes, Sylvain & Fabienne 11èmes.'
+                }
+            },
+            {
+                id: 'arch-2025-aug-mirabelle',
+                name: '10ème Open de la Mirabelle – Metz',
+                date: '2025-08-30',
+                format: 'Doublette',
+                location: 'Metz',
+                results: {
+                    poules: '176 équipes. 6 équipes de Pagny engagées, 5 en tableau Principal.',
+                    phase: 'Vainqueur 🏆',
+                    details: '🏆 Finale historique 100% AS Pagny !\n🥇 Laura & Alex Champions 2025 (Laura devient la 3e femme à remporter l’Open).\n🥈 Cyril & Arnaud Vice-champions.\nArnaud 2e au jeu du pousse-pousse 🥈.'
+                }
+            },
+            {
+                id: 'arch-2025-aug-mondial',
+                name: 'Mondial de Mölkky – Golotczyzna (Pologne)',
+                date: '2025-08-15',
+                format: 'Mixte',
+                location: 'Golotczyzna, Pologne',
+                results: {
+                    poules: 'Équipe de France (avec François) : 6e mondiale sur 20 nations 🌍.\nTournoi par équipes : ASP French Team 1 & 2 qualifiées en Tableau Or (16èmes de finale).',
+                    phase: 'Quart de finale',
+                    details: 'Une superbe aventure internationale pour nos Pagnotins avec de très beaux matchs en Pologne et Prague.'
+                }
+            },
+            {
+                id: 'arch-2025-aug-messancy',
+                name: '6e Open de Messancy',
+                date: '2025-08-02',
+                format: 'Mixte',
+                location: 'Messancy (Belgique)',
+                results: {
+                    poules: '72 joueurs en individuel (samedi) et 63 équipes en doublette (dimanche).',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: 'Individuel : Arnaud 6e sur 72, Yvon 9e, Fabienne 15e et élue meilleure féminine du tournoi 🏆.\nDoublette : Belles prestations de Yvon & Gérald (quarts), Arnaud & Nicolas (8èmes), Fabienne & Fred (8èmes).'
+                }
+            },
+            {
+                id: 'arch-2025-jul-florange',
+                name: 'Tournoi de Florange & Tournoi à Domicile',
+                date: '2025-07-20',
+                format: 'Doublette',
+                location: 'Florange / Pagny',
+                results: {
+                    poules: 'Tournois estivaux à domicile (45 doublettes) et à Florange (46 doublettes).',
+                    phase: 'Vainqueur 🏆',
+                    details: 'Tournoi de Pagny (5 juillet) : Victoire de Sylvain & Alex face à Florentin & Jimmy (Metz) 🥇.\nTournoi de Florange (20 juillet) : Victoire de Sylvain & Gauthier en finale face à Jimmy & Mickaël 🥇.'
+                }
+            },
+            {
+                id: 'arch-2025-may-commercy',
+                name: 'Open de la Madeleine (Commercy) & Printemps',
+                date: '2025-05-15',
+                format: 'Doublette',
+                location: 'Commercy & Boulay',
+                results: {
+                    poules: 'Série de tournois de printemps.',
+                    phase: 'Vainqueur 🏆',
+                    details: 'Open de Commercy : Triplé historique de l’AS Pagny ! 1ers Alex & Sylvain, 2es Jacques & Yvon, 3es Fabienne & Laura 🥇🥈🥉.\nBoulay (10 ans) : Alex vainqueur en individuel, Yvon & Gérald vainqueurs en Belgique.'
+                }
+            },
+            {
+                id: 'arch-2025-jan-apr',
+                name: 'Début de Saison 2025 (Janvier - Avril)',
+                date: '2025-01-15',
+                format: 'Mixte',
+                location: 'Divers',
+                results: {
+                    poules: 'ASM (9 participants), Tournoi de Macheren, Euro Mölkky Prague, Tournoi FMCL, Interclubs nationaux.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: 'Macheren : Victoire de Jean-Luc & Arnaud 🥇.\nEuro Mölkky Prague : Équipe de France 4e avec Arnaud & François.\nTournoi FMCL : Victoire d’Arnaud, Manu & Aline 🥇.\nInterclubs Pavillons-sous-Bois : ASP 1 2e en Poule Or, ASP 2 3e en Diamant 🥈🥉.'
+                }
+            }
+        ];
+
         let state = { isAdmin: false, members: [], tournaments: [], currentArchiveYear: '2026' };
 
         function initApp() {
@@ -386,12 +558,14 @@
             state.currentArchiveYear = year;
             ['2026', '2025', '2024'].forEach(y => {
                 const btn = document.getElementById(`btn-year-${y}`);
-                if (y === year) {
-                    btn.style.background = '#1d4ed8';
-                    btn.style.color = 'white';
-                } else {
-                    btn.style.background = '#e2e8f0';
-                    btn.style.color = '#475569';
+                if (btn) {
+                    if (y === year) {
+                        btn.style.background = '#1d4ed8';
+                        btn.style.color = 'white';
+                    } else {
+                        btn.style.background = '#e2e8f0';
+                        btn.style.color = '#475569';
+                    }
                 }
             });
             render();
@@ -404,12 +578,14 @@
         function toggleAvailabilityMenu(tournamentId) {
             const container = document.getElementById(`avail-container-${tournamentId}`);
             const icon = document.getElementById(`avail-icon-${tournamentId}`);
-            if (container.style.display === 'none') {
-                container.style.display = 'block';
-                icon.className = 'fa-solid fa-chevron-up';
-            } else {
-                container.style.display = 'none';
-                icon.className = 'fa-solid fa-chevron-down';
+            if (container && icon) {
+                if (container.style.display === 'none') {
+                    container.style.display = 'block';
+                    icon.className = 'fa-solid fa-chevron-up';
+                } else {
+                    container.style.display = 'none';
+                    icon.className = 'fa-solid fa-chevron-down';
+                }
             }
         }
 
@@ -675,10 +851,18 @@
             // RENDU ONGLET ARCHIVES FILTRÉ PAR L'ANNÉE SÉLECTIONNÉE
             const archivesList = document.getElementById('archives-list');
             if (archivesList) {
-                const filteredArchives = archivedTournaments.filter(t => {
-                    const tournamentYear = new Date(t.date).getFullYear().toString();
-                    return tournamentYear === state.currentArchiveYear;
-                });
+                let filteredArchives = [];
+
+                if (state.currentArchiveYear === '2025') {
+                    // Si l'année 2025 est sélectionnée, on affiche l'historique complet et officiel enregistré
+                    filteredArchives = ARCHIVES_2025;
+                } else {
+                    // Pour 2026, 2024 ou autres, on prend les tournois archivés de la BDD Firebase correspondants
+                    filteredArchives = archivedTournaments.filter(t => {
+                        const tournamentYear = new Date(t.date).getFullYear().toString();
+                        return tournamentYear === state.currentArchiveYear;
+                    });
+                }
 
                 if (filteredArchives.length === 0) {
                     archivesList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi archivé pour l'année ${state.currentArchiveYear}.</div>`;
@@ -703,7 +887,7 @@
             const teams = Object.values(teamsObj);
             const results = t.results;
 
-            let dateDisplay = new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            let dateDisplay = t.date ? new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '';
             if (t.endDate) {
                 const dateEndFormatted = new Date(t.endDate).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
                 dateDisplay = `Du ${dateDisplay} au ${dateEndFormatted}`;
@@ -720,42 +904,44 @@
                                     ${isArchive ? '<span style="background: #fef08a; color: #713f12; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">Archivé 🏆</span>' : ''}
                                 </div>
                                 <div style="font-size: 0.75rem; color: #bfdbfe; display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap;">
-                                    <span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${dateDisplay}</span>
+                                    ${dateDisplay ? `<span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${dateDisplay}</span>` : ''}
                                     ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${t.location}</span>` : ''}
                                 </div>
                             </div>
-                            ${state.isAdmin ? `
+                            ${(state.isAdmin && !t.id.startsWith('arch-2025')) ? `
                                 <div style="display: flex; gap: 8px;">
                                     <button onclick="openTournamentModal('${t.id}')" style="background:none; border:none; color:#93c5fd; cursor:pointer;" title="Modifier"><i class="fa-solid fa-pen-to-square"></i></button>
                                     <button onclick="deleteTournament('${t.id}')" style="background:none; border:none; color:#fca5a5; cursor:pointer;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>
                                 </div>
                             ` : ''}
                         </div>
-                        <div style="display: flex; gap: 8px; font-size: 0.75rem; flex-wrap: wrap;">
-                            <span style="background: #064e3b; color: #a7f3d0; border: 1px solid #047857; padding: 4px 10px; border-radius: 8px;">🟢 ${registered} Inscrits</span>
-                            <span style="background: #78350f; color: #fde68a; border: 1px solid #b45309; padding: 4px 10px; border-radius: 8px;">🟡 ${available} Dispos</span>
-                            <span style="background: #881337; color: #fecdd3; border: 1px solid #9f1239; padding: 4px 10px; border-radius: 8px;">🔴 ${absent} Absents</span>
-                        </div>
+                        ${!t.id.startsWith('arch-2025') ? `
+                            <div style="display: flex; gap: 8px; font-size: 0.75rem; flex-wrap: wrap;">
+                                <span style="background: #064e3b; color: #a7f3d0; border: 1px solid #047857; padding: 4px 10px; border-radius: 8px;">🟢 ${registered} Inscrits</span>
+                                <span style="background: #78350f; color: #fde68a; border: 1px solid #b45309; padding: 4px 10px; border-radius: 8px;">🟡 ${available} Dispos</span>
+                                <span style="background: #881337; color: #fecdd3; border: 1px solid #9f1239; padding: 4px 10px; border-radius: 8px;">🔴 ${absent} Absents</span>
+                            </div>
+                        ` : ''}
                     </div>
 
                     <!-- SECTION RÉSULTATS -->
                     <div style="background-color: #fefce8; border-bottom: 1px solid #fef08a; padding: 12px 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span style="font-size: 0.75rem; font-weight: bold; color: #854d0e; text-transform: uppercase;"><i class="fa-solid fa-chart-line" style="margin-right: 4px;"></i> Résultats & Bilan</span>
-                            ${state.isAdmin ? `<button onclick="openResultsModal('${t.id}')" style="background: #ca8a04; color: white; border: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen"></i> ${results ? 'Modifier les résultats' : 'Ajouter les résultats'}</button>` : ''}
+                            ${(state.isAdmin && !t.id.startsWith('arch-2025')) ? `<button onclick="openResultsModal('${t.id}')" style="background: #ca8a04; color: white; border: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen"></i> ${results ? 'Modifier les résultats' : 'Ajouter les résultats'}</button>` : ''}
                         </div>
                         ${results ? `
                             <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
-                                <div><strong>Matin (Poules) :</strong> ${results.poules || 'Non renseigné'}</div>
+                                ${results.poules ? `<div><strong>Matin (Poules) :</strong> ${results.poules}</div>` : ''}
                                 <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${results.phase}</span></div>
                                 ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${results.details}</div>` : ''}
                             </div>
                         ` : `
-                            <div style="font-size: 0.75rem; color: #a16207; font-style: italic;">Aucun résultat encodé pour l'instant. Renseigne les résultats pour archiver ce tournoi.</div>
+                            <div style="font-size: 0.75rem; color: #a16207; font-style: italic;">Aucun résultat encodé pour l'instant.</div>
                         `}
                     </div>
 
-                    ${isTeamFormat ? `
+                    ${isTeamFormat && !t.id.startsWith('arch-2025') ? `
                         <div style="padding: 16px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -792,33 +978,35 @@
                         </div>
                     ` : ''}
 
-                    <!-- MENU REPLIANT DES DISPONIBILITÉS -->
-                    <div style="background-color: #f8fafc;">
-                        <button onclick="toggleAvailabilityMenu('${t.id}')" style="width: 100%; background: #e2e8f0; border: none; padding: 12px 16px; font-weight: bold; font-size: 0.75rem; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                            <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> ${isArchive ? 'Voir les inscriptions et la liste' : 'Gérer / Voir les disponibilités des joueurs'}</span>
-                            <i class="fa-solid fa-chevron-down" id="avail-icon-${t.id}"></i>
-                        </button>
-                        
-                        <div id="avail-container-${t.id}" style="display: none; padding: 16px; border-top: 1px solid #cbd5e1;">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
-                                ${state.members.map(m => {
-                                    const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
-                                    return `
-                                        <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid ${m.isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between;">
-                                            <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">
-                                                ${m.name} ${m.isGuest ? '<span style="font-size: 10px; color: #ea580c;">(Ext.)</span>' : ''}
-                                            </span>
-                                            <div style="display: flex; gap: 4px;">
-                                                <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'registered')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#059669' : '#f8fafc'}; color: ${st === 'registered' ? 'white' : '#64748b'}; font-weight: ${st === 'registered' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Inscrit</button>
-                                                <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'available')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'available' ? '#f59e0b' : '#cbd5e1'}; background: ${st === 'available' ? '#f59e0b' : '#f8fafc'}; color: ${st === 'available' ? '#1e293b' : '#64748b'}; font-weight: ${st === 'available' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Dispo</button>
-                                                <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'absent')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'absent' ? '#e11d48' : '#cbd5e1'}; background: ${st === 'absent' ? '#e11d48' : '#f8fafc'}; color: ${st === 'absent' ? 'white' : '#64748b'}; font-weight: ${st === 'absent' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Absent</button>
+                    <!-- MENU REPLIANT DES DISPONIBILITÉS (Masqué pour les archives statiques 2025) -->
+                    ${!t.id.startsWith('arch-2025') ? `
+                        <div style="background-color: #f8fafc;">
+                            <button onclick="toggleAvailabilityMenu('${t.id}')" style="width: 100%; background: #e2e8f0; border: none; padding: 12px 16px; font-weight: bold; font-size: 0.75rem; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> ${isArchive ? 'Voir les inscriptions et la liste' : 'Gérer / Voir les disponibilités des joueurs'}</span>
+                                <i class="fa-solid fa-chevron-down" id="avail-icon-${t.id}"></i>
+                            </button>
+                            
+                            <div id="avail-container-${t.id}" style="display: none; padding: 16px; border-top: 1px solid #cbd5e1;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
+                                    ${state.members.map(m => {
+                                        const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
+                                        return `
+                                            <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid ${m.isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between;">
+                                                <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">
+                                                    ${m.name} ${m.isGuest ? '<span style="font-size: 10px; color: #ea580c;">(Ext.)</span>' : ''}
+                                                </span>
+                                                <div style="display: flex; gap: 4px;">
+                                                    <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'registered')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#059669' : '#f8fafc'}; color: ${st === 'registered' ? 'white' : '#64748b'}; font-weight: ${st === 'registered' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Inscrit</button>
+                                                    <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'available')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'available' ? '#f59e0b' : '#cbd5e1'}; background: ${st === 'available' ? '#f59e0b' : '#f8fafc'}; color: ${st === 'available' ? '#1e293b' : '#64748b'}; font-weight: ${st === 'available' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Dispo</button>
+                                                    <button ${isArchive ? 'disabled' : `onclick="setStatus('${t.id}', '${m.id}', 'absent')"`} style="padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'absent' ? '#e11d48' : '#cbd5e1'}; background: ${st === 'absent' ? '#e11d48' : '#f8fafc'}; color: ${st === 'absent' ? 'white' : '#64748b'}; font-weight: ${st === 'absent' ? 'bold' : 'normal'}; cursor: ${isArchive ? 'default' : 'pointer'};">Absent</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    `;
-                                }).join('')}
+                                        `;
+                                    }).join('')}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ` : ''}
                 </div>
             `;
         }
