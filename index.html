@@ -45,7 +45,7 @@
                 <button onclick="switchTab('tournaments')" id="tab-tournaments" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid #dc2626; font-weight: bold; font-size: 0.875rem; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
                     <i class="fa-solid fa-trophy" style="color: #f87171;"></i> Tournois
                 </button>
-                <!-- Onglet Bilan Joueurs masqué par défaut (réservé admin) -->
+                <!-- Bilan Joueurs strictement réservé à l'admin (invisible pour les visiteurs) -->
                 <button onclick="switchTab('player-stats')" id="tab-player-stats" class="admin-only" style="display: none; background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; align-items: center; gap: 8px; white-space: nowrap;">
                     <i class="fa-solid fa-chart-simple" style="color: #fde047;"></i> Bilan Joueurs (Admin)
                 </button>
@@ -67,7 +67,7 @@
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button onclick="load2026History()" class="admin-only" style="display: none; background-color: #f59e0b; color: white; font-weight: 500; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.75rem; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-clock-rotate-left"></i> Recharger Historique 2024-2026
+                        <i class="fa-solid fa-clock-rotate-left"></i> Recharger Historique & Tournois
                     </button>
                     <button onclick="openTournamentModal()" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
                         <i class="fa-solid fa-plus"></i> Nouveau Tournoi
@@ -274,7 +274,7 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre', isGuest: false }
         ];
 
-        // HISTORIQUE COMPLET INTÉGRAL DE TOUS LES TOURNOIS 2024 - 2026
+        // HISTORIQUE COMPLET ET TOURNOIS À VENIR (2024 - 2026 / 2027)
         const HISTORIC_2026_TOURNAMENTS = {
             "t_mirabelle_2026": {
                 name: "11ème Édition de la Mirabelle",
@@ -386,6 +386,13 @@
                     phase: "Podium / Bilan Club 🥇🥈🥉",
                     details: "🥉 Cyril & Sylvain 3èmes du podium final (Finlandaises) 🥉\n- Arnaud & Seb : 5èmes\n- Yvon & Jacques : 7èmes\n- Inès & Logan : 17èmes"
                 }
+            },
+            "t_futur_1": {
+                name: "Tournoi à Venir / Hiver 2026-2027",
+                date: "2026-12-05",
+                format: "Doublette",
+                location: "À définir",
+                results: null
             }
         };
 
@@ -431,7 +438,6 @@
             if (state.isAdmin) {
                 state.isAdmin = false;
                 alert("Mode Administrateur désactivé.");
-                // Si on désactive l'admin et qu'on était sur l'onglet stats, on repasse sur tournois
                 switchTab('tournaments');
                 render();
             } else {
