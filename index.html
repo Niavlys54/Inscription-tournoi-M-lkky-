@@ -294,7 +294,7 @@
                     state.tournaments = Object.keys(val).map(key => ({
                         id: key,
                         ...val[key]
-                    })).sort((a,b) => new Date(a.date) - new Date(b.date));
+                    })).sort((a, b) => new Date(a.date) - new Date(b.date)); // TRI CHRONOLOGIQUE STRICT
                 } else {
                     state.tournaments = [];
                 }
@@ -610,7 +610,7 @@
                 }).join('');
             }
 
-            // RENDU ONGLET TOURNOIS
+            // RENDU ONGLET TOURNOIS (TRIÉS CHRONOLOGIQUEMENT)
             const tournamentsList = document.getElementById('tournaments-list');
             if (tournamentsList) {
                 if (state.tournaments.length === 0) {
