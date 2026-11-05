@@ -1074,13 +1074,10 @@
                 let filteredArchives = [];
 
                 if (state.currentArchiveYear === '2026') {
-                    // Si l'année 2026 est sélectionnée, on affiche l'historique complet et officiel enregistré pour 2026
                     filteredArchives = ARCHIVES_2026;
                 } else if (state.currentArchiveYear === '2025') {
-                    // Si l'année 2025 est sélectionnée, on affiche l'historique complet et officiel enregistré pour 2025
                     filteredArchives = ARCHIVES_2025;
                 } else {
-                    // Pour d'autres années, on prend les tournois archivés de la BDD Firebase correspondants
                     filteredArchives = archivedTournaments.filter(t => {
                         const tournamentYear = new Date(t.date).getFullYear().toString();
                         return tournamentYear === state.currentArchiveYear;
