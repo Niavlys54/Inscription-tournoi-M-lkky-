@@ -116,7 +116,7 @@
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
                 <div>
                     <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Effectif de l'AS Pagny Mölkky</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Les invités sont affichés séparément et ne comptent pas dans l'effectif.</p>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Uniquement les membres de Pagny. Les partenaires extérieurs apparaissent dans les équipes.</p>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button onclick="resetDefaultData()" class="admin-only" style="display: none; background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 500; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
@@ -132,11 +132,6 @@
             </div>
 
             <div id="members-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
-            <div>
-                <h3 style="font-size:1rem; color:#c2410c;">Invités / Joueurs extérieurs — hors effectif</h3>
-                <p style="font-size:0.75rem; color:#64748b;">Ces partenaires restent disponibles pour composer les équipes. Leur club apparaît à côté de leur nom.</p>
-                <div id="guests-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px;"></div>
-            </div>
         </section>
 
     </main>
@@ -214,7 +209,7 @@
                     <input type="text" id="team-name" required placeholder="Ex: Équipe 1 - Cyril & Sylvain" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 6px;">Sélectionnez les joueurs inscrits :</label>
+                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 6px;">Joueurs inscrits et partenaires extérieurs :</label>
                     <div id="team-players-checkboxes" style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; background: #f8fafc;"></div>
                 </div>
                 <div>
@@ -588,7 +583,7 @@
             let html = '';
             state.members.forEach(m => {
                 const st = tournament && tournament.statuses && tournament.statuses[m.id];
-                if (st === 'registered') {
+                if (st === 'registered' || m.isGuest) {
                     html += `
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: #334155; cursor: pointer;">
                             <input type="checkbox" name="team_player" value="${m.id}" style="width: 16px; height: 16px;">
@@ -698,11 +693,10 @@
             
             const countEl = document.getElementById('member-count');
             const clubMembers = state.members.filter(m => !m.isGuest);
-            const guestMembers = state.members.filter(m => m.isGuest);
             if (countEl) countEl.textContent = clubMembers.length;
 
             // RENDU ONGLET MEMBRES
-            [['members-grid', clubMembers], ['guests-grid', guestMembers]].forEach(([gridId, players]) => {
+            [['members-grid', clubMembers]].forEach(([gridId, players]) => {
                 const membersGrid = document.getElementById(gridId);
                 if (!membersGrid) return;
                 membersGrid.innerHTML = players.map(m => {
@@ -792,7 +786,7 @@
         function renderTournamentCard(t, isArchive, contentOnly = false, dayId = '') {
             const statuses = t.statuses || {};
             let registered = 0, available = 0, absent = 0;
-            state.members.forEach(m => {
+            state.members.filter(m => !m.isGuest).forEach(m => {
                 const st = statuses[m.id] || 'none';
                 if (st === 'registered') registered++;
                 else if (st === 'available') available++;
@@ -907,7 +901,7 @@
                         
                         <div id="avail-container-${t.id}" style="display: ${state.openAvailabilityMenus[t.id] ? 'block' : 'none'}; padding: 16px; border-top: 1px solid #cbd5e1;">
                             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
-                                ${state.members.map(m => {
+                                ${state.members.filter(m => !m.isGuest).map(m => {
                                     const st = statuses[m.id] === undefined ? 'none' : statuses[m.id];
                                     return `
                                         <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid ${m.isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between;">
