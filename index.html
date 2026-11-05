@@ -46,7 +46,7 @@
                     <i class="fa-solid fa-trophy" style="color: #f87171;"></i> Tournois à venir
                 </button>
                 <button onclick="switchTab('archives')" id="tab-archives" style="background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <i class="fa-solid fa-box-archive" style="color: #fde047;"></i> Archives & Résultats
+                    <i class="fa-solid fa-box-archive" style="color: #fde047;"></i> Archives & Palmarès
                 </button>
                 <button onclick="switchTab('player-stats')" id="tab-player-stats" class="admin-only" style="display: none; background: none; border: none; padding: 10px 12px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 0.875rem; color: #bfdbfe; cursor: pointer; align-items: center; gap: 8px; white-space: nowrap;">
                     <i class="fa-solid fa-chart-simple" style="color: #fde047;"></i> Bilan Joueurs (Admin)
@@ -80,12 +80,21 @@
             <div id="tournaments-list" style="display: flex; flex-direction: column; gap: 24px;"></div>
         </section>
 
-        <!-- ONGLET: ARCHIVES & RÉSULTATS -->
+        <!-- ONGLET: ARCHIVES & RÉSULTATS (CLASSÉS PAR ANNÉE) -->
         <section id="view-archives" style="display: none; flex-direction: column; gap: 24px;">
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1;">
-                <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;"><i class="fa-solid fa-box-archive" style="color: #ca8a04;"></i> Historique & Résultats des Tournois Passés</h2>
-                <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Tous les tournois terminés et leurs résultats encodés sont archivés ici automatiquement.</p>
+                <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;"><i class="fa-solid fa-box-archive" style="color: #ca8a04;"></i> Historique & Palmarès du Club</h2>
+                <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Retrouvez l'ensemble des résultats des joueurs de l'AS Pagny classés par année.</p>
             </div>
+
+            <!-- Sous-onglets des Années -->
+            <div style="display: flex; gap: 8px; border-bottom: 2px solid #cbd5e1; padding-bottom: 12px;">
+                <button onclick="switchArchiveYear('2026')" id="btn-year-2026" style="background: #1d4ed8; color: white; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; font-size: 0.875rem; cursor: pointer;">Année 2026</button>
+                <button onclick="switchArchiveYear('2025')" id="btn-year-2025" style="background: #e2e8f0; color: #475569; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; font-size: 0.875rem; cursor: pointer;">Année 2025</button>
+                <button onclick="switchArchiveYear('2024')" id="btn-year-2024" style="background: #e2e8f0; color: #475569; border: none; padding: 6px 16px; border-radius: 8px; font-weight: bold; font-size: 0.875rem; cursor: pointer;">Année 2024</button>
+            </div>
+
+            <!-- Conteneur des archives par année -->
             <div id="archives-list" style="display: flex; flex-direction: column; gap: 24px;"></div>
         </section>
 
@@ -285,7 +294,7 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre', isGuest: false }
         ];
 
-        let state = { isAdmin: false, members: [], tournaments: [] };
+        let state = { isAdmin: false, members: [], tournaments: [], currentArchiveYear: '2026' };
 
         function initApp() {
             db.ref('members').on('value', (snapshot) => {
@@ -371,6 +380,21 @@
             document.getElementById('tab-members').style.borderBottom = tab === 'members' ? '2px solid #dc2626' : '2px solid transparent';
             document.getElementById('tab-members').style.fontWeight = tab === 'members' ? 'bold' : '500';
             document.getElementById('tab-members').style.color = tab === 'members' ? 'white' : '#bfdbfe';
+        }
+
+        function switchArchiveYear(year) {
+            state.currentArchiveYear = year;
+            ['2026', '2025', '2024'].forEach(y => {
+                const btn = document.getElementById(`btn-year-${y}`);
+                if (y === year) {
+                    btn.style.background = '#1d4ed8';
+                    btn.style.color = 'white';
+                } else {
+                    btn.style.background = '#e2e8f0';
+                    btn.style.color = '#475569';
+                }
+            });
+            render();
         }
 
         function setStatus(tournamentId, memberId, newStatus) {
@@ -603,7 +627,7 @@
                 }).join('');
             }
 
-            // RENDU ONGLET BILAN JOUEURS (STATS) - UNIQUEMENT SI ADMIN ACTIF
+            // RENDU ONGLET BILAN JOUEURS (STATS)
             const statsGrid = document.getElementById('player-stats-grid');
             if (statsGrid && state.isAdmin) {
                 statsGrid.innerHTML = state.members.map(m => {
@@ -626,12 +650,11 @@
                 }).join('');
             }
 
-            // SÉPARATION TOURNOIS À VENIR / ARCHIVES
+            // SÉPARATION TOURNOIS À VENIR / ARCHIVES PAR ANNÉE
             const activeTournaments = [];
             const archivedTournaments = [];
 
             state.tournaments.forEach(t => {
-                // Si un résultat est encodé, on le bascule automatiquement dans les archives
                 if (t.results && t.results.phase) {
                     archivedTournaments.push(t);
                 } else {
@@ -649,13 +672,18 @@
                 }
             }
 
-            // RENDU ONGLET ARCHIVES & RÉSULTATS
+            // RENDU ONGLET ARCHIVES FILTRÉ PAR L'ANNÉE SÉLECTIONNÉE
             const archivesList = document.getElementById('archives-list');
             if (archivesList) {
-                if (archivedTournaments.length === 0) {
-                    archivesList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi archivé pour le moment. Dès que tu ajoutes des résultats sur un tournoi, il s'installera ici.</div>`;
+                const filteredArchives = archivedTournaments.filter(t => {
+                    const tournamentYear = new Date(t.date).getFullYear().toString();
+                    return tournamentYear === state.currentArchiveYear;
+                });
+
+                if (filteredArchives.length === 0) {
+                    archivesList.innerHTML = `<div style="background: white; padding: 32px; border-radius: 12px; text-align: center; color: #94a3b8; border: 1px solid #cbd5e1;">Aucun tournoi archivé pour l'année ${state.currentArchiveYear}.</div>`;
                 } else {
-                    archivesList.innerHTML = archivedTournaments.map(t => renderTournamentCard(t, true)).join('');
+                    archivesList.innerHTML = filteredArchives.map(t => renderTournamentCard(t, true)).join('');
                 }
             }
         }
