@@ -58,12 +58,17 @@
         <section id="view-tournaments" style="display: flex; flex-direction: column; gap: 24px;">
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px;">
                 <div>
-                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier des Tournois</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités et équipes partagées en direct pour le club et ses invités.</p>
+                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Calendrier & Historique des Tournois</h2>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Disponibilités, équipes et résultats sauvegardés en direct.</p>
                 </div>
-                <button onclick="openTournamentModal()" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-plus"></i> Nouveau Tournoi
-                </button>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="load2026History()" class="admin-only" style="display: none; background-color: #f59e0b; color: white; font-weight: 500; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.75rem; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Recharger Saison 2026
+                    </button>
+                    <button onclick="openTournamentModal()" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-plus"></i> Nouveau Tournoi
+                    </button>
+                </div>
             </div>
 
             <div id="tournaments-list" style="display: flex; flex-direction: column; gap: 24px;"></div>
@@ -78,7 +83,7 @@
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button onclick="resetDefaultData()" class="admin-only" style="display: none; background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 500; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
-                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser
+                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser Joueurs
                     </button>
                     <button onclick="openModal('modal-member')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem;">
                         <i class="fa-solid fa-user-plus"></i> Nouveau Membre
@@ -187,8 +192,9 @@
                         <option value="Demi-finale">Demi-finale</option>
                         <option value="Finaliste">Finaliste 🥈</option>
                         <option value="Vainqueur">Vainqueur 🏆</option>
+                        <option value="Podium / Bilan Club">Podium / Bilan Club 🥇🥈🥉</option>
                     </select>
-                    <textarea id="res-details" rows="2" placeholder="Détails (ex: scores des matchs, adversaires...)" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
+                    <textarea id="res-details" rows="3" placeholder="Détails (ex: scores des matchs, adversaires, parcours des duos...)" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
                     <button type="button" onclick="closeModal('modal-results')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
@@ -255,6 +261,120 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre', isGuest: false }
         ];
 
+        // HISTORIQUE COMPLET SAISON 2026
+        const HISTORIC_2026_TOURNAMENTS = {
+            "t_mirabelle_2026": {
+                name: "11ème Édition de la Mirabelle",
+                date: "2026-08-29",
+                format: "Doublette",
+                location: "Metz (Metz Mölkky Club)",
+                results: {
+                    poules: "Arnaud & Cyril (7/7 v.) et Seb & Patrick (7/7 v.) 1ers ! Laura & Sylvain et Inès & Logan 2èmes (Or). Bryan & Sasha (Argent). Jacques & Yvon (Meilleurs 4èmes, Or). Béa & Bryana (Bronze).",
+                    phase: "Vainqueur 🏆",
+                    details: "🥇 Arnaud & Cyril WINNERS ! (Victoire héroïque en finale contre Brandon & Xavier après être menés 30-2 dans la belle ! Triplé 2024/2025/2026 pour Pagny !)\n🥉 Laura & Sylvain 3èmes du podium Or !\n- Seb & Patrick, Inès & Logan, Jacques & Yvon (32èmes Or)\n- Bryan & Sasha (32èmes Argent)\n- Béa & Bryana (Quart Bronze)"
+                }
+            },
+            "t_macheren_2026": {
+                name: "Tournoi Bazar de Macheren",
+                date: "2026-09-12",
+                format: "Doublette",
+                location: "Macheren (Mölkky Club Macheren 2020)",
+                results: {
+                    poules: "Mode Bazar (8 parties) : Laura & Inès terminent 1ères du classement, Arnaud & Seb 3èmes.",
+                    phase: "Vainqueur 🏆",
+                    details: "🥇 Arnaud & Seb remportent une nouvelle fois le tournoi (Titre conservé !) 🏆\n🥉 Inès & Laura 3èmes du podium ! 🥉\n- Sylvain & Thierry 13èmes\n- Yvon & Didier 14èmes\n- Béa & Bryana 24èmes\n- Logan & Bryan 27èmes"
+                }
+            },
+            "t_crusnes_2026": {
+                name: "Tournoi Un Adulte, Un Enfant",
+                date: "2026-09-13",
+                format: "Doublette",
+                location: "Crusnes (Entente Mölkky Club)",
+                results: {
+                    poules: "Seb & Bryana 1ers de poule (5 victoires, 1 nul). Béa & Bryan 3èmes de poule (3 victoires, 1 nul, 1 défaite).",
+                    phase: "Podium / Bilan Club 🥇🥈🥉",
+                    details: "🥉 Seb & Bryana terminent 3èmes du Tableau Or ! 🥉\n- Béa & Bryan quart de finalistes du Tableau Or."
+                }
+            },
+            "t_montois_2026": {
+                name: "Tournoi Doublette de Montois-la-Montagne",
+                date: "2026-09-19",
+                format: "Doublette",
+                location: "Montois-la-Montagne",
+                results: {
+                    poules: "9 tours de qualif : Arnaud & Tof (Florange) terminent 2èmes du classement général.",
+                    phase: "Vainqueur 🏆",
+                    details: "🥇 Arnaud & Tof remportent la Grande FINALE ! 🏆 (Victoire en finale contre Jimmy MMC & Gary Mâcon)."
+                }
+            },
+            "t_paris_2026": {
+                name: "Tournoi de Paris - Le Bâton Mouche",
+                date: "2026-09-26",
+                format: "Doublette",
+                location: "Paris (Le Bâton Mouche)",
+                results: {
+                    poules: "80 doublettes : Laura & Audrey (Angers) 5èmes de poule -> Direction Phase Argent.",
+                    phase: "Podium / Bilan Club 🥇🥈🥉",
+                    details: "🥉 Laura & Audrey décrochent la 3ème place de la Phase Argent ! 🥉"
+                }
+            },
+            "t_pagny_indiv_2026": {
+                name: "4ème Tournoi Individuel & Féminin de Pagny",
+                date: "2026-09-27",
+                format: "Individuel",
+                location: "Pagny-sur-Moselle",
+                results: {
+                    poules: "68 joueurs (8 poules de 8) + 12 joueuses.",
+                    phase: "Vainqueur 🏆",
+                    details: "🥇 Arnaud WINNER de la Phase Principale (4ème champion individuel de Pagny) ! 🏆\n🥈 Logan 2ème de la Consolante !\n🥈 Bryan 2ème chez les Jeunes !\n- Tournoi Féminin : Dominique (Florange) 1ère."
+                }
+            },
+            "t_octobre_rose_2026": {
+                name: "Tournoi Octobre Rose",
+                date: "2026-10-03",
+                format: "Doublette",
+                location: "Metz (MMC & Épée Reforgée)",
+                results: {
+                    poules: "48 doublettes : Arnaud & Sylvain 1ers de poule. Seb & Béa, Logan & Inès, Jacques & Cricri 2èmes.",
+                    phase: "Podium / Bilan Club 🥇🥈🥉",
+                    details: "🥉 Arnaud & Sylvain 3èmes du podium principal ! 🥉\n- Seb & Béa : 11èmes / 48\n- Logan & Inès : 13èmes / 48\n- Jacques & Cricri : 25èmes / 48"
+                }
+            },
+            "t_interclub_marly_2026": {
+                name: "5ème Interclub du Coin - Marly",
+                date: "2026-10-18",
+                format: "Doublette",
+                location: "Marly (Les Molguy)",
+                results: {
+                    poules: "Format LDC (6 matchs) : Arnaud & Seb (ASP1) 1ers avec 16pts, Inès & Logan (ASP2) 2èmes. Cyril & Laura (ASP3) 17èmes (Consolante).",
+                    phase: "Vainqueur 🏆",
+                    details: "🥇 Arnaud & Seb CHAMPIONS DE L'INTERCLUB DU COIN ! 🏆\n🥇 Cyril & Laura WINNERS DE LA CONSOLANTE ! 🥇\n- Inès & Logan quart de finalistes du Tableau Or."
+                }
+            },
+            "t_bessenay_2026": {
+                name: "2ème Tournoi Nocturne de Bessenay",
+                date: "2026-10-31",
+                format: "Doublette",
+                location: "Bessenay",
+                results: {
+                    poules: "32 doublettes : Les Lauvains (Laura & Sylvain) 2èmes de poule (14 pts) -> Phase Or.",
+                    phase: "Demi-finale",
+                    details: "🥉 Laura & Sylvain 3èmes du podium Phase Or ! 🥉 (Victoires en 8èmes et Quarts, battus en demi par Pit & Fred)."
+                }
+            },
+            "t_florange_halloween_2026": {
+                name: "3ème Bazar Halloween de Florange",
+                date: "2026-11-01",
+                format: "Doublette",
+                location: "Florange (Mölkky Florange)",
+                results: {
+                    poules: "28 doublettes (7 rondes au cumul de pts) : Cyril & Sylvain 4èmes (681 pts), Arnaud & Seb 6èmes (674 pts), Yvon & Jacques 8èmes (649 pts), Inès & Logan 17èmes (594 pts).",
+                    phase: "Podium / Bilan Club 🥇🥈🥉",
+                    details: "🥉 Cyril & Sylvain 3èmes du podium final après les Finlandaises ! 🥉\n- Arnaud & Seb : 5èmes\n- Yvon & Jacques : 7èmes\n- Inès & Logan : 17èmes"
+                }
+            }
+        };
+
         let state = { isAdmin: false, members: [], tournaments: [] };
 
         function initApp() {
@@ -277,14 +397,18 @@
                         ...val[key]
                     })).sort((a,b) => new Date(a.date) - new Date(b.date));
                 } else {
-                    state.tournaments = [];
+                    load2026History();
                 }
                 render();
             });
         }
 
+        function load2026History() {
+            db.ref('tournaments').set(HISTORIC_2026_TOURNAMENTS);
+        }
+
         function resetDefaultData() {
-            if(confirm("Recharger la liste officielle des 14 membres avec leurs rôles d'origine ?")) {
+            if(confirm("Recharger la liste officielle des 14 membres d'origine ?")) {
                 db.ref('members').set(DEFAULT_MEMBERS);
             }
         }
@@ -614,8 +738,8 @@
                                     ${results ? `
                                         <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
                                             <div><strong>Matin (Poules) :</strong> ${results.poules || 'Non renseigné'}</div>
-                                            <div><strong>Après-midi (Phase) :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${results.phase}</span></div>
-                                            ${results.details ? `<div><strong>Détails :</strong> ${results.details}</div>` : ''}
+                                            <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${results.phase}</span></div>
+                                            ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${results.details}</div>` : ''}
                                         </div>
                                     ` : `
                                         <div style="font-size: 0.75rem; color: #a16207; font-style: italic;">Aucun résultat enregistré pour le moment.</div>
