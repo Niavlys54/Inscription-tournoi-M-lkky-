@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AS Pagny Mölkky - Gestion Club</title>
+    <style>
+        #modal-tournament > div, #modal-team > div, #modal-results > div {
+            max-height: calc(100dvh - 32px);
+            overflow-y: auto;
+        }
+    </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
@@ -158,9 +164,22 @@
                     <select id="t-format" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box; background: white;">
                         <option value="Doublette">Doublette (2)</option>
                         <option value="Triplette">Triplette (3)</option>
-                        <option value="Quadrette">Quadrette (4)</option>
+                        <option value="Quadrette">Quadruplette (4)</option>
                         <option value="Individuel">Individuel (1)</option>
                     </select>
+                </div>
+                <label style="display:flex; gap:8px; align-items:center; font-size:0.875rem;">
+                    <input type="checkbox" id="t-two-days" onchange="toggleDayFields()"> Deux journées distinctes (équipes et résultats séparés)
+                </label>
+                <div id="t-day-fields" style="display:none;">
+                    <label for="t-format-day2" style="display:block; font-size:0.875rem; margin-bottom:4px;">Format de la deuxième journée</label>
+                    <select id="t-format-day2" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px;">
+                        <option value="Doublette">Doublette (2)</option>
+                        <option value="Triplette">Triplette (3)</option>
+                        <option value="Quadrette">Quadruplette (4)</option>
+                        <option value="Individuel">Individuel (1)</option>
+                    </select>
+                    <p style="font-size:0.75rem; color:#64748b;">Le format ci-dessus s'applique à la première journée. Renseigne les deux dates.</p>
                 </div>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Lieu</label>
@@ -183,6 +202,8 @@
             </div>
             <form onsubmit="saveTeam(event)" style="display: flex; flex-direction: column; gap: 12px;">
                 <input type="hidden" id="team-tournament-id">
+                <input type="hidden" id="team-day-id">
+                <p id="team-day-label" style="margin:0; font-weight:bold; color:#1d4ed8;"></p>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Nom de l'équipe (ou Duo)</label>
                     <input type="text" id="team-name" required placeholder="Ex: Équipe 1 - Cyril & Sylvain" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
@@ -190,6 +211,10 @@
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 6px;">Sélectionnez les joueurs inscrits :</label>
                     <div id="team-players-checkboxes" style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; background: #f8fafc;"></div>
+                </div>
+                <div>
+                    <label for="team-external" style="display:block; font-size:0.875rem; margin-bottom:4px;">Partenaires d'un autre club (un par ligne)</label>
+                    <textarea id="team-external" rows="2" placeholder="Prénom Nom — Club" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:8px; box-sizing:border-box;"></textarea>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
                     <button type="button" onclick="closeModal('modal-team')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
@@ -208,6 +233,8 @@
             </div>
             <form onsubmit="saveResults(event)" style="display: flex; flex-direction: column; gap: 14px;">
                 <input type="hidden" id="res-tournament-id">
+                <input type="hidden" id="res-day-id">
+                <p id="res-day-label" style="margin:0; font-weight:bold; color:#854d0e;"></p>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">☀️ Résultats des Poules (Matin)</label>
                     <textarea id="res-poules" rows="3" placeholder="Ex: Poule A : 3 victoires, 1 défaite." style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
@@ -410,7 +437,33 @@
             icon.className = state.openAvailabilityMenus[tournamentId] ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
         }
 
+        function escapeText(value) {
+            return String(value || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function dayLabel(day) {
+            return new Date(day.date + 'T12:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'}) + ' — ' + (day.format === 'Quadrette' ? 'Quadruplette' : day.format);
+        }
+
+        function competitionPath(tournamentId, dayId = '') {
+            return `tournaments/${tournamentId}` + (dayId ? `/days/${dayId}` : '');
+        }
+
+        function isTournamentArchived(t) {
+            const days = Object.values(t.days || {});
+            return days.length ? days.every(day => day.results && day.results.phase) : Boolean(t.results && t.results.phase);
+        }
+
+        function toggleDayFields() {
+            const enabled = document.getElementById('t-two-days').checked;
+            document.getElementById('t-day-fields').style.display = enabled ? 'block' : 'none';
+            document.getElementById('t-end-date').required = enabled;
+        }
+
         function openTournamentModal(id = null) {
+            document.getElementById('t-two-days').disabled = false;
+            document.getElementById('t-two-days').checked = false;
+            document.getElementById('t-format-day2').value = 'Doublette';
             if (id) {
                 const t = state.tournaments.find(item => item.id === id);
                 if (t) {
@@ -421,12 +474,19 @@
                     document.getElementById('t-end-date').value = t.endDate || '';
                     document.getElementById('t-format').value = t.format;
                     document.getElementById('t-location').value = t.location || '';
+                    if (t.days) {
+                        document.getElementById('t-two-days').checked = true;
+                        document.getElementById('t-two-days').disabled = true;
+                        document.getElementById('t-format').value = t.days.day1.format;
+                        document.getElementById('t-format-day2').value = t.days.day2.format;
+                    }
                 }
             } else {
                 document.getElementById('tournament-modal-title').textContent = "Ajouter un Tournoi";
                 document.getElementById('form-tournament').reset();
                 document.getElementById('t-id').value = '';
             }
+            toggleDayFields();
             openModal('modal-tournament');
         }
 
@@ -436,8 +496,14 @@
             const tournamentId = idInput ? idInput : Date.now().toString();
             
             const existingTournament = state.tournaments.find(t => t.id === tournamentId);
+            const twoDays = document.getElementById('t-two-days').checked;
+            const start = document.getElementById('t-date').value;
+            const end = document.getElementById('t-end-date').value;
+            if (end && end < start) return alert("La date de fin doit suivre la date de début.");
+            if (twoDays && (!end || end <= start)) return alert("Renseigne deux dates distinctes pour les deux journées.");
 
             const tournamentData = {
+                ...existingTournament,
                 name: document.getElementById('t-name').value,
                 date: document.getElementById('t-date').value,
                 endDate: document.getElementById('t-end-date').value,
@@ -447,10 +513,21 @@
                 teams: existingTournament ? (existingTournament.teams || {}) : {},
                 results: existingTournament ? (existingTournament.results || null) : null
             };
+            delete tournamentData.id;
+            if (twoDays) {
+                const days = existingTournament?.days || {};
+                tournamentData.days = {
+                    day1: {...(days.day1 || {}), date:start, format:tournamentData.format,
+                        teams: days.day1?.teams || existingTournament?.teams || {},
+                        results: days.day1?.results || existingTournament?.results || null},
+                    day2: {...(days.day2 || {}), date:end, format:document.getElementById('t-format-day2').value}
+                };
+            }
 
-            db.ref(`tournaments/${tournamentId}`).set(tournamentData);
-            closeModal('modal-tournament');
-            document.getElementById('form-tournament').reset();
+            db.ref(`tournaments/${tournamentId}`).set(tournamentData).then(() => {
+                closeModal('modal-tournament');
+                document.getElementById('form-tournament').reset();
+            }).catch(() => alert("Enregistrement impossible. Réessaie, tes données restent dans le formulaire."));
         }
 
         function deleteTournament(id) {
@@ -459,9 +536,13 @@
             }
         }
 
-        function openResultsModal(tournamentId) {
+        function openResultsModal(tournamentId, dayId = '') {
+            if (!state.isAdmin) return;
             document.getElementById('res-tournament-id').value = tournamentId;
-            const t = state.tournaments.find(item => item.id === tournamentId);
+            document.getElementById('res-day-id').value = dayId;
+            const tournament = state.tournaments.find(item => item.id === tournamentId);
+            const t = dayId ? tournament.days[dayId] : tournament;
+            document.getElementById('res-day-label').textContent = dayId ? dayLabel(t) : '';
             if (t && t.results) {
                 document.getElementById('res-poules').value = t.results.poules || '';
                 document.getElementById('res-phase').value = t.results.phase || 'Non sorti des poules';
@@ -476,21 +557,27 @@
 
         function saveResults(e) {
             e.preventDefault();
+            if (!state.isAdmin) return;
             const tournamentId = document.getElementById('res-tournament-id').value;
+            const dayId = document.getElementById('res-day-id').value;
             const resultsData = {
                 poules: document.getElementById('res-poules').value,
                 phase: document.getElementById('res-phase').value,
                 details: document.getElementById('res-details').value
             };
-            db.ref(`tournaments/${tournamentId}/results`).set(resultsData);
-            closeModal('modal-results');
+            db.ref(competitionPath(tournamentId, dayId) + '/results').set(resultsData)
+                .then(() => closeModal('modal-results'))
+                .catch(() => alert("Résultats non enregistrés. Réessaie."));
         }
 
-        function openTeamModal(tournamentId) {
+        function openTeamModal(tournamentId, dayId = '') {
             document.getElementById('team-tournament-id').value = tournamentId;
+            document.getElementById('team-day-id').value = dayId;
             document.getElementById('team-name').value = '';
+            document.getElementById('team-external').value = '';
             
             const tournament = state.tournaments.find(t => t.id === tournamentId);
+            document.getElementById('team-day-label').textContent = dayId ? dayLabel(tournament.days[dayId]) : '';
             const container = document.getElementById('team-players-checkboxes');
             
             let html = '';
@@ -517,7 +604,9 @@
         function saveTeam(e) {
             e.preventDefault();
             const tournamentId = document.getElementById('team-tournament-id').value;
+            const dayId = document.getElementById('team-day-id').value;
             const teamName = document.getElementById('team-name').value;
+            const externalPlayers = document.getElementById('team-external').value.split('\n').map(s => s.trim()).filter(Boolean);
             
             const checkboxes = document.querySelectorAll('input[name="team_player"]:checked');
             const playerIds = Array.from(checkboxes).map(cb => cb.value);
@@ -526,20 +615,27 @@
                 alert("Veuillez sélectionner au moins un joueur.");
                 return;
             }
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            const competition = dayId ? tournament.days[dayId] : tournament;
+            const size = {Doublette:2, Triplette:3, Quadrette:4, Individuel:1}[competition.format];
+            if (size && playerIds.length + externalPlayers.length !== size) {
+                return alert(`Cette équipe doit compter ${size} joueur(s), partenaires extérieurs compris.`);
+            }
+            const used = Object.values(competition.teams || {}).flatMap(team => team.playerIds || []);
+            if (playerIds.some(id => used.includes(id))) return alert("Un joueur sélectionné fait déjà partie d'une équipe de cette journée.");
 
             const teamId = Date.now().toString();
-            db.ref(`tournaments/${tournamentId}/teams/${teamId}`).set({
+            db.ref(competitionPath(tournamentId, dayId) + `/teams/${teamId}`).set({
                 id: teamId,
                 name: teamName,
-                playerIds: playerIds
-            });
-
-            closeModal('modal-team');
+                playerIds: playerIds,
+                externalPlayers
+            }).then(() => closeModal('modal-team')).catch(() => alert("Équipe non enregistrée. Réessaie."));
         }
 
-        function deleteTeam(tournamentId, teamId) {
+        function deleteTeam(tournamentId, teamId, dayId = '') {
             if (confirm("Supprimer cette équipe ?")) {
-                db.ref(`tournaments/${tournamentId}/teams/${teamId}`).remove();
+                db.ref(competitionPath(tournamentId, dayId) + `/teams/${teamId}`).remove();
             }
         }
 
@@ -652,7 +748,7 @@
             const archivedTournaments = [];
 
             state.tournaments.forEach(t => {
-                if (t.results && t.results.phase) {
+                if (isTournamentArchived(t)) {
                     archivedTournaments.push(t);
                 } else {
                     activeTournaments.push(t);
@@ -685,7 +781,7 @@
             }
         }
 
-        function renderTournamentCard(t, isArchive) {
+        function renderTournamentCard(t, isArchive, contentOnly = false, dayId = '') {
             const statuses = t.statuses || {};
             let registered = 0, available = 0, absent = 0;
             state.members.forEach(m => {
@@ -708,11 +804,12 @@
 
             return `
                 <div style="background: white; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);">
+                    ${contentOnly ? `<h4 style="margin:0; padding:12px 16px; background:#eff6ff; color:#1e40af;">${escapeText(dayLabel(t))}</h4>` : `
                     <div style="background-color: #0f172a; color: white; padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 2px solid ${isArchive ? '#ca8a04' : '#dc2626'};">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
                             <div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="background-color: ${isArchive ? '#ca8a04' : '#dc2626'}; color: white; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">${t.format}</span>
+                                    <span style="background-color: ${isArchive ? '#ca8a04' : '#dc2626'}; color: white; font-weight: bold; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">${t.days ? '2 jours · formats distincts' : t.format}</span>
                                     <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0;">${t.name}</h3>
                                     ${isArchive ? '<span style="background: #fef08a; color: #713f12; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">Archivé 🏆</span>' : ''}
                                 </div>
@@ -734,21 +831,23 @@
                             <span style="background: #881337; color: #fecdd3; border: 1px solid #9f1239; padding: 4px 10px; border-radius: 8px;">🔴 ${absent} Absents</span>
                         </div>
                     </div>
+                    `}
+                    ${t.days ? `<div style="padding:12px; display:grid; gap:12px;">${Object.entries(t.days).map(([key, day]) => renderTournamentCard({...t, ...day, days:null, endDate:null, teams:day.teams || {}, results:day.results || null}, isArchive, true, key)).join('')}</div>` : `
 
                     <!-- SECTION RÉSULTATS -->
                     <div style="background-color: #fefce8; border-bottom: 1px solid #fef08a; padding: 12px 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span style="font-size: 0.75rem; font-weight: bold; color: #854d0e; text-transform: uppercase;"><i class="fa-solid fa-chart-line" style="margin-right: 4px;"></i> Résultats & Bilan</span>
-                            ${state.isAdmin ? `<button onclick="openResultsModal('${t.id}')" style="background: #ca8a04; color: white; border: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen"></i> ${results ? 'Modifier les résultats' : 'Ajouter les résultats'}</button>` : ''}
+                            ${state.isAdmin ? `<button onclick="openResultsModal('${t.id}', '${dayId}')" style="background: #ca8a04; color: white; border: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen"></i> ${results ? 'Modifier les résultats' : 'Ajouter les résultats'}</button>` : ''}
                         </div>
                         ${results ? `
                             <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
-                                <div><strong>Matin (Poules) :</strong> ${results.poules || 'Non renseigné'}</div>
-                                <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${results.phase}</span></div>
-                                ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${results.details}</div>` : ''}
+                                <div><strong>Matin (Poules) :</strong> ${escapeText(results.poules) || 'Non renseigné'}</div>
+                                <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${escapeText(results.phase)}</span></div>
+                                ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${escapeText(results.details)}</div>` : ''}
                             </div>
                         ` : `
-                            <div style="font-size: 0.75rem; color: #a16207; font-style: italic;">Aucun résultat encodé pour l'instant. Renseigne les résultats pour archiver ce tournoi.</div>
+                            <div style="font-size: 0.75rem; color: #a16207; font-style: italic;">Aucun résultat encodé pour l'instant.${dayId ? ' Le tournoi sera archivé après les résultats des deux journées.' : ' Renseigne les résultats pour archiver ce tournoi.'}</div>
                         `}
                     </div>
 
@@ -760,7 +859,7 @@
                                     <h4 style="font-size: 0.75rem; font-weight: bold; color: #334155; text-transform: uppercase; margin: 0;">Équipes engagées (${teams.length})</h4>
                                 </div>
                                 ${state.isAdmin && !isArchive ? `
-                                    <button onclick="openTeamModal('${t.id}')" style="background: #1d4ed8; color: white; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                    <button onclick="openTeamModal('${t.id}', '${dayId}')" style="background: #1d4ed8; color: white; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 6px;">
                                         <i class="fa-solid fa-user-plus"></i> Composer une équipe
                                     </button>
                                 ` : ''}
@@ -773,14 +872,14 @@
                                         const playerNames = (tm.playerIds || []).map(pid => {
                                             const mem = state.members.find(m => m.id === pid);
                                             return mem ? (mem.name + (mem.isGuest ? ' (Ext.)' : '')) : '';
-                                        }).filter(Boolean).join(' & ');
+                                        }).filter(Boolean).concat((tm.externalPlayers || []).map(name => name + ' (Ext.)')).join(' & ');
                                         return `
                                             <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
                                                 <div>
-                                                    <div style="font-size: 0.75rem; font-weight: bold; color: #1d4ed8;">${tm.name}</div>
-                                                    <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;"><i class="fa-solid fa-user-check" style="color: #059669; margin-right: 4px;"></i> ${playerNames}</div>
+                                                    <div style="font-size: 0.75rem; font-weight: bold; color: #1d4ed8;">${escapeText(tm.name)}</div>
+                                                    <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;"><i class="fa-solid fa-user-check" style="color: #059669; margin-right: 4px;"></i> ${escapeText(playerNames)}</div>
                                                 </div>
-                                                ${(state.isAdmin && !isArchive) ? `<button onclick="deleteTeam('${t.id}', '${tm.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 0.75rem;"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                                                ${(state.isAdmin && !isArchive) ? `<button onclick="deleteTeam('${t.id}', '${tm.id}', '${dayId}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 0.75rem;"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                                             </div>
                                         `;
                                     }).join('')}
@@ -788,8 +887,10 @@
                             `}
                         </div>
                     ` : ''}
+                    `}
 
                     <!-- MENU REPLIANT DES DISPONIBILITÉS -->
+                    ${contentOnly ? '' : `
                     <div style="background-color: #f8fafc;">
                         <button onclick="toggleAvailabilityMenu('${t.id}')" style="width: 100%; background: #e2e8f0; border: none; padding: 12px 16px; font-weight: bold; font-size: 0.75rem; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
                             <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> ${isArchive ? 'Voir les inscriptions et la liste' : 'Gérer / Voir les disponibilités des joueurs'}</span>
@@ -825,6 +926,7 @@
                             </div>
                         </div>
                     </div>
+                    `}
                 </div>
             `;
         }
