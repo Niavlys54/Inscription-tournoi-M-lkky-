@@ -115,8 +115,8 @@
         <section id="view-members" style="display: none; flex-direction: column; gap: 24px;">
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
                 <div>
-                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Effectif & Joueurs Extérieurs</h2>
-                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Membres officiels de l'AS Pagny Mölkky et invités occasionnels.</p>
+                    <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;">Effectif de l'AS Pagny Mölkky</h2>
+                    <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Les invités sont affichés séparément et ne comptent pas dans l'effectif.</p>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <button onclick="resetDefaultData()" class="admin-only" style="display: none; background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 500; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem;">
@@ -132,6 +132,11 @@
             </div>
 
             <div id="members-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
+            <div>
+                <h3 style="font-size:1rem; color:#c2410c;">Invités / Joueurs extérieurs — hors effectif</h3>
+                <p style="font-size:0.75rem; color:#64748b;">Ces partenaires restent disponibles pour composer les équipes. Leur club apparaît à côté de leur nom.</p>
+                <div id="guests-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px;"></div>
+            </div>
         </section>
 
     </main>
@@ -587,7 +592,7 @@
                     html += `
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: #334155; cursor: pointer;">
                             <input type="checkbox" name="team_player" value="${m.id}" style="width: 16px; height: 16px;">
-                            <span>${m.name} ${m.isGuest ? '<span style="font-size: 10px; color: #ea580c; font-weight: bold;">(Invité)</span>' : ''}</span>
+                            <span>${escapeText(m.name)} ${m.isGuest ? `<span style="font-size: 10px; color: #ea580c; font-weight: bold;">— ${escapeText(m.role || 'Club non renseigné')} (Invité)</span>` : ''}</span>
                         </label>
                     `;
                 }
@@ -692,12 +697,15 @@
             });
             
             const countEl = document.getElementById('member-count');
-            if (countEl) countEl.textContent = state.members.length;
+            const clubMembers = state.members.filter(m => !m.isGuest);
+            const guestMembers = state.members.filter(m => m.isGuest);
+            if (countEl) countEl.textContent = clubMembers.length;
 
             // RENDU ONGLET MEMBRES
-            const membersGrid = document.getElementById('members-grid');
-            if (membersGrid) {
-                membersGrid.innerHTML = state.members.map(m => {
+            [['members-grid', clubMembers], ['guests-grid', guestMembers]].forEach(([gridId, players]) => {
+                const membersGrid = document.getElementById(gridId);
+                if (!membersGrid) return;
+                membersGrid.innerHTML = players.map(m => {
                     const isGuest = m.isGuest === true;
                     return `
                         <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid ${isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);">
@@ -718,12 +726,12 @@
                         </div>
                     `;
                 }).join('');
-            }
+            });
 
             // RENDU ONGLET BILAN JOUEURS (STATS)
             const statsGrid = document.getElementById('player-stats-grid');
             if (statsGrid && state.isAdmin) {
-                statsGrid.innerHTML = state.members.map(m => {
+                statsGrid.innerHTML = clubMembers.map(m => {
                     return `
                         <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                             <div style="display: flex; align-items: center; gap: 12px;">
@@ -871,7 +879,7 @@
                                     ${teams.map(tm => {
                                         const playerNames = (tm.playerIds || []).map(pid => {
                                             const mem = state.members.find(m => m.id === pid);
-                                            return mem ? (mem.name + (mem.isGuest ? ' (Ext.)' : '')) : '';
+                                            return mem ? (mem.name + (mem.isGuest ? ' — ' + (mem.role || 'Club non renseigné') + ' (Ext.)' : '')) : '';
                                         }).filter(Boolean).concat((tm.externalPlayers || []).map(name => name + ' (Ext.)')).join(' & ');
                                         return `
                                             <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
@@ -904,7 +912,7 @@
                                     return `
                                         <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid ${m.isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between;">
                                             <span style="font-size: 0.8125rem; font-weight: 600; color: #1e293b;">
-                                                ${m.name} ${m.isGuest ? '<span style="font-size: 10px; color: #ea580c;">(Ext.)</span>' : ''}
+                                                ${escapeText(m.name)} ${m.isGuest ? `<span style="font-size: 10px; color: #ea580c;">— ${escapeText(m.role || 'Club non renseigné')} (Ext.)</span>` : ''}
                                             </span>
                                             <div style="display: flex; gap: 4px;">
                                                 <label style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px; font-size: 0.75rem; border-radius: 4px; border: 1px solid ${st === 'registered' ? '#059669' : '#cbd5e1'}; background: ${st === 'registered' ? '#ecfdf5' : '#f8fafc'}; color: ${st === 'registered' ? '#047857' : '#64748b'}; cursor: ${isArchive ? 'default' : 'pointer'};">
