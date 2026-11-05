@@ -294,6 +294,226 @@
             { id: '14', name: 'Nathalie Mercier', role: 'Membre', isGuest: false }
         ];
 
+        // DONNÉES ARCHIVÉES FIXES DE LA SAISON 2026 (Janvier à Novembre)
+        const ARCHIVES_2026 = [
+            {
+                id: 'arch-2026-nov-toussaint',
+                name: 'Nocturne de Bessenay & Bazar Halloween de Florange',
+                date: '2026-10-31',
+                format: 'Doublette',
+                location: 'Bessenay & Florange',
+                results: {
+                    poules: 'Nocturne de Bessenay (32 doublettes) : Laura & Sylvain (Les Lauvains) 2es de poule en Phase Or.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: '🌙 Nocturne de Bessenay (31 oct) : Laura & Sylvain enchaînent les victoires en phase Or et s’emparent de la 3e place 🥉 !\n🎃 Bazar Halloween de Florange (1er nov - 28 doublettes) : 4 doublettes engagées. Cyril & Sylvain arrachent une superbe 3e place sur le podium final 🥉 ! Arnaud & Seb 5es, Yvon & Jacques 7es, Inès & Logan 17es.'
+                }
+            },
+            {
+                id: 'arch-2026-oct-interclub',
+                name: '5ème Interclub du Coin – Marly',
+                date: '2026-10-18',
+                format: 'Doublette',
+                location: 'Marly',
+                results: {
+                    poules: '24 équipes (Format Ligue des Champions - 6 matchs le matin). Arnaud & Seb 1ers (5V, 1N), Inès & Logan 2es (3V, 2N, 1D), Cyril & Laura 17es.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: '🏆 Tableau Principal : Arnaud & Seb survolent la compétition et remportent la 5e édition de l’Interclub du Coin 🏆 ! (Inès & Logan en quarts de finale).\n🥇 Tableau Consolante : Cyril & Laura s’imposent brillamment en finale et remportent la 1re place de la consolante 🥇 !'
+                }
+            },
+            {
+                id: 'arch-2026-oct-rose',
+                name: 'Tournoi Octobre Rose – Metz',
+                date: '2026-10-03',
+                format: 'Doublette',
+                location: 'Metz',
+                results: {
+                    poules: '48 doublettes (8 poules de 6). Arnaud & Sylvain 1ers de poule, Jacques & Cricri, Seb & Béa, Logan & Inès 2es de poule.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: 'Arnaud & Sylvain (tenants du titre) réalisent un beau parcours jusqu’en demies, s’inclinent face aux futurs vainqueurs, puis remportent la petite finale pour décrocher une magnifique 3e place 🥉 !\nSeb & Béa 11es, Inès & Logan 13es, Jacques & Cricri 25es.'
+                }
+            },
+            {
+                id: 'arch-2026-sep-pagny',
+                name: '4ème Tournoi Individuel & Féminin de l’AS Pagny & Tournoi de Paris',
+                date: '2026-09-27',
+                format: 'Individuel',
+                location: 'Pagny-sur-Moselle & Paris',
+                results: {
+                    poules: 'Tournoi de Pagny : 68 joueurs (8 poules de 8) + Tournoi de Paris (80 doublettes pour Laura).',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: '🎯 4e Tournoi de Pagny (27 sep) :\n- Open Individuel Principal : 🥇 Arnaud s’impose et devient le 4e champion individuel de l’histoire de Pagny 🏆🔴🔵 ! (Jimmy 2e, Tof 3e).\n- Consolante : Logan 2e 🥈.\n- Féminines : Fabienne 3e 🥉.\n- Jeunes : Bryan 2e 🥈.\n- Fil Rouge : François 1er 🥇.\n🗼 Tournoi de Paris (26 sep) : Laura & Audrey (Angers) montent sur la 3e marche du podium en phase Argent 🥉 !'
+                }
+            },
+            {
+                id: 'arch-2026-sep-montois',
+                name: 'Tournoi Doublette de Montois-la-Montagne',
+                date: '2026-09-19',
+                format: 'Doublette',
+                location: 'Montois-la-Montagne',
+                results: {
+                    poules: '26 équipes (9 tours de qualification au tirage au sort). Arnaud & Tof (Florange) terminent 2es du classement général.',
+                    phase: 'Vainqueur 🏆',
+                    details: '🥇 Arnaud & Tof enchaînent les victoires en phases finales (8es, quarts, demies) et remportent la grande finale du tournoi au bout du suspense 🏆 !'
+                }
+            },
+            {
+                id: 'arch-2026-sep-crusnes-enf',
+                name: 'Tournoi « Un adulte, un enfant » – Crusnes',
+                date: '2026-09-13',
+                format: 'Doublette',
+                location: 'Crusnes',
+                results: {
+                    poules: '14 équipes (2 poules de 7). Seb & Bryana 1ers de poule, Béa & Bryan 3es de poule.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: 'Tableau Or : Seb & Bryana s’inclinent en demi-finale mais se remobilisent pour remporter la petite finale et décrocher une magnifique 3e place 🥉 ! Béa & Bryan s’arrêtent en quarts de finale.'
+                }
+            },
+            {
+                id: 'arch-2026-sep-mach',
+                name: 'Tournoi Bazar de Macheren',
+                date: '2026-09-12',
+                format: 'Doublette',
+                location: 'Macheren',
+                results: {
+                    poules: '27 équipes (8 parties au cumul des points). Laura & Inès 1ères, Arnaud & Seb 3es des qualifications.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: '🏆 Arnaud & Seb (tenants du titre) récidivent et remportent brillamment le Tournoi Bazar de Macheren 🏆 !\n🥉 Inès & Laura décrochent une magnifique 3e place sur le podium des Finlandaises finales 🥉 !\nSylvain & Thierry 13es, Yvon & Didier 14es, Béa & Bryana 24es, Logan & Bryan 27es.'
+                }
+            },
+            {
+                id: 'arch-2026-aug-mirabelle',
+                name: '11ème Open de la Mirabelle – Metz',
+                date: '2026-08-29',
+                format: 'Doublette',
+                location: 'Metz',
+                results: {
+                    poules: '160 équipes (20 poules de 8). Arnaud & Cyril et Seb & Patrick 1ers de poule avec 7/7 victoires ! Laura & Sylvain et Inès & Logan 2es, Jacques & Yvon 4es (qualifiés en Or).',
+                    phase: 'Vainqueur 🏆',
+                    details: '🏆 Épopée historique et triplé d’affilée pour l’AS Pagny à la Mirabelle !\n🥇 Arnaud & Cyril renversent une finale folle (menés 30-2, ils s’imposent face à Crusnes) et remportent la 11e Mirabelle 🏆 !\n🥉 Laura & Sylvain décrochent une superbe 3e place en Phase Or 🥉 !\nBéa & Bryana quarts en Bronze.'
+                }
+            },
+            {
+                id: 'arch-2026-aug-mondial',
+                name: 'Championnat du Monde de Mölkky – Helsinki (Finlande)',
+                date: '2026-08-15',
+                format: 'Quadrette',
+                location: 'Helsinki, Finlande',
+                results: {
+                    poules: '479 équipes engagées. ASP 1 (Laura, Cyril, François, Sylvain) et ASP 2 (Fabienne, Nathalie, Yvon, Jacques) sortent invaincues de leurs poules (3/3 et 4/3).',
+                    phase: 'Quart de finale',
+                    details: '🌍 Parcours XXL mondial : ASP 1 et ASP 2 franchissent brillamment les 128es de finale face à la Suède 🇸🇪 et la Finlande 🇫🇮.\n- ASP 2 s’incline de justesse en 64es (2-3) face à Molkky Kong (Suisse).\n- ASP 1 passe les 64es face à la Pologne, puis s’arrête en 32es de finale face aux Japonais d’All In Valkoinen (futurs 6es mondiaux) sur un score serré de 3-2.'
+                }
+            },
+            {
+                id: 'arch-2026-aug-messancy',
+                name: 'Week-end de Mölkky à Messancy (Belgique)',
+                date: '2026-08-01',
+                format: 'Mixte',
+                location: 'Messancy (Belgique)',
+                results: {
+                    poules: 'Individuel (72 joueurs) & Doublette (63 équipes).',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: '🎯 Samedi (Indiv) : Jacques Vice-champion (2e) 🥈, Arnaud 3e 🥉. Inès élue meilleure féminine ex æquo 🏆.\n🎯 Dimanche (Doublette) : Laura & Sylvain (Les Lauvains) montent sur la 3e marche du podium (3es) 🥉 ! Premier open de Bryan aux couleurs de Pagny avec son père Seb.'
+                }
+            },
+            {
+                id: 'arch-2026-jul-yverdon',
+                name: '1er Tournoi d’Yverdon-les-Bains (Suisse)',
+                date: '2026-07-25',
+                format: 'Mixte',
+                location: 'Yverdon-les-Bains (Suisse)',
+                results: {
+                    poules: 'Individuel (28 joueurs) & Doublette (21 équipes). Arnaud, Seb et Inès 1ers de leur poule le samedi.',
+                    phase: 'Vainqueur 🏆',
+                    details: '🇨🇭 Samedi (Indiv) : Arnaud et Inès sur le podium (3es ex æquo) 🥉.\n🇨🇭 Dimanche (Doublette) : Arnaud & Seb réalisent un parcours parfait (victoires 2-0 et 3-0 en finale) et remportent le tournoi face au club hôte Mölkky Kong 🏆🇨🇭 !'
+                }
+            },
+            {
+                id: 'arch-2026-jul-florange',
+                name: '3ème Tournoi Doublette de Florange',
+                date: '2026-07-19',
+                format: 'Doublette',
+                location: 'Florange',
+                results: {
+                    poules: '36 doublettes (4 poules de 9). Laura & Jimmy 1ers, Arnaud & Logan, Sylvain & Gauthier, Jacques & Yvon 2es de poule.',
+                    phase: 'Finaliste 🥈',
+                    details: 'Seb & Inès réalisent une magnifique journée et décrochent une superbe 2e place (Vice-champions) en s’inclinant en finale face à Florange 🥈.\nLaura & Jimmy prennent la 4e place.'
+                }
+            },
+            {
+                id: 'arch-2026-jun-marly',
+                name: '7ème Open de Marly',
+                date: '2026-06-06',
+                format: 'Doublette',
+                location: 'Marly',
+                results: {
+                    poules: '81 équipes. François & Arnaud 1ers de poule (Tableau Or), Yvon & Jacques et Nathalie & Sylvain 4es (Tableau Argent).',
+                    phase: 'Vainqueur 🏆',
+                    details: '🥇 Tableau Or : François & Arnaud survolent les phases finales et remportent le 7e Open de Marly 🏆 !\n🥇 Tableau Argent : Finale 100% AS Pagny ! Yvon & Jacques s’imposent face à Nathalie & Sylvain (2es) 🥇🥈.'
+                }
+            },
+            {
+                id: 'arch-2026-may-france',
+                name: '17ème Open de France de Mölkky – Malagué',
+                date: '2026-05-23',
+                format: 'Doublette',
+                location: 'Jarzé Villages / Malagué',
+                results: {
+                    poules: '268 doublettes engagées. 7 doublettes de l’AS Pagny présentes.',
+                    phase: 'Quart de finale',
+                    details: 'Arnaud & François atteignent les 8èmes de finale du Tableau Or 💪.\nYvon & Jacques et Béa & Patrick atteignent les quarts de finale (Argent et Brochet) 👏.'
+                }
+            },
+            {
+                id: 'arch-2026-may-crusnes',
+                name: '4ème Tournoi Doublette de Crusnes',
+                date: '2026-05-16',
+                format: 'Doublette',
+                location: 'Crusnes',
+                results: {
+                    poules: '51 doublettes (6 poules). Yvon & Jacques, Sylvain & Seb, Fred & Patrick 1ers de poule. Arnaud & Laura (tenants du titre) 2es.',
+                    phase: 'Vainqueur 🏆',
+                    details: '🏆 Seb & Sylvain s’imposent 3-1 en finale face à Metz/Vendée et remportent la 4e édition ! Le trophée de Crusnes reste à la maison 🏆 !\nJacques & Yvon 4es, Cyril & Yves 2es en consolante 🥈, Patrick vainqueur du jeu de la griffe pour la 2e année consécutive 👏.'
+                }
+            },
+            {
+                id: 'arch-2026-may-commercy',
+                name: '2e Open de la Madeleine (Commercy) & Open Davis (Macheren)',
+                date: '2026-05-09',
+                format: 'Doublette',
+                location: 'Commercy & Macheren',
+                results: {
+                    poules: 'Commercy : 26 doublettes (Ligue des Champions MTM). Sylvain & Seb 1ers (19 pts), Arnaud & Fabienne 3es (17 pts). Macheren : 12 quadruplettes.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: '🏆 Commercy : Petite finale 100% Pagny ! Seb & Sylvain s’imposent et prennent la 3e place 🥉 (Arnaud & Fabienne 4es). Tournoi solidaire pour le lycée de Commercy 🇮🇹.\n🎯 Macheren (Open Davis) : Logan, Inès, Bryan & Bryana se qualifient en groupe Or et décrochent une superbe 4e place 4es.'
+                }
+            },
+            {
+                id: 'arch-2026-apr-belgique',
+                name: 'Open de Belgique & Vendôme & Bessenay',
+                date: '2026-04-25',
+                format: 'Mixte',
+                location: 'Divers',
+                results: {
+                    poules: 'Série de tournois d’avril (Belgique, Vendôme, Bessenay).',
+                    phase: 'Vainqueur 🏆',
+                    details: 'Open de Belgique (25 avr) : Victoire d’Yvon & Gérald 🥇, Consolante pour Fabienne & Nathalie 🥇.\nWeek-end à Bessenay (1er-3 mai) : Victoire d’Inès au warm-up féminin 🏆, podiums d’Arnaud et François.\nVendôme (18 avr) : Sylvain & Céline 6es.'
+                }
+            },
+            {
+                id: 'arch-2026-jan-mar',
+                name: 'Début de Saison 2026 (Janvier - Mars)',
+                date: '2026-01-15',
+                format: 'Mixte',
+                location: 'Divers',
+                results: {
+                    poules: 'Tournois intérieurs et préparation de saison.',
+                    phase: 'Podium / Bilan Club 🥇🥈🥉',
+                    details: 'Mise en place des entraînements et des compétitions indoor de début d’année pour préparer les échéances nationales et internationales.'
+                }
+            }
+        ];
+
         // DONNÉES ARCHIVÉES FIXES DE LA SAISON 2025 (Janvier à Décembre)
         const ARCHIVES_2025 = [
             {
@@ -853,11 +1073,14 @@
             if (archivesList) {
                 let filteredArchives = [];
 
-                if (state.currentArchiveYear === '2025') {
-                    // Si l'année 2025 est sélectionnée, on affiche l'historique complet et officiel enregistré
+                if (state.currentArchiveYear === '2026') {
+                    // Si l'année 2026 est sélectionnée, on affiche l'historique complet et officiel enregistré pour 2026
+                    filteredArchives = ARCHIVES_2026;
+                } else if (state.currentArchiveYear === '2025') {
+                    // Si l'année 2025 est sélectionnée, on affiche l'historique complet et officiel enregistré pour 2025
                     filteredArchives = ARCHIVES_2025;
                 } else {
-                    // Pour 2026, 2024 ou autres, on prend les tournois archivés de la BDD Firebase correspondants
+                    // Pour d'autres années, on prend les tournois archivés de la BDD Firebase correspondants
                     filteredArchives = archivedTournaments.filter(t => {
                         const tournamentYear = new Date(t.date).getFullYear().toString();
                         return tournamentYear === state.currentArchiveYear;
@@ -893,6 +1116,8 @@
                 dateDisplay = `Du ${dateDisplay} au ${dateEndFormatted}`;
             }
 
+            const isStaticArchive = t.id.startsWith('arch-2025') || t.id.startsWith('arch-2026');
+
             return `
                 <div style="background: white; border-radius: 12px; border: 1px solid #cbd5e1; overflow: hidden; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);">
                     <div style="background-color: #0f172a; color: white; padding: 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 2px solid ${isArchive ? '#ca8a04' : '#dc2626'};">
@@ -908,14 +1133,14 @@
                                     ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${t.location}</span>` : ''}
                                 </div>
                             </div>
-                            ${(state.isAdmin && !t.id.startsWith('arch-2025')) ? `
+                            ${(state.isAdmin && !isStaticArchive) ? `
                                 <div style="display: flex; gap: 8px;">
                                     <button onclick="openTournamentModal('${t.id}')" style="background:none; border:none; color:#93c5fd; cursor:pointer;" title="Modifier"><i class="fa-solid fa-pen-to-square"></i></button>
                                     <button onclick="deleteTournament('${t.id}')" style="background:none; border:none; color:#fca5a5; cursor:pointer;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>
                                 </div>
                             ` : ''}
                         </div>
-                        ${!t.id.startsWith('arch-2025') ? `
+                        ${!isStaticArchive ? `
                             <div style="display: flex; gap: 8px; font-size: 0.75rem; flex-wrap: wrap;">
                                 <span style="background: #064e3b; color: #a7f3d0; border: 1px solid #047857; padding: 4px 10px; border-radius: 8px;">🟢 ${registered} Inscrits</span>
                                 <span style="background: #78350f; color: #fde68a; border: 1px solid #b45309; padding: 4px 10px; border-radius: 8px;">🟡 ${available} Dispos</span>
@@ -928,7 +1153,7 @@
                     <div style="background-color: #fefce8; border-bottom: 1px solid #fef08a; padding: 12px 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span style="font-size: 0.75rem; font-weight: bold; color: #854d0e; text-transform: uppercase;"><i class="fa-solid fa-chart-line" style="margin-right: 4px;"></i> Résultats & Bilan</span>
-                            ${(state.isAdmin && !t.id.startsWith('arch-2025')) ? `<button onclick="openResultsModal('${t.id}')" style="background: #ca8a04; color: white; border: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen"></i> ${results ? 'Modifier les résultats' : 'Ajouter les résultats'}</button>` : ''}
+                            ${(state.isAdmin && !isStaticArchive) ? `<button onclick="openResultsModal('${t.id}')" style="background: #ca8a04; color: white; border: none; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-pen"></i> ${results ? 'Modifier les résultats' : 'Ajouter les résultats'}</button>` : ''}
                         </div>
                         ${results ? `
                             <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
@@ -941,7 +1166,7 @@
                         `}
                     </div>
 
-                    ${isTeamFormat && !t.id.startsWith('arch-2025') ? `
+                    ${isTeamFormat && !isStaticArchive ? `
                         <div style="padding: 16px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -978,8 +1203,8 @@
                         </div>
                     ` : ''}
 
-                    <!-- MENU REPLIANT DES DISPONIBILITÉS (Masqué pour les archives statiques 2025) -->
-                    ${!t.id.startsWith('arch-2025') ? `
+                    <!-- MENU REPLIANT DES DISPONIBILITÉS (Masqué pour les archives statiques) -->
+                    {!isStaticArchive ? `
                         <div style="background-color: #f8fafc;">
                             <button onclick="toggleAvailabilityMenu('${t.id}')" style="width: 100%; background: #e2e8f0; border: none; padding: 12px 16px; font-weight: bold; font-size: 0.75rem; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
                                 <span><i class="fa-solid fa-list-check" style="margin-right: 6px;">&nbsp;</i> ${isArchive ? 'Voir les inscriptions et la liste' : 'Gérer / Voir les disponibilités des joueurs'}</span>
