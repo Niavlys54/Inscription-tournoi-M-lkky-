@@ -64,13 +64,21 @@
         </div>
     </header>
 
-    <main style="max-width: 1000px; margin: 0 auto; padding: 24px 16px;">
-        <aside id="upcoming-alert" aria-label="Tournois proches" style="display:none; margin-bottom:16px; padding:12px 16px; border:1px solid #fcd34d; border-radius:10px; background:#fffbeb; color:#92400e;">
-            <strong>🔔 Tournois à ne pas manquer</strong>
+    <div id="notification-stack" style="position:fixed; top:max(12px, env(safe-area-inset-top)); left:12px; right:12px; max-width:480px; margin:0 auto; z-index:200; display:flex; flex-direction:column; gap:8px; pointer-events:none;">
+        <div id="success-toast" role="status" aria-live="polite" aria-atomic="true" style="display:none; background:#065f46; color:white; padding:14px 16px; border-radius:10px; box-shadow:0 4px 16px #0003; align-items:center; gap:12px; pointer-events:auto;">
+            <span id="success-toast-message" style="flex:1;"></span>
+            <button type="button" aria-label="Fermer la confirmation" onclick="document.getElementById('success-toast').style.display='none'" style="border:none; background:transparent; color:white; font-size:1.25rem; cursor:pointer;">×</button>
+        </div>
+        <aside id="upcoming-alert" role="status" aria-live="polite" aria-atomic="true" aria-label="Tournois proches" style="display:none; padding:12px 16px; border:1px solid #fcd34d; border-radius:10px; background:#fffbeb; color:#92400e; box-shadow:0 4px 16px #0003; pointer-events:auto;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                <strong>🔔 Tournois à ne pas manquer</strong>
+                <button type="button" aria-label="Fermer le rappel" onclick="document.getElementById('upcoming-alert').style.display='none'" style="border:none; background:transparent; color:inherit; font-size:1.25rem; cursor:pointer;">×</button>
+            </div>
             <div id="upcoming-alert-list" style="display:grid; gap:6px; margin-top:6px; font-size:0.875rem;"></div>
-            <small>Rappel la veille et le jour du tournoi, puis pendant toute sa durée.</small>
         </aside>
+    </div>
 
+    <main style="max-width: 1000px; margin: 0 auto; padding: 24px 16px;">
         <!-- ONGLET: TOURNOIS À VENIR -->
         <section id="view-tournaments" style="display: flex; flex-direction: column; gap: 24px;">
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
@@ -141,10 +149,6 @@
 
     </main>
 
-    <div id="success-toast" role="status" aria-live="polite" aria-atomic="true" style="display:none; position:fixed; bottom:24px; left:16px; right:16px; max-width:480px; margin:0 auto; z-index:200; background:#065f46; color:white; padding:14px 16px; border-radius:10px; box-shadow:0 4px 16px #0003; align-items:center; gap:12px;">
-        <span id="success-toast-message" style="flex:1;"></span>
-        <button type="button" aria-label="Fermer la confirmation" onclick="document.getElementById('success-toast').style.display='none'" style="border:none; background:transparent; color:white; font-size:1.25rem; cursor:pointer;">×</button>
-    </div>
     <!-- MODALE TOURNOI -->
     <div id="modal-tournament" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
@@ -456,7 +460,7 @@
             document.getElementById('success-toast-message').textContent = message;
             toast.style.display = 'flex';
             clearTimeout(successToastTimer);
-            successToastTimer = setTimeout(() => { toast.style.display = 'none'; }, 6000);
+            successToastTimer = setTimeout(() => { toast.style.display = 'none'; }, 10000);
         }
 
         function upcomingTournaments(now = new Date()) {
@@ -476,17 +480,30 @@
               .sort((a, b) => a.daysUntil - b.daysUntil);
         }
 
+        let upcomingAlertTimer;
+        let upcomingAlertKey = '';
         function renderUpcomingAlerts() {
             const box = document.getElementById('upcoming-alert');
             const list = document.getElementById('upcoming-alert-list');
             if (!box || !list) return;
             const upcoming = upcomingTournaments();
-            box.style.display = upcoming.length ? 'block' : 'none';
+            if (!upcoming.length) {
+                box.style.display = 'none';
+                clearTimeout(upcomingAlertTimer);
+                upcomingAlertKey = '';
+                return;
+            }
+            const key = JSON.stringify(upcoming.map(({tournament:t, daysUntil}) => [t.id, t.date, t.endDate, t.name, t.location, daysUntil]));
+            if (key === upcomingAlertKey) return;
+            upcomingAlertKey = key;
+            box.style.display = 'block';
             list.innerHTML = upcoming.map(({tournament:t, daysUntil}) => {
                 const when = daysUntil < 0 ? 'En cours' : daysUntil === 0 ? "Aujourd’hui" : daysUntil === 1 ? 'Demain' : `Dans ${daysUntil} jours`;
                 const date = new Date(t.date + 'T12:00:00').toLocaleDateString('fr-FR', {day:'numeric', month:'long'});
                 return `<div><strong>${when} :</strong> ${escapeText(t.name)} — ${date}${t.location ? ' · ' + escapeText(t.location) : ''}${t.days ? ' · 2 jours' : ''}</div>`;
             }).join('');
+            clearTimeout(upcomingAlertTimer);
+            upcomingAlertTimer = setTimeout(() => { box.style.display = 'none'; }, 10000);
         }
 
         function dayLabel(day) {
