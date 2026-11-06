@@ -65,6 +65,11 @@
     </header>
 
     <main style="max-width: 1000px; margin: 0 auto; padding: 24px 16px;">
+        <aside id="upcoming-alert" aria-label="Tournois proches" style="display:none; margin-bottom:16px; padding:12px 16px; border:1px solid #fcd34d; border-radius:10px; background:#fffbeb; color:#92400e;">
+            <strong>🔔 Tournois à ne pas manquer</strong>
+            <div id="upcoming-alert-list" style="display:grid; gap:6px; margin-top:6px; font-size:0.875rem;"></div>
+            <small>Rappel la veille et le jour du tournoi, puis pendant toute sa durée.</small>
+        </aside>
 
         <!-- ONGLET: TOURNOIS À VENIR -->
         <section id="view-tournaments" style="display: flex; flex-direction: column; gap: 24px;">
@@ -136,6 +141,10 @@
 
     </main>
 
+    <div id="success-toast" role="status" aria-live="polite" aria-atomic="true" style="display:none; position:fixed; bottom:24px; left:16px; right:16px; max-width:480px; margin:0 auto; z-index:200; background:#065f46; color:white; padding:14px 16px; border-radius:10px; box-shadow:0 4px 16px #0003; align-items:center; gap:12px;">
+        <span id="success-toast-message" style="flex:1;"></span>
+        <button type="button" aria-label="Fermer la confirmation" onclick="document.getElementById('success-toast').style.display='none'" style="border:none; background:transparent; color:white; font-size:1.25rem; cursor:pointer;">×</button>
+    </div>
     <!-- MODALE TOURNOI -->
     <div id="modal-tournament" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
@@ -441,6 +450,45 @@
             return String(value || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         }
 
+        let successToastTimer;
+        function showSuccessToast(message) {
+            const toast = document.getElementById('success-toast');
+            document.getElementById('success-toast-message').textContent = message;
+            toast.style.display = 'flex';
+            clearTimeout(successToastTimer);
+            successToastTimer = setTimeout(() => { toast.style.display = 'none'; }, 6000);
+        }
+
+        function upcomingTournaments(now = new Date()) {
+            const parisDate = new Intl.DateTimeFormat('en-CA', {timeZone:'Europe/Paris', year:'numeric', month:'2-digit', day:'2-digit'}).formatToParts(now);
+            const part = type => parisDate.find(p => p.type === type).value;
+            const today = Date.UTC(Number(part('year')), Number(part('month')) - 1, Number(part('day')));
+            const dateValue = date => {
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) return NaN;
+                const [year, month, day] = date.split('-').map(Number);
+                return Date.UTC(year, month - 1, day);
+            };
+            return state.tournaments.filter(t => !isTournamentArchived(t)).map(t => ({
+                tournament:t,
+                daysUntil:Math.round((dateValue(t.date) - today) / 86400000),
+                endDays:Math.round((dateValue(t.endDate || t.date) - today) / 86400000)
+            })).filter(item => item.daysUntil <= 1 && item.endDays >= 0)
+              .sort((a, b) => a.daysUntil - b.daysUntil);
+        }
+
+        function renderUpcomingAlerts() {
+            const box = document.getElementById('upcoming-alert');
+            const list = document.getElementById('upcoming-alert-list');
+            if (!box || !list) return;
+            const upcoming = upcomingTournaments();
+            box.style.display = upcoming.length ? 'block' : 'none';
+            list.innerHTML = upcoming.map(({tournament:t, daysUntil}) => {
+                const when = daysUntil < 0 ? 'En cours' : daysUntil === 0 ? "Aujourd’hui" : daysUntil === 1 ? 'Demain' : `Dans ${daysUntil} jours`;
+                const date = new Date(t.date + 'T12:00:00').toLocaleDateString('fr-FR', {day:'numeric', month:'long'});
+                return `<div><strong>${when} :</strong> ${escapeText(t.name)} — ${date}${t.location ? ' · ' + escapeText(t.location) : ''}${t.days ? ' · 2 jours' : ''}</div>`;
+            }).join('');
+        }
+
         function dayLabel(day) {
             return new Date(day.date + 'T12:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'}) + ' — ' + (day.format === 'Quadrette' ? 'Quadruplette' : day.format);
         }
@@ -527,6 +575,7 @@
             db.ref(`tournaments/${tournamentId}`).set(tournamentData).then(() => {
                 closeModal('modal-tournament');
                 document.getElementById('form-tournament').reset();
+                showSuccessToast(existingTournament ? '✓ Le tournoi a bien été modifié.' : '✓ Le tournoi a bien été créé.');
             }).catch(() => alert("Enregistrement impossible. Réessaie, tes données restent dans le formulaire."));
         }
 
@@ -679,6 +728,7 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function render() {
+            renderUpcomingAlerts();
             const btnText = document.getElementById('admin-btn-text');
             const btnIcon = document.getElementById('admin-icon');
             if (btnText && btnIcon) {
@@ -934,6 +984,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', initApp);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) renderUpcomingAlerts();
+        });
+        setInterval(renderUpcomingAlerts, 60000);
     </script>
 </body>
 </html>
