@@ -198,6 +198,16 @@
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">Lieu</label>
                     <input type="text" id="t-location" placeholder="Ex: Complexe Isabelle Wendling" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;">
                 </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <div>
+                        <label for="t-check-in" style="display:block; font-size:0.75rem; font-weight:bold; color:#475569; margin-bottom:4px;">Émargement</label>
+                        <input type="time" id="t-check-in" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label for="t-first-throw" style="display:block; font-size:0.75rem; font-weight:bold; color:#475569; margin-bottom:4px;">Premier lancer</label>
+                        <input type="time" id="t-first-throw" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
+                    </div>
+                </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
                     <button type="button" onclick="closeModal('modal-tournament')" style="background: none; border: none; padding: 8px 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; cursor: pointer;">Annuler</button>
                     <button type="submit" style="background: #1d4ed8; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Enregistrer</button>
@@ -454,6 +464,22 @@
             return String(value || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         }
 
+        function tournamentSchedule(t) {
+            const name = (t.name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+            let defaults = {};
+            if (/\bmambo\b/.test(name)) defaults = {checkInTime:'08:00', firstThrowTime:'09:00'};
+            else if (/\bblack molkky\b/.test(name)) defaults = {checkInTime:'17:00', firstThrowTime:'18:00'};
+            else if (/\bbazar\b.*\bmcm\b/.test(name)) defaults = {checkInTime:'09:30'};
+            return {
+                checkInTime:t.checkInTime ?? defaults.checkInTime ?? '',
+                firstThrowTime:t.firstThrowTime ?? defaults.firstThrowTime ?? ''
+            };
+        }
+
+        function formatScheduleTime(time) {
+            return /^\d{2}:\d{2}$/.test(time) ? time.slice(0, 2).replace(/^0/, '') + ' h' + (time.slice(3) === '00' ? '' : ' ' + time.slice(3)) : '';
+        }
+
         let successToastTimer;
         function showSuccessToast(message) {
             const toast = document.getElementById('success-toast');
@@ -539,6 +565,9 @@
                     document.getElementById('t-end-date').value = t.endDate || '';
                     document.getElementById('t-format').value = t.format;
                     document.getElementById('t-location').value = t.location || '';
+                    const schedule = tournamentSchedule(t);
+                    document.getElementById('t-check-in').value = schedule.checkInTime;
+                    document.getElementById('t-first-throw').value = schedule.firstThrowTime;
                     if (t.days) {
                         document.getElementById('t-two-days').checked = true;
                         document.getElementById('t-two-days').disabled = true;
@@ -574,6 +603,8 @@
                 endDate: document.getElementById('t-end-date').value,
                 format: document.getElementById('t-format').value,
                 location: document.getElementById('t-location').value,
+                checkInTime: document.getElementById('t-check-in').value,
+                firstThrowTime: document.getElementById('t-first-throw').value,
                 statuses: existingTournament ? (existingTournament.statuses || {}) : {},
                 teams: existingTournament ? (existingTournament.teams || {}) : {},
                 results: existingTournament ? (existingTournament.results || null) : null
@@ -864,6 +895,7 @@
             const teamsObj = t.teams || {};
             const teams = Object.values(teamsObj);
             const results = t.results;
+            const schedule = tournamentSchedule(t);
 
             let dateDisplay = new Date(t.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             if (t.endDate) {
@@ -885,6 +917,8 @@
                                 <div style="font-size: 0.75rem; color: #bfdbfe; display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap;">
                                     <span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${dateDisplay}</span>
                                     ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${t.location}</span>` : ''}
+                                    ${formatScheduleTime(schedule.checkInTime) ? `<span><i class="fa-regular fa-clock" style="margin-right:4px;"></i> Émargement : <strong>${formatScheduleTime(schedule.checkInTime)}</strong></span>` : ''}
+                                    ${formatScheduleTime(schedule.firstThrowTime) ? `<span>Premier lancer : <strong>${formatScheduleTime(schedule.firstThrowTime)}</strong></span>` : ''}
                                 </div>
                             </div>
                             ${state.isAdmin ? `
