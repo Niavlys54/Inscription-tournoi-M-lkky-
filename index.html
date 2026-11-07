@@ -259,6 +259,11 @@
                 <input type="hidden" id="res-day-id">
                 <p id="res-day-label" style="margin:0; font-weight:bold; color:#854d0e;"></p>
                 <div>
+                    <label for="res-player-count" style="display:block; font-size:0.75rem; font-weight:bold; color:#475569; margin-bottom:4px;">Nombre total de joueurs dans le tournoi</label>
+                    <input type="number" id="res-player-count" min="1" step="1" placeholder="Ex : 120" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
+                    <small style="color:#64748b;">Facultatif — tous les participants, pas seulement les joueurs de Pagny.</small>
+                </div>
+                <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">☀️ Résultats des Poules (Matin)</label>
                     <textarea id="res-poules" rows="3" placeholder="Ex: Poule A : 3 victoires, 1 défaite." style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
                 </div>
@@ -640,6 +645,7 @@
             const tournament = state.tournaments.find(item => item.id === tournamentId);
             const t = dayId ? tournament.days[dayId] : tournament;
             document.getElementById('res-day-label').textContent = dayId ? dayLabel(t) : '';
+            document.getElementById('res-player-count').value = t?.results?.playerCount ?? '';
             if (t && t.results) {
                 document.getElementById('res-poules').value = t.results.poules || '';
                 document.getElementById('res-phase').value = t.results.phase || 'Non sorti des poules';
@@ -657,7 +663,16 @@
             if (!state.isAdmin) return;
             const tournamentId = document.getElementById('res-tournament-id').value;
             const dayId = document.getElementById('res-day-id').value;
+            const countInput = String(document.getElementById('res-player-count').value).trim();
+            const playerCount = countInput === '' ? null : Number(countInput);
+            if (playerCount !== null && (!Number.isSafeInteger(playerCount) || playerCount < 1)) {
+                return alert("Indique un nombre entier de joueurs supérieur à zéro, ou laisse le champ vide.");
+            }
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            const competition = dayId ? tournament?.days?.[dayId] : tournament;
             const resultsData = {
+                ...(competition?.results || {}),
+                playerCount,
                 poules: document.getElementById('res-poules').value,
                 phase: document.getElementById('res-phase').value,
                 details: document.getElementById('res-details').value
@@ -947,6 +962,7 @@
                             <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
                                 <div><strong>Matin (Poules) :</strong> ${escapeText(results.poules) || 'Non renseigné'}</div>
                                 <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${escapeText(results.phase)}</span></div>
+                                ${Number.isSafeInteger(results.playerCount) && results.playerCount > 0 ? `<div><strong>Nombre total de joueurs :</strong> ${results.playerCount}</div>` : ''}
                                 ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${escapeText(results.details)}</div>` : ''}
                             </div>
                         ` : `
