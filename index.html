@@ -249,7 +249,7 @@
 
     <!-- MODALE RÉSULTATS (ADMIN UNIQUEMENT) -->
     <div id="modal-results" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
-        <div style="background: white; border-radius: 12px; max-width: 450px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+        <div style="background: white; border-radius: 12px; max-width: 450px; width: 100%; max-height:90vh; overflow-y:auto; box-sizing:border-box; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
                 <h3 style="font-weight: bold; font-size: 1.125rem; margin: 0; color: #1e293b;"><i class="fa-solid fa-medal" style="color: #f59e0b;"></i> Résultats & Performances</h3>
                 <button onclick="closeModal('modal-results')" style="background: none; border: none; font-size: 1.25rem; color: #94a3b8; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
@@ -263,6 +263,16 @@
                     <input type="number" id="res-player-count" min="1" step="1" placeholder="Ex : 120" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
                     <small style="color:#64748b;">Facultatif — tous les participants, pas seulement les joueurs de Pagny.</small>
                 </div>
+                <fieldset style="border:1px solid #fef08a; border-radius:8px; padding:12px; display:grid; gap:8px;">
+                    <legend style="font-size:0.875rem; font-weight:bold; color:#854d0e;">Classement final du tournoi</legend>
+                    <small style="color:#64748b;">Facultatif — indique les joueurs ou équipes du podium, tous clubs confondus.</small>
+                    <label for="res-podium-first" style="font-size:0.8125rem; font-weight:bold;">🥇 1er</label>
+                    <input type="text" id="res-podium-first" maxlength="200" placeholder="Joueur(s) ou équipe — club" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
+                    <label for="res-podium-second" style="font-size:0.8125rem; font-weight:bold;">🥈 2e</label>
+                    <input type="text" id="res-podium-second" maxlength="200" placeholder="Joueur(s) ou équipe — club" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
+                    <label for="res-podium-third" style="font-size:0.8125rem; font-weight:bold;">🥉 3e</label>
+                    <input type="text" id="res-podium-third" maxlength="200" placeholder="Joueur(s) ou équipe — club" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
+                </fieldset>
                 <div>
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">☀️ Résultats des Poules (Matin)</label>
                     <textarea id="res-poules" rows="3" placeholder="Ex: Poule A : 3 victoires, 1 défaite." style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
@@ -646,6 +656,9 @@
             const t = dayId ? tournament.days[dayId] : tournament;
             document.getElementById('res-day-label').textContent = dayId ? dayLabel(t) : '';
             document.getElementById('res-player-count').value = t?.results?.playerCount ?? '';
+            ['first', 'second', 'third'].forEach(place => {
+                document.getElementById(`res-podium-${place}`).value = t?.results?.podium?.[place] || '';
+            });
             if (t && t.results) {
                 document.getElementById('res-poules').value = t.results.poules || '';
                 document.getElementById('res-phase').value = t.results.phase || 'Non sorti des poules';
@@ -673,6 +686,9 @@
             const resultsData = {
                 ...(competition?.results || {}),
                 playerCount,
+                podium: Object.fromEntries(['first', 'second', 'third'].map(place => [
+                    place, document.getElementById(`res-podium-${place}`).value.trim().slice(0, 200)
+                ])),
                 poules: document.getElementById('res-poules').value,
                 phase: document.getElementById('res-phase').value,
                 details: document.getElementById('res-details').value
@@ -963,6 +979,12 @@
                                 <div><strong>Matin (Poules) :</strong> ${escapeText(results.poules) || 'Non renseigné'}</div>
                                 <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${escapeText(results.phase)}</span></div>
                                 ${Number.isSafeInteger(results.playerCount) && results.playerCount > 0 ? `<div><strong>Nombre total de joueurs :</strong> ${results.playerCount}</div>` : ''}
+                                ${['first', 'second', 'third'].some(place => results.podium?.[place]) ? `
+                                    <div style="margin-top:6px; padding:8px; border:1px solid #fef08a; border-radius:6px; background:#fffbeb;">
+                                        <strong>Classement final du tournoi</strong>
+                                        ${[['first','🥇 1er'],['second','🥈 2e'],['third','🥉 3e']].filter(([place]) => results.podium?.[place]).map(([place,label]) => `<div style="margin-top:4px; overflow-wrap:anywhere;"><strong>${label} :</strong> ${escapeText(results.podium[place])}</div>`).join('')}
+                                    </div>
+                                ` : ''}
                                 ${results.details ? `<div style="white-space: pre-line; margin-top: 4px; background: rgba(254,240,138,0.4); padding: 8px; border-radius: 6px; border: 1px solid #fef08a;"><strong>Détails :</strong>\n${escapeText(results.details)}</div>` : ''}
                             </div>
                         ` : `
