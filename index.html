@@ -15,6 +15,7 @@
     
     <!-- SDK Firebase Compat -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body style="background-color: #f1f5f9; color: #1e293b; font-family: sans-serif; margin: 0; padding-bottom: 50px;">
@@ -138,7 +139,7 @@
                     <button onclick="openModal('modal-member')" class="admin-only" style="display: none; background-color: #dc2626; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem;">
                         <i class="fa-solid fa-user-plus"></i> Nouveau Membre
                     </button>
-                    <button onclick="openGuestModal()" style="background-color: #ea580c; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; display: flex; align-items: center; gap: 6px;">
+                    <button onclick="openGuestModal()" class="admin-only" style="background-color: #ea580c; color: white; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; display: none; align-items: center; gap: 6px;">
                         <i class="fa-solid fa-user-tag"></i> + Invité / Externe
                     </button>
                 </div>
@@ -248,6 +249,21 @@
     </div>
 
     <!-- MODALE RÉSULTATS (ADMIN UNIQUEMENT) -->
+    <div id="modal-admin-login" role="dialog" aria-modal="true" aria-labelledby="admin-login-title" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:150; align-items:center; justify-content:center; padding:16px;">
+        <form onsubmit="signInAdmin(event)" style="background:white; border-radius:12px; padding:24px; max-width:400px; width:100%; max-height:90vh; overflow-y:auto; box-sizing:border-box; display:grid; gap:12px;">
+            <h3 id="admin-login-title" style="margin:0; font-weight:bold;">Connexion administrateur</h3>
+            <p style="margin:0; font-size:0.875rem; color:#475569;">Réservée à l’administration du club. Les disponibilités restent accessibles sans connexion.</p>
+            <label for="admin-email">Adresse e-mail</label>
+            <input id="admin-email" type="email" autocomplete="username" required style="border:1px solid #cbd5e1; border-radius:8px; padding:10px; width:100%; box-sizing:border-box;">
+            <label for="admin-password">Mot de passe</label>
+            <input id="admin-password" type="password" autocomplete="current-password" required style="border:1px solid #cbd5e1; border-radius:8px; padding:10px; width:100%; box-sizing:border-box;">
+            <p id="admin-login-error" role="alert" style="margin:0; color:#b91c1c; font-size:0.875rem;"></p>
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+                <button type="button" onclick="closeModal('modal-admin-login')" style="padding:8px; border:0; border-radius:8px;">Annuler</button>
+                <button id="admin-login-submit" type="submit" style="padding:8px; background:#1d4ed8; color:white; border:0; border-radius:8px;">Se connecter</button>
+            </div>
+        </form>
+    </div>
     <div id="modal-results" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: white; border-radius: 12px; max-width: 450px; width: 100%; max-height:90vh; overflow-y:auto; box-sizing:border-box; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
@@ -339,6 +355,8 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
+        const ADMIN_UID = 'th9gEGFrlQUJt299LlV6VdGgl643';
 
         const DEFAULT_MEMBERS = [
             { id: '1', name: 'Cyril Fortin', role: 'Président', isGuest: false },
@@ -360,13 +378,20 @@
         let state = { isAdmin: false, members: [], tournaments: [], currentArchiveYear: '2026', openAvailabilityMenus: {} };
 
         function initApp() {
+            auth.onAuthStateChanged(user => {
+                state.isAdmin = Boolean(user && user.uid === ADMIN_UID);
+                if (!state.isAdmin) {
+                    ['modal-tournament', 'modal-results', 'modal-team', 'modal-member'].forEach(closeModal);
+                    switchTab('tournaments');
+                }
+                render();
+            });
             db.ref('members').on('value', (snapshot) => {
                 const val = snapshot.val();
                 if (val) {
                     state.members = Array.isArray(val) ? val : Object.values(val);
                 } else {
                     state.members = DEFAULT_MEMBERS;
-                    db.ref('members').set(DEFAULT_MEMBERS);
                 }
                 render();
             });
@@ -386,37 +411,58 @@
         }
 
         function clearAllTournaments() {
+            if (!requireAdmin()) return;
             if(confirm("Voulez-vous vraiment effacer TOUS les tournois de la base de données ?")) {
                 db.ref('tournaments').remove().then(() => {
                     alert("Tous les tournois ont été effacés avec succès !");
-                }).catch(error => {
-                    db.ref('tournaments').set(null);
-                });
+                }).catch(() => alert("Suppression refusée ou connexion interrompue. Aucun nouvel essai automatique."));
             }
         }
 
         function resetDefaultData() {
+            if (!requireAdmin()) return;
             if(confirm("Recharger la liste officielle des 14 membres d'origine ?")) {
                 db.ref('members').set(DEFAULT_MEMBERS);
             }
         }
 
         function toggleAdminMode() {
-            if (state.isAdmin) {
-                state.isAdmin = false;
-                alert("Mode Administrateur désactivé.");
-                switchTab('tournaments');
-                render();
-            } else {
-                const pass = prompt("Mot de passe administrateur :");
-                if (pass === "admin54") {
-                    state.isAdmin = true;
-                    alert("Mode Administrateur activé !");
-                    render();
-                } else if (pass !== null) {
-                    alert("Mot de passe incorrect.");
-                }
+            if (auth.currentUser) {
+                auth.signOut().catch(() => alert("Déconnexion impossible. Réessaie."));
+                return;
             }
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-login-error').textContent = '';
+            openModal('modal-admin-login');
+        }
+
+        async function signInAdmin(event) {
+            event.preventDefault();
+            const submit = document.getElementById('admin-login-submit');
+            const password = document.getElementById('admin-password');
+            const error = document.getElementById('admin-login-error');
+            submit.disabled = true;
+            error.textContent = '';
+            try {
+                const result = await auth.signInWithEmailAndPassword(document.getElementById('admin-email').value.trim(), password.value);
+                if (result.user.uid !== ADMIN_UID) {
+                    await auth.signOut();
+                    error.textContent = "Ce compte n’a pas les droits d’administration.";
+                    return;
+                }
+                closeModal('modal-admin-login');
+            } catch (_) {
+                error.textContent = "Connexion impossible. Vérifie ton adresse e-mail, ton mot de passe et ta connexion Internet.";
+            } finally {
+                password.value = '';
+                submit.disabled = false;
+            }
+        }
+
+        function requireAdmin() {
+            if (auth.currentUser && auth.currentUser.uid === ADMIN_UID) return true;
+            alert("Connecte-toi avec le compte administrateur pour effectuer cette modification.");
+            return false;
         }
 
         function switchTab(tab) {
@@ -461,8 +507,12 @@
         }
 
         function setStatus(tournamentId, memberId, newStatus, isChecked) {
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            if (!tournament || (isTournamentArchived(tournament) && !state.isAdmin)) return;
+            if (!['registered', 'available', 'absent'].includes(newStatus)) return;
             const status = isChecked ? newStatus : 'none';
-            db.ref('tournaments/' + tournamentId + '/statuses/' + memberId).set(status);
+            db.ref('tournaments/' + tournamentId + '/statuses/' + memberId).set(status)
+                .catch(() => { alert("Disponibilité non enregistrée. Réessaie."); render(); });
         }
 
         function toggleAvailabilityMenu(tournamentId) {
@@ -567,6 +617,7 @@
         }
 
         function openTournamentModal(id = null) {
+            if (!requireAdmin()) return;
             document.getElementById('t-two-days').disabled = false;
             document.getElementById('t-two-days').checked = false;
             document.getElementById('t-format-day2').value = 'Doublette';
@@ -601,6 +652,7 @@
 
         function saveTournament(e) {
             e.preventDefault();
+            if (!requireAdmin()) return;
             const idInput = document.getElementById('t-id').value;
             const tournamentId = idInput ? idInput : Date.now().toString();
             
@@ -643,13 +695,14 @@
         }
 
         function deleteTournament(id) {
+            if (!requireAdmin()) return;
             if (confirm("Supprimer ce tournoi ?")) {
                 db.ref(`tournaments/${id}`).remove();
             }
         }
 
         function openResultsModal(tournamentId, dayId = '') {
-            if (!state.isAdmin) return;
+            if (!requireAdmin()) return;
             document.getElementById('res-tournament-id').value = tournamentId;
             document.getElementById('res-day-id').value = dayId;
             const tournament = state.tournaments.find(item => item.id === tournamentId);
@@ -673,7 +726,7 @@
 
         function saveResults(e) {
             e.preventDefault();
-            if (!state.isAdmin) return;
+            if (!requireAdmin()) return;
             const tournamentId = document.getElementById('res-tournament-id').value;
             const dayId = document.getElementById('res-day-id').value;
             const countInput = String(document.getElementById('res-player-count').value).trim();
@@ -699,6 +752,7 @@
         }
 
         function openTeamModal(tournamentId, dayId = '') {
+            if (!requireAdmin()) return;
             document.getElementById('team-tournament-id').value = tournamentId;
             document.getElementById('team-day-id').value = dayId;
             document.getElementById('team-name').value = '';
@@ -731,6 +785,7 @@
 
         function saveTeam(e) {
             e.preventDefault();
+            if (!requireAdmin()) return;
             const tournamentId = document.getElementById('team-tournament-id').value;
             const dayId = document.getElementById('team-day-id').value;
             const teamName = document.getElementById('team-name').value;
@@ -762,12 +817,14 @@
         }
 
         function deleteTeam(tournamentId, teamId, dayId = '') {
+            if (!requireAdmin()) return;
             if (confirm("Supprimer cette équipe ?")) {
                 db.ref(competitionPath(tournamentId, dayId) + `/teams/${teamId}`).remove();
             }
         }
 
         function openGuestModal() {
+            if (!requireAdmin()) return;
             document.getElementById('member-modal-title').textContent = "Ajouter un Joueur Extérieur";
             document.getElementById('m-is-guest').value = "true";
             document.getElementById('m-role-label').textContent = "Club d'origine / Origine";
@@ -778,6 +835,7 @@
 
         function saveMember(e) {
             e.preventDefault();
+            if (!requireAdmin()) return;
             const isGuest = document.getElementById('m-is-guest').value === "true";
             const newMember = {
                 id: Date.now().toString(),
@@ -786,8 +844,9 @@
                 isGuest: isGuest
             };
             const updatedMembers = [...state.members, newMember];
-            db.ref('members').set(updatedMembers);
-            closeModal('modal-member');
+            db.ref('members').set(updatedMembers)
+                .then(() => closeModal('modal-member'))
+                .catch(() => alert("Joueur non enregistré. Réessaie."));
             
             document.getElementById('form-member').reset();
             document.getElementById('m-is-guest').value = "false";
@@ -797,9 +856,10 @@
         }
 
         function deleteMember(id) {
+            if (!requireAdmin()) return;
             if (confirm("Supprimer ce joueur ?")) {
                 const updatedMembers = state.members.filter(m => m.id !== id);
-                db.ref('members').set(updatedMembers);
+            db.ref('members').set(updatedMembers).catch(() => alert("Suppression non enregistrée. Réessaie."));
             }
         }
 
@@ -845,7 +905,7 @@
                                     </div>
                                 </div>
                             </div>
-                            ${(state.isAdmin || isGuest) ? `<button onclick="deleteMember('${m.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 1rem;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                            ${state.isAdmin ? `<button onclick="deleteMember('${m.id}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 1rem;" title="Supprimer"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                         </div>
                     `;
                 }).join('');
