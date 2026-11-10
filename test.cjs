@@ -6,6 +6,7 @@ for (const script of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) new Functio
 const elements = {};
 const el = id => elements[id] ||= {value:'', checked:false, disabled:false, style:{}, reset() {}};
 const writes = [];
+const removals = [];
 const alerts = [];
 let checkedPlayers = [];
 const timers = new Map();
@@ -16,7 +17,7 @@ const ctx = vm.createContext({
     clearTimeout:id => timers.delete(id),
     document: {getElementById:el, querySelectorAll:() => checkedPlayers.map(value => ({value}))},
     state:{isAdmin:true, members:[{id:'a',name:'Laura'},{id:'b',name:'Sylvain'},{id:'c',name:'Fabienne'}],tournaments:[],currentArchiveYear:'2026',openAvailabilityMenus:{}},
-    db:{ref:path => ({set:data => {writes.push({path,data}); return Promise.resolve();},remove:() => Promise.resolve()})},
+    db:{ref:path => ({set:data => {writes.push({path,data}); return Promise.resolve();},remove:() => {removals.push(path); return Promise.resolve();}})},
     alert:message => alerts.push(message),
     confirm:() => true
 });
@@ -248,3 +249,97 @@ assert.equal(writes.at(-1).path,'tournaments/old/results');
 assert.equal(writes.at(-1).data.podium.third,'Troisièmes');
 assert(!ctx.renderTournamentCard(legacy,true).includes('Classement final du tournoi'));
 console.log('OK : podium facultatif, sauvegarde et réouverture, deux journées distinctes, tournoi simple, échappement HTML, effacement et anciens résultats compatibles.');
+(async()=>{
+    const teamTournament = {id:'team-results',name:'Week-end équipes',date:'2026-11-20',format:'Doublette',days:{
+        day1:{date:'2026-11-20',format:'Quadrette',teams:{
+            same:{id:'same',name:'Samedi',playerIds:['a','b','c'],externalPlayers:['Partenaire — Metz']},
+            other:{id:'other',name:'Autre équipe',playerIds:[]}
+        }},
+        day2:{date:'2026-11-21',format:'Doublette',teams:{same:{id:'same',name:'Dimanche',playerIds:['a'],externalPlayers:['Autre partenaire — Boulay']}}}
+    }};
+    ctx.state.tournaments=[teamTournament];
+    ctx.state.isAdmin=true;
+    ctx.openTeamResultsModal('team-results','same','day1');
+    assert.equal(el('tr-phase').value,'');
+    assert.equal(el('tr-tableau').value,'Principal');
+    assert(el('team-results-label').textContent.includes('Quadruplette'));
+    el('tr-tableau').value='Consolante';
+    el('tr-phase').value='Finaliste';
+    el('tr-rank').value='2';
+    el('tr-details').value='<script>alert(1)</script>';
+    await ctx.saveTeamResults(event);
+    assert.equal(writes.at(-1).path,'tournaments/team-results/days/day1/teams/same/results');
+    assert.equal(writes.at(-1).data.phase,'Finaliste');
+    assert.equal(writes.at(-1).data.rank,2);
+    teamTournament.days.day1.teams.same.results=writes.at(-1).data;
+    assert.equal(ctx.isTournamentArchived(teamTournament),false,'A team result alone never archives the weekend');
+    ctx.openTeamResultsModal('team-results','other','day1');
+    assert.equal(el('tr-phase').value,'');
+    assert.equal(el('tr-details').value,'');
+    el('tr-phase').value='Quart de finale';
+    await ctx.saveTeamResults(event);
+    teamTournament.days.day1.teams.other.results=writes.at(-1).data;
+    assert.equal(writes.at(-1).path,'tournaments/team-results/days/day1/teams/other/results');
+    ctx.openTeamResultsModal('team-results','same','day2');
+    assert.equal(el('tr-phase').value,'');
+    el('tr-phase').value='Vainqueur';
+    await ctx.saveTeamResults(event);
+    teamTournament.days.day2.teams.same.results=writes.at(-1).data;
+    assert.equal(writes.at(-1).path,'tournaments/team-results/days/day2/teams/same/results');
+    assert.equal(teamTournament.days.day1.teams.same.results.phase,'Finaliste');
+    ctx.openTeamResultsModal('team-results','same','day1');
+    assert.equal(el('tr-rank').value,2);
+    assert.equal(el('tr-phase').value,'Finaliste');
+    for (const rank of ['0','-1','2.5','abc']) {
+        el('tr-rank').value=rank;
+        const n=writes.length;
+        await ctx.saveTeamResults(event);
+        assert.equal(writes.length,n);
+    }
+    el('tr-rank').value='';
+    el('tr-phase').value='Classé';
+    const n=writes.length;
+    await ctx.saveTeamResults(event);
+    assert.equal(writes.length,n);
+    el('tr-rank').value='12';
+    await ctx.saveTeamResults(event);
+    assert.equal(writes.at(-1).data.rank,12);
+    const rendered=ctx.renderTournamentCard(teamTournament,false);
+    assert(rendered.includes('Consolante :</strong> Finaliste'));
+    assert(rendered.includes('Principal :</strong> Quart de finale'));
+    assert(rendered.includes('Principal :</strong> Vainqueur'));
+    assert(rendered.includes('Partenaire — Metz (Ext.)'));
+    assert(rendered.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
+    assert(!rendered.includes('<script>alert(1)</script>'));
+    assert(rendered.includes("openTeamResultsModal('team-results', 'same', 'day2')"));
+    ctx.state.isAdmin=false;
+    const publicCard=ctx.renderTournamentCard(teamTournament,true);
+    assert(publicCard.includes('Consolante :</strong> Finaliste'));
+    assert(!publicCard.includes('onclick="openTeamResultsModal'));
+    ctx.auth.currentUser=null;
+    const blocked=writes.length;
+    await ctx.saveTeamResults(event);
+    assert.equal(writes.length,blocked);
+    ctx.auth.currentUser={uid:ctx.ADMIN_UID};
+    ctx.state.isAdmin=true;
+    assert(ctx.renderTournamentCard(teamTournament,true).includes('onclick="openTeamResultsModal'));
+    const originalRef=ctx.db.ref;
+    ctx.db.ref=()=>({set:()=>Promise.reject(Error('Offline'))});
+    el('tr-phase').value='Finaliste';
+    await ctx.saveTeamResults(event);
+    assert(el('tr-error').textContent.includes('non enregistré'));
+    assert.equal(el('tr-submit').disabled,false);
+    ctx.db.ref=originalRef;
+    await ctx.deleteTeamResults();
+    assert.equal(removals.at(-1),'tournaments/team-results/days/day1/teams/same/results');
+    assert.equal(teamTournament.days.day1.teams.same.externalPlayers[0],'Partenaire — Metz');
+    const single={id:'single-teams',name:'Un jour',date:'2026-11-22',format:'Doublette',teams:{a:{id:'a',name:'Duo',playerIds:['a','b']}},results:{phase:'Podium / Bilan Club',podium:{first:'Autre équipe'},playerCount:100}};
+    ctx.state.tournaments=[single];
+    ctx.openTeamResultsModal('single-teams','a');
+    el('tr-phase').value='Demi-finale';
+    await ctx.saveTeamResults(event);
+    assert.equal(writes.at(-1).path,'tournaments/single-teams/teams/a/results');
+    assert.equal(single.results.playerCount,100);
+    assert.equal(single.results.podium.first,'Autre équipe');
+    console.log('OK : résultats par équipe et journée, tournois simples/archivés, compositions et bilan préservés, validation, rendu public sécurisé, droits admin et erreurs réseau, effacement du résultat seul.');
+})().catch(error=>{console.error(error);process.exitCode=1;});
