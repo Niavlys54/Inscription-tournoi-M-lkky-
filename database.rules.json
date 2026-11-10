@@ -1,0 +1,21 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "members": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'th9gEGFrlQUJt299LlV6VdGgl643'"
+    },
+    "tournaments": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'th9gEGFrlQUJt299LlV6VdGgl643'",
+      "$tournamentId": {
+        "statuses": {
+          "$memberId": {
+            ".write": "$memberId.matches(/^[0-9]{1,20}$/) && root.child('tournaments').child($tournamentId).child('name').exists() && root.child('tournaments').child($tournamentId).child('date').exists() && !root.child('tournaments').child($tournamentId).child('results').child('phase').exists() && !(root.child('tournaments').child($tournamentId).child('days').child('day1').child('results').child('phase').exists() && root.child('tournaments').child($tournamentId).child('days').child('day2').child('results').child('phase').exists()) && newData.isString() && (newData.val() === 'registered' || newData.val() === 'available' || newData.val() === 'absent' || newData.val() === 'none')"
+          }
+        }
+      }
+    }
+  }
+}
