@@ -255,6 +255,7 @@
             <p style="margin:0; font-size:0.875rem; color:#475569;">Réservée à l’administration du club. Les disponibilités restent accessibles sans connexion.</p>
             <label for="admin-email">Adresse e-mail</label>
             <input id="admin-email" type="email" autocomplete="username" required style="border:1px solid #cbd5e1; border-radius:8px; padding:10px; width:100%; box-sizing:border-box;">
+            <small style="color:#64748b;">Après une connexion réussie, l’adresse est retenue sur cet appareil. Le site ne mémorise pas ton mot de passe.</small>
             <label for="admin-password">Mot de passe</label>
             <input id="admin-password" type="password" autocomplete="current-password" required style="border:1px solid #cbd5e1; border-radius:8px; padding:10px; width:100%; box-sizing:border-box;">
             <p id="admin-login-error" role="alert" style="margin:0; color:#b91c1c; font-size:0.875rem;"></p>
@@ -431,6 +432,12 @@
                 auth.signOut().catch(() => alert("Déconnexion impossible. Réessaie."));
                 return;
             }
+            try {
+                const savedEmail = localStorage.getItem('asPagnyAdminEmail');
+                if (savedEmail) document.getElementById('admin-email').value = savedEmail;
+            } catch (_) {
+                // La connexion reste possible si le navigateur bloque le stockage local.
+            }
             document.getElementById('admin-password').value = '';
             document.getElementById('admin-login-error').textContent = '';
             openModal('modal-admin-login');
@@ -443,12 +450,18 @@
             const error = document.getElementById('admin-login-error');
             submit.disabled = true;
             error.textContent = '';
+            const email = document.getElementById('admin-email').value.trim();
             try {
-                const result = await auth.signInWithEmailAndPassword(document.getElementById('admin-email').value.trim(), password.value);
+                const result = await auth.signInWithEmailAndPassword(email, password.value);
                 if (result.user.uid !== ADMIN_UID) {
                     await auth.signOut();
                     error.textContent = "Ce compte n’a pas les droits d’administration.";
                     return;
+                }
+                try {
+                    localStorage.setItem('asPagnyAdminEmail', email);
+                } catch (_) {
+                    // Un stockage indisponible ne doit pas empêcher la connexion.
                 }
                 closeModal('modal-admin-login');
             } catch (_) {
