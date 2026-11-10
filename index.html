@@ -318,6 +318,44 @@
     </div>
 
     <!-- MODALE MEMBRE -->
+    <div id="modal-team-results" role="dialog" aria-modal="true" aria-labelledby="team-results-title" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:110; align-items:center; justify-content:center; padding:16px;">
+        <form onsubmit="saveTeamResults(event)" style="background:white; border-radius:12px; padding:24px; max-width:450px; width:100%; max-height:90vh; overflow-y:auto; box-sizing:border-box; display:grid; gap:10px;">
+            <h3 id="team-results-title" style="margin:0; font-weight:bold; color:#854d0e;">Résultat de l’équipe</h3>
+            <p id="team-results-label" style="margin:0; color:#475569; font-size:0.875rem; white-space:pre-line;"></p>
+            <input type="hidden" id="tr-tournament-id">
+            <input type="hidden" id="tr-day-id">
+            <input type="hidden" id="tr-team-id">
+            <label for="tr-tableau" style="font-weight:bold; font-size:0.8125rem;">Tableau</label>
+            <input id="tr-tableau" list="tr-tableaux" required maxlength="80" placeholder="Principal ou Consolante" style="border:1px solid #cbd5e1; border-radius:8px; padding:8px;">
+            <datalist id="tr-tableaux"><option value="Principal"><option value="Consolante"><option value="Honneur"></datalist>
+            <label for="tr-phase" style="font-weight:bold; font-size:0.8125rem;">Résultat final de cette équipe</label>
+            <select id="tr-phase" required style="border:1px solid #cbd5e1; border-radius:8px; padding:8px; background:white;">
+                <option value="">Choisir le résultat</option>
+                <option value="Non sorti des poules">Non sorti des poules</option>
+                <option value="64e de finale">64e de finale</option>
+                <option value="32e de finale">32e de finale</option>
+                <option value="16e de finale">16e de finale</option>
+                <option value="8e de finale">8e de finale</option>
+                <option value="Quart de finale">Quart de finale</option>
+                <option value="Demi-finale">Demi-finale</option>
+                <option value="3e place">3e place 🥉</option>
+                <option value="Finaliste">Finaliste 🥈</option>
+                <option value="Vainqueur">Vainqueur 🏆</option>
+                <option value="Classé">Autre classement</option>
+            </select>
+            <label for="tr-rank" style="font-weight:bold; font-size:0.8125rem;">Classement exact dans ce tableau — facultatif</label>
+            <input id="tr-rank" type="number" min="1" step="1" placeholder="Ex : 12" style="border:1px solid #cbd5e1; border-radius:8px; padding:8px;">
+            <label for="tr-details" style="font-weight:bold; font-size:0.8125rem;">Détails — facultatif</label>
+            <textarea id="tr-details" rows="3" maxlength="2000" placeholder="Score, adversaires, précisions…" style="border:1px solid #cbd5e1; border-radius:8px; padding:8px;"></textarea>
+            <small style="color:#64748b;">Ce résultat concerne uniquement cette équipe et cette journée. Pour archiver le tournoi, complète aussi son bilan général.</small>
+            <p id="tr-error" role="alert" style="margin:0; color:#b91c1c; font-size:0.8125rem;"></p>
+            <button type="button" id="tr-remove" onclick="deleteTeamResults()" style="display:none; border:0; background:none; color:#b91c1c; padding:8px; text-align:left;">Effacer uniquement ce résultat</button>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button type="button" onclick="closeModal('modal-team-results')" style="border:0; border-radius:8px; padding:8px 12px;">Annuler</button>
+                <button type="submit" id="tr-submit" style="border:0; border-radius:8px; padding:8px 12px; background:#ca8a04; color:white;">Enregistrer</button>
+            </div>
+        </form>
+    </div>
     <div id="modal-member" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px;">
         <div style="background: white; border-radius: 12px; max-width: 400px; width: 100%; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
@@ -382,7 +420,7 @@
             auth.onAuthStateChanged(user => {
                 state.isAdmin = Boolean(user && user.uid === ADMIN_UID);
                 if (!state.isAdmin) {
-                    ['modal-tournament', 'modal-results', 'modal-team', 'modal-member'].forEach(closeModal);
+                    ['modal-tournament', 'modal-results', 'modal-team', 'modal-team-results', 'modal-member'].forEach(closeModal);
                     switchTab('tournaments');
                 }
                 render();
@@ -796,6 +834,83 @@
             openModal('modal-team');
         }
 
+        function teamResultTarget(tournamentId, dayId, teamId) {
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            const competition = dayId ? tournament?.days?.[dayId] : tournament;
+            return {tournament, competition, team:competition?.teams?.[teamId]};
+        }
+
+        function openTeamResultsModal(tournamentId, teamId, dayId = '') {
+            if (!requireAdmin()) return;
+            const {competition, team} = teamResultTarget(tournamentId, dayId, teamId);
+            if (!team) return alert("Cette équipe n’existe plus. Actualise la page.");
+            document.getElementById('tr-tournament-id').value = tournamentId;
+            document.getElementById('tr-day-id').value = dayId;
+            document.getElementById('tr-team-id').value = teamId;
+            document.getElementById('team-results-label').textContent = team.name + (dayId ? '\n' + dayLabel(competition) : '');
+            document.getElementById('tr-tableau').value = team.results?.tableau || 'Principal';
+            document.getElementById('tr-phase').value = team.results?.phase || '';
+            document.getElementById('tr-rank').value = team.results?.rank ?? '';
+            document.getElementById('tr-details').value = team.results?.details || '';
+            document.getElementById('tr-error').textContent = '';
+            document.getElementById('tr-submit').disabled = false;
+            document.getElementById('tr-remove').style.display = team.results ? 'block' : 'none';
+            openModal('modal-team-results');
+        }
+
+        async function saveTeamResults(event) {
+            event.preventDefault();
+            if (!requireAdmin()) return;
+            const tournamentId = document.getElementById('tr-tournament-id').value;
+            const dayId = document.getElementById('tr-day-id').value;
+            const teamId = document.getElementById('tr-team-id').value;
+            const {team} = teamResultTarget(tournamentId, dayId, teamId);
+            const error = document.getElementById('tr-error');
+            if (!team) { error.textContent = "Cette équipe n’existe plus. Actualise la page."; return; }
+            const tableau = document.getElementById('tr-tableau').value.trim();
+            const phase = document.getElementById('tr-phase').value;
+            const allowed = ['Non sorti des poules','64e de finale','32e de finale','16e de finale','8e de finale','Quart de finale','Demi-finale','3e place','Finaliste','Vainqueur','Classé'];
+            const rankInput = String(document.getElementById('tr-rank').value).trim();
+            const rank = rankInput === '' ? null : Number(rankInput);
+            if (!tableau || tableau.length > 80 || !allowed.includes(phase)) {
+                error.textContent = "Renseigne le tableau et choisis un résultat final."; return;
+            }
+            if ((rank !== null && (!Number.isSafeInteger(rank) || rank < 1)) || (phase === 'Classé' && rank === null)) {
+                error.textContent = "Indique un classement entier supérieur à zéro (obligatoire pour « Autre classement »)."; return;
+            }
+            const button = document.getElementById('tr-submit');
+            button.disabled = true;
+            error.textContent = '';
+            try {
+                await db.ref(competitionPath(tournamentId, dayId) + `/teams/${teamId}/results`).set({
+                    ...(team.results || {}), tableau, phase, rank,
+                    details:document.getElementById('tr-details').value.trim().slice(0, 2000)
+                });
+                closeModal('modal-team-results');
+                showSuccessToast("Résultat de l’équipe enregistré.");
+            } catch (_) {
+                error.textContent = "Résultat non enregistré. Vérifie ta connexion et tes droits administrateur.";
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function deleteTeamResults() {
+            if (!requireAdmin()) return;
+            if (!confirm("Effacer uniquement le résultat de cette équipe ? Sa composition sera conservée.")) return;
+            const tournamentId = document.getElementById('tr-tournament-id').value;
+            const dayId = document.getElementById('tr-day-id').value;
+            const teamId = document.getElementById('tr-team-id').value;
+            if (!teamResultTarget(tournamentId, dayId, teamId).team) return;
+            try {
+                await db.ref(competitionPath(tournamentId, dayId) + `/teams/${teamId}/results`).remove();
+                closeModal('modal-team-results');
+                showSuccessToast("Résultat effacé. Composition conservée.");
+            } catch (_) {
+                document.getElementById('tr-error').textContent = "Résultat non effacé. Réessaie.";
+            }
+        }
+
         function saveTeam(e) {
             e.preventDefault();
             if (!requireAdmin()) return;
@@ -831,7 +946,7 @@
 
         function deleteTeam(tournamentId, teamId, dayId = '') {
             if (!requireAdmin()) return;
-            if (confirm("Supprimer cette équipe ?")) {
+            if (confirm("Supprimer cette équipe et son éventuel résultat ?")) {
                 db.ref(competitionPath(tournamentId, dayId) + `/teams/${teamId}`).remove();
             }
         }
@@ -1088,10 +1203,18 @@
                                             return mem ? (mem.name + (mem.isGuest ? ' — ' + (mem.role || 'Club non renseigné') + ' (Ext.)' : '')) : '';
                                         }).filter(Boolean).concat((tm.externalPlayers || []).map(name => name + ' (Ext.)')).join(' & ');
                                         return `
-                                            <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
-                                                <div>
+                                            <div style="background: white; padding: 10px; border-radius: 8px; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: flex-start; gap:8px;">
+                                                <div style="min-width:0; overflow-wrap:anywhere; flex:1;">
                                                     <div style="font-size: 0.75rem; font-weight: bold; color: #1d4ed8;">${escapeText(tm.name)}</div>
                                                     <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;"><i class="fa-solid fa-user-check" style="color: #059669; margin-right: 4px;"></i> ${escapeText(playerNames)}</div>
+                                                    ${tm.results?.phase ? `
+                                                        <div style="margin-top:8px; padding:8px; border-radius:6px; background:#fefce8; color:#854d0e; font-size:0.8125rem;">
+                                                            <div><strong>${escapeText(tm.results.tableau || 'Principal')} :</strong> ${escapeText(tm.results.phase)}</div>
+                                                            ${Number.isSafeInteger(tm.results.rank) && tm.results.rank > 0 ? `<div>Classement dans ce tableau : <strong>${tm.results.rank === 1 ? '1er' : tm.results.rank + 'e'}</strong></div>` : ''}
+                                                            ${tm.results.details ? `<div style="white-space:pre-line; margin-top:4px;">${escapeText(tm.results.details)}</div>` : ''}
+                                                        </div>
+                                                    ` : ''}
+                                                    ${state.isAdmin ? `<button onclick="openTeamResultsModal('${t.id}', '${tm.id}', '${dayId}')" style="margin-top:8px; background:#ca8a04; color:white; border:0; border-radius:6px; padding:6px 8px; font-size:0.75rem; cursor:pointer;">${tm.results?.phase ? 'Modifier le résultat de l’équipe' : 'Résultat de l’équipe'}</button>` : ''}
                                                 </div>
                                                 ${(state.isAdmin && !isArchive) ? `<button onclick="deleteTeam('${t.id}', '${tm.id}', '${dayId}')" style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size: 0.75rem;"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                                             </div>
