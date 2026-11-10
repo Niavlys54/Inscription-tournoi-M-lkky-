@@ -597,6 +597,83 @@
             };
         }
 
+        function calendarDate(value, offset = 0) {
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) throw new Error('Date du tournoi invalide.');
+            const date = new Date(value + 'T12:00:00Z');
+            if (isNaN(date) || date.toISOString().slice(0, 10) !== value) throw new Error('Date du tournoi invalide.');
+            date.setUTCDate(date.getUTCDate() + offset);
+            return date.toISOString().slice(0, 10).replace(/-/g, '');
+        }
+
+        function calendarEscape(value) {
+            return String(value || '').replace(/\\/g, '\\\\').replace(/\r\n|\r|\n/g, '\\n').replace(/;/g, '\\;').replace(/,/g, '\\,');
+        }
+
+        function buildTournamentCalendar(t) {
+            const lines = [
+                'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AS Pagny//Tournois Molkky//FR', 'CALSCALE:GREGORIAN',
+                'BEGIN:VTIMEZONE', 'TZID:Europe/Paris',
+                'BEGIN:DAYLIGHT', 'DTSTART:19700329T020000', 'TZOFFSETFROM:+0100', 'TZOFFSETTO:+0200',
+                'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU', 'END:DAYLIGHT',
+                'BEGIN:STANDARD', 'DTSTART:19701025T030000', 'TZOFFSETFROM:+0200', 'TZOFFSETTO:+0100',
+                'RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU', 'END:STANDARD', 'END:VTIMEZONE'
+            ];
+            const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+            const days = t.days ? Object.entries(t.days).sort((a, b) => a[1].date.localeCompare(b[1].date)) : [['', t]];
+            for (const [dayId, day] of days) {
+                const entry = {...t, ...day};
+                const date = calendarDate(entry.date);
+                const schedule = tournamentSchedule(entry);
+                const validTime = value => /^([01]\d|2[0-3]):[0-5]\d$/.test(value || '');
+                const startTime = validTime(schedule.checkInTime) ? schedule.checkInTime : validTime(schedule.firstThrowTime) ? schedule.firstThrowTime : '';
+                const details = [
+                    entry.format === 'Quadrette' ? 'Quadruplette' : entry.format,
+                    validTime(schedule.checkInTime) ? 'Émargement : ' + schedule.checkInTime : '',
+                    validTime(schedule.firstThrowTime) ? 'Premier lancer : ' + schedule.firstThrowTime : '',
+                    startTime ? 'Horaire de fin non renseigné.' : 'Horaires non renseignés.',
+                    'https://niavlys54.github.io/Inscription-tournoi-M-lkky-/'
+                ].filter(Boolean).join('\n');
+                lines.push('BEGIN:VEVENT',
+                    'UID:' + encodeURIComponent(t.id) + (dayId ? '-' + encodeURIComponent(dayId) : '') + '@as-pagny-molkky',
+                    'DTSTAMP:' + stamp,
+                    'SUMMARY:' + calendarEscape(t.name + (t.days ? ' — ' + (entry.format === 'Quadrette' ? 'Quadruplette' : entry.format || 'Journée') : '')),
+                    startTime ? 'DTSTART;TZID=Europe/Paris:' + date + 'T' + startTime.replace(':', '') + '00' : 'DTSTART;VALUE=DATE:' + date);
+                if (!startTime) lines.push('DTEND;VALUE=DATE:' + calendarDate(entry.date, 1));
+                if (entry.location) lines.push('LOCATION:' + calendarEscape(entry.location));
+                lines.push('DESCRIPTION:' + calendarEscape(details), 'END:VEVENT');
+            }
+            lines.push('END:VCALENDAR');
+            // RFC 5545: fold at 75 UTF-8 octets, without splitting a Unicode character.
+            return lines.map(line => {
+                let result = '', length = 0;
+                for (const character of line) {
+                    const bytes = new TextEncoder().encode(character).length;
+                    if (length + bytes > 75) { result += '\r\n '; length = 1; }
+                    result += character;
+                    length += bytes;
+                }
+                return result;
+            }).join('\r\n') + '\r\n';
+        }
+
+        function downloadTournamentCalendar(tournamentId) {
+            const tournament = state.tournaments.find(t => t.id === tournamentId);
+            if (!tournament) return;
+            try {
+                const blob = new Blob([buildTournamentCalendar(tournament)], {type:'text/calendar;charset=utf-8'});
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'tournoi-' + String(tournament.name || 'molkky').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/gi, '-').slice(0, 80) + '.ics';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+            } catch (error) {
+                alert('Impossible de préparer le calendrier. Vérifie la date du tournoi.');
+            }
+        }
+
         function formatScheduleTime(time) {
             return /^\d{2}:\d{2}$/.test(time) ? time.slice(0, 2).replace(/^0/, '') + ' h' + (time.slice(3) === '00' ? '' : ' ' + time.slice(3)) : '';
         }
@@ -1140,7 +1217,7 @@
                                 </div>
                                 <div style="font-size: 0.75rem; color: #bfdbfe; display: flex; gap: 16px; margin-top: 6px; flex-wrap: wrap;">
                                     <span><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i> ${dateDisplay}</span>
-                                    ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${t.location}</span>` : ''}
+                                    ${t.location ? `<span><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> ${escapeText(t.location)}</span>` : ''}
                                     ${formatScheduleTime(schedule.checkInTime) ? `<span><i class="fa-regular fa-clock" style="margin-right:4px;"></i> Émargement : <strong>${formatScheduleTime(schedule.checkInTime)}</strong></span>` : ''}
                                     ${formatScheduleTime(schedule.firstThrowTime) ? `<span>Premier lancer : <strong>${formatScheduleTime(schedule.firstThrowTime)}</strong></span>` : ''}
                                 </div>
@@ -1152,6 +1229,11 @@
                                 </div>
                             ` : ''}
                         </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button type="button" onclick="downloadTournamentCalendar(${escapeText(JSON.stringify(t.id))})" style="background:#eff6ff; color:#1e40af; border:none; border-radius:8px; padding:10px 12px; cursor:pointer; font-size:0.8125rem; font-weight:bold;"><i class="fa-regular fa-calendar-plus" aria-hidden="true"></i> Ajouter au calendrier</button>
+                            ${String(t.location || '').trim() ? `<a href="https://www.google.com/maps/dir/?api=1&amp;destination=${escapeText(encodeURIComponent(t.location.trim()))}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; background:#eff6ff; color:#1e40af; border-radius:8px; padding:10px 12px; text-decoration:none; font-size:0.8125rem; font-weight:bold;"><i class="fa-solid fa-route" aria-hidden="true"></i> Itinéraire</a>` : ''}
+                        </div>
+                        <p style="margin:0; font-size:0.75rem; color:#bfdbfe;">Calendrier : ouvre le fichier .ics puis confirme l’ajout dans ton application calendrier.${t.days ? ' Une entrée par journée.' : ''}</p>
                         <div style="display: flex; gap: 8px; font-size: 0.75rem; flex-wrap: wrap;">
                             <span style="background: #064e3b; color: #a7f3d0; border: 1px solid #047857; padding: 4px 10px; border-radius: 8px;">🟢 ${registered} Inscrits</span>
                             <span style="background: #78350f; color: #fde68a; border: 1px solid #b45309; padding: 4px 10px; border-radius: 8px;">🟡 ${available} Dispos</span>
