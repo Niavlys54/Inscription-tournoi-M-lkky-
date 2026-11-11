@@ -280,6 +280,15 @@
                 <input type="hidden" id="res-tournament-id">
                 <input type="hidden" id="res-day-id">
                 <p id="res-day-label" style="margin:0; font-weight:bold; color:#854d0e;"></p>
+                <label for="res-system" style="font-weight:bold; font-size:0.8125rem;">Système de compétition</label>
+                <select id="res-system" onchange="updateResultsSystem()" style="border:1px solid #cbd5e1; border-radius:8px; padding:8px; background:white;">
+                    <option value="classic">Poules et phases finales</option>
+                    <option value="swiss">Système suisse — classement final</option>
+                </select>
+                <div id="res-swiss-fields" style="display:none;">
+                    <label for="res-ranking" style="font-weight:bold; font-size:0.8125rem;">Classement final des joueurs ou équipes de Pagny</label>
+                    <textarea id="res-ranking" rows="3" maxlength="2000" placeholder="Ex : Jacques et Laura : 12e" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;"></textarea>
+                </div>
                 <div>
                     <label for="res-player-count" style="display:block; font-size:0.75rem; font-weight:bold; color:#475569; margin-bottom:4px;">Nombre total de joueurs dans le tournoi</label>
                     <input type="number" id="res-player-count" min="1" step="1" placeholder="Ex : 120" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
@@ -295,12 +304,12 @@
                     <label for="res-podium-third" style="font-size:0.8125rem; font-weight:bold;">🥉 3e</label>
                     <input type="text" id="res-podium-third" maxlength="200" placeholder="Joueur(s) ou équipe — club" style="width:100%; border:1px solid #cbd5e1; border-radius:8px; padding:8px; box-sizing:border-box;">
                 </fieldset>
-                <div>
+                <div id="res-poules-fields">
                     <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">☀️ Résultats des Poules (Matin)</label>
                     <textarea id="res-poules" rows="3" placeholder="Ex: Poule A : 3 victoires, 1 défaite." style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box;"></textarea>
                 </div>
                 <div>
-                    <label style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">🏆 Phase Finale & Parcours</label>
+                    <label id="res-phase-label" style="display: block; font-size: 0.75rem; font-weight: bold; color: #475569; text-transform: uppercase; margin-bottom: 4px;">🏆 Phase Finale & Parcours</label>
                     <select id="res-phase" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 0.875rem; box-sizing: border-box; background: white; margin-bottom: 8px;">
                         <option value="Non sorti des poules">Non sorti des poules</option>
                         <option value="32ème de finale">32ème de finale</option>
@@ -330,10 +339,15 @@
             <input type="hidden" id="tr-tournament-id">
             <input type="hidden" id="tr-day-id">
             <input type="hidden" id="tr-team-id">
-            <label for="tr-tableau" style="font-weight:bold; font-size:0.8125rem;">Tableau</label>
+            <label for="tr-system" style="font-weight:bold; font-size:0.8125rem;">Système de compétition</label>
+            <select id="tr-system" onchange="updateTeamResultsSystem()" style="border:1px solid #cbd5e1; border-radius:8px; padding:8px; background:white;">
+                <option value="classic">Poules et phases finales</option>
+                <option value="swiss">Système suisse — classement final</option>
+            </select>
+            <label id="tr-tableau-label" for="tr-tableau" style="font-weight:bold; font-size:0.8125rem;">Tableau</label>
             <input id="tr-tableau" list="tr-tableaux" required maxlength="80" placeholder="Principal ou Consolante" style="border:1px solid #cbd5e1; border-radius:8px; padding:8px;">
             <datalist id="tr-tableaux"><option value="Principal"><option value="Consolante"><option value="Honneur"></datalist>
-            <label for="tr-phase" style="font-weight:bold; font-size:0.8125rem;">Résultat final de cette équipe</label>
+            <label id="tr-phase-label" for="tr-phase" style="font-weight:bold; font-size:0.8125rem;">Résultat final de cette équipe</label>
             <select id="tr-phase" required style="border:1px solid #cbd5e1; border-radius:8px; padding:8px; background:white;">
                 <option value="">Choisir le résultat</option>
                 <option value="Non sorti des poules">Non sorti des poules</option>
@@ -348,7 +362,7 @@
                 <option value="Vainqueur">Vainqueur 🏆</option>
                 <option value="Classé">Autre classement</option>
             </select>
-            <label for="tr-rank" style="font-weight:bold; font-size:0.8125rem;">Classement exact dans ce tableau — facultatif</label>
+            <label id="tr-rank-label" for="tr-rank" style="font-weight:bold; font-size:0.8125rem;">Classement exact dans ce tableau — facultatif</label>
             <input id="tr-rank" type="number" min="1" step="1" placeholder="Ex : 12" style="border:1px solid #cbd5e1; border-radius:8px; padding:8px;">
             <label for="tr-details" style="font-weight:bold; font-size:0.8125rem;">Détails — facultatif</label>
             <textarea id="tr-details" rows="3" maxlength="2000" placeholder="Score, adversaires, précisions…" style="border:1px solid #cbd5e1; border-radius:8px; padding:8px;"></textarea>
@@ -834,12 +848,34 @@
             }
         }
 
+        function updateResultsSystem() {
+            const swiss = document.getElementById('res-system').value === 'swiss';
+            document.getElementById('res-swiss-fields').style.display = swiss ? 'block' : 'none';
+            document.getElementById('res-ranking').required = swiss;
+            ['res-poules-fields', 'res-phase-label', 'res-phase'].forEach(id => {
+                document.getElementById(id).style.display = swiss ? 'none' : '';
+            });
+        }
+
+        function updateTeamResultsSystem() {
+            const swiss = document.getElementById('tr-system').value === 'swiss';
+            ['tr-tableau-label', 'tr-tableau', 'tr-phase-label', 'tr-phase'].forEach(id => {
+                document.getElementById(id).style.display = swiss ? 'none' : '';
+            });
+            document.getElementById('tr-tableau').required = !swiss;
+            document.getElementById('tr-phase').required = !swiss;
+            document.getElementById('tr-rank').required = swiss;
+            document.getElementById('tr-rank-label').textContent = swiss ? 'Classement final de cette équipe' : 'Classement exact dans ce tableau — facultatif';
+        }
+
         function openResultsModal(tournamentId, dayId = '') {
             if (!requireAdmin()) return;
             document.getElementById('res-tournament-id').value = tournamentId;
             document.getElementById('res-day-id').value = dayId;
             const tournament = state.tournaments.find(item => item.id === tournamentId);
             const t = dayId ? tournament.days[dayId] : tournament;
+            document.getElementById('res-system').value = t?.results?.system === 'swiss' ? 'swiss' : 'classic';
+            document.getElementById('res-ranking').value = t?.results?.ranking || '';
             document.getElementById('res-day-label').textContent = dayId ? dayLabel(t) : '';
             document.getElementById('res-player-count').value = t?.results?.playerCount ?? '';
             ['first', 'second', 'third'].forEach(place => {
@@ -847,13 +883,14 @@
             });
             if (t && t.results) {
                 document.getElementById('res-poules').value = t.results.poules || '';
-                document.getElementById('res-phase').value = t.results.phase || 'Non sorti des poules';
+                document.getElementById('res-phase').value = (t.results.system === 'swiss' ? t.results.classicPhase : t.results.phase) || 'Non sorti des poules';
                 document.getElementById('res-details').value = t.results.details || '';
             } else {
                 document.getElementById('res-poules').value = '';
                 document.getElementById('res-phase').value = 'Non sorti des poules';
                 document.getElementById('res-details').value = '';
             }
+            updateResultsSystem();
             openModal('modal-results');
         }
 
@@ -869,14 +906,21 @@
             }
             const tournament = state.tournaments.find(t => t.id === tournamentId);
             const competition = dayId ? tournament?.days?.[dayId] : tournament;
+            if (!competition) return alert("Ce tournoi ou cette journée n’existe plus. Actualise la page.");
+            const swiss = document.getElementById('res-system').value === 'swiss';
+            const ranking = document.getElementById('res-ranking').value.trim();
+            if (swiss && (!ranking || ranking.length > 2000)) return alert("Indique le classement final (2 000 caractères maximum).");
             const resultsData = {
                 ...(competition?.results || {}),
+                system: swiss ? 'swiss' : 'classic',
+                ranking,
+                classicPhase: document.getElementById('res-phase').value,
                 playerCount,
                 podium: Object.fromEntries(['first', 'second', 'third'].map(place => [
                     place, document.getElementById(`res-podium-${place}`).value.trim().slice(0, 200)
                 ])),
                 poules: document.getElementById('res-poules').value,
-                phase: document.getElementById('res-phase').value,
+                phase: swiss ? 'Classement final' : document.getElementById('res-phase').value,
                 details: document.getElementById('res-details').value
             };
             db.ref(competitionPath(tournamentId, dayId) + '/results').set(resultsData)
@@ -930,13 +974,15 @@
             document.getElementById('tr-day-id').value = dayId;
             document.getElementById('tr-team-id').value = teamId;
             document.getElementById('team-results-label').textContent = team.name + (dayId ? '\n' + dayLabel(competition) : '');
-            document.getElementById('tr-tableau').value = team.results?.tableau || 'Principal';
-            document.getElementById('tr-phase').value = team.results?.phase || '';
+            document.getElementById('tr-system').value = (team.results?.system || competition.results?.system) === 'swiss' ? 'swiss' : 'classic';
+            document.getElementById('tr-tableau').value = (team.results?.system === 'swiss' ? team.results.classicTableau : team.results?.tableau) || 'Principal';
+            document.getElementById('tr-phase').value = (team.results?.system === 'swiss' ? team.results.classicPhase : team.results?.phase) || '';
             document.getElementById('tr-rank').value = team.results?.rank ?? '';
             document.getElementById('tr-details').value = team.results?.details || '';
             document.getElementById('tr-error').textContent = '';
             document.getElementById('tr-submit').disabled = false;
             document.getElementById('tr-remove').style.display = team.results ? 'block' : 'none';
+            updateTeamResultsSystem();
             openModal('modal-team-results');
         }
 
@@ -949,8 +995,9 @@
             const {team} = teamResultTarget(tournamentId, dayId, teamId);
             const error = document.getElementById('tr-error');
             if (!team) { error.textContent = "Cette équipe n’existe plus. Actualise la page."; return; }
-            const tableau = document.getElementById('tr-tableau').value.trim();
-            const phase = document.getElementById('tr-phase').value;
+            const swiss = document.getElementById('tr-system').value === 'swiss';
+            const tableau = swiss ? 'Système suisse' : document.getElementById('tr-tableau').value.trim();
+            const phase = swiss ? 'Classé' : document.getElementById('tr-phase').value;
             const allowed = ['Non sorti des poules','64e de finale','32e de finale','16e de finale','8e de finale','Quart de finale','Demi-finale','3e place','Finaliste','Vainqueur','Classé'];
             const rankInput = String(document.getElementById('tr-rank').value).trim();
             const rank = rankInput === '' ? null : Number(rankInput);
@@ -966,6 +1013,9 @@
             try {
                 await db.ref(competitionPath(tournamentId, dayId) + `/teams/${teamId}/results`).set({
                     ...(team.results || {}), tableau, phase, rank,
+                    system: swiss ? 'swiss' : 'classic',
+                    classicTableau: document.getElementById('tr-tableau').value.trim(),
+                    classicPhase: document.getElementById('tr-phase').value,
                     details:document.getElementById('tr-details').value.trim().slice(0, 2000)
                 });
                 closeModal('modal-team-results');
@@ -1252,8 +1302,13 @@
                         </div>
                         ${results ? `
                             <div style="font-size: 0.8125rem; color: #713f12; display: flex; flex-direction: column; gap: 4px;">
-                                <div><strong>Matin (Poules) :</strong> ${escapeText(results.poules) || 'Non renseigné'}</div>
-                                <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${escapeText(results.phase)}</span></div>
+                                ${results.system === 'swiss' ? `
+                                    <div><strong>Système suisse</strong></div>
+                                    <div style="white-space:pre-line;"><strong>Classement final :</strong> ${escapeText(results.ranking) || 'Non renseigné'}</div>
+                                ` : `
+                                    <div><strong>Matin (Poules) :</strong> ${escapeText(results.poules) || 'Non renseigné'}</div>
+                                    <div><strong>Résultat principal :</strong> <span style="background: #fde047; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${escapeText(results.phase)}</span></div>
+                                `}
                                 ${Number.isSafeInteger(results.playerCount) && results.playerCount > 0 ? `<div><strong>Nombre total de joueurs :</strong> ${results.playerCount}</div>` : ''}
                                 ${['first', 'second', 'third'].some(place => results.podium?.[place]) ? `
                                     <div style="margin-top:6px; padding:8px; border:1px solid #fef08a; border-radius:6px; background:#fffbeb;">
@@ -1297,8 +1352,8 @@
                                                     <div style="font-size: 0.75rem; color: #334155; margin-top: 2px;"><i class="fa-solid fa-user-check" style="color: #059669; margin-right: 4px;"></i> ${escapeText(playerNames)}</div>
                                                     ${tm.results?.phase ? `
                                                         <div style="margin-top:8px; padding:8px; border-radius:6px; background:#fefce8; color:#854d0e; font-size:0.8125rem;">
-                                                            <div><strong>${escapeText(tm.results.tableau || 'Principal')} :</strong> ${escapeText(tm.results.phase)}</div>
-                                                            ${Number.isSafeInteger(tm.results.rank) && tm.results.rank > 0 ? `<div>Classement dans ce tableau : <strong>${tm.results.rank === 1 ? '1er' : tm.results.rank + 'e'}</strong></div>` : ''}
+                                                            ${tm.results.system === 'swiss' ? '<div><strong>Système suisse</strong></div>' : `<div><strong>${escapeText(tm.results.tableau || 'Principal')} :</strong> ${escapeText(tm.results.phase)}</div>`}
+                                                            ${Number.isSafeInteger(tm.results.rank) && tm.results.rank > 0 ? `<div>${tm.results.system === 'swiss' ? 'Classement final' : 'Classement dans ce tableau'} : <strong>${tm.results.rank === 1 ? '1er' : tm.results.rank + 'e'}</strong></div>` : ''}
                                                             ${tm.results.details ? `<div style="white-space:pre-line; margin-top:4px;">${escapeText(tm.results.details)}</div>` : ''}
                                                         </div>
                                                     ` : ''}
