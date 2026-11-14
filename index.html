@@ -125,7 +125,7 @@
         <section id="view-player-stats" style="display: none; flex-direction: column; gap: 24px;">
             <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #cbd5e1;">
                 <h2 style="font-size: 1.125rem; font-weight: bold; margin: 0 0 4px 0; color: #1e293b;"><i class="fa-solid fa-medal" style="color: #f59e0b;"></i> Performances Joueur par Joueur (Dossier Admin Privé)</h2>
-                <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Récapitulatif interne des victoires et podiums des membres.</p>
+                <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Saison 2026 — calcul automatique à partir des résultats de chaque équipe. Les podiums incluent les victoires. Le bilan général et les noms saisis dans le podium ne sont pas comptés une seconde fois.</p>
             </div>
             <div id="player-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;"></div>
         </section>
@@ -752,6 +752,65 @@
             return `tournaments/${tournamentId}` + (dayId ? `/days/${dayId}` : '');
         }
 
+        function playerPerformance(memberId, tournaments, year = '2026') {
+            const records = [];
+            const seen = new Set();
+            for (const tournament of tournaments) {
+                const competitions = tournament.days ? Object.entries(tournament.days) : [['', tournament]];
+                for (const [dayId, day] of competitions) {
+                    const date = day.date || tournament.date || '';
+                    if (date.slice(0, 4) !== String(year)) continue;
+                    for (const [teamKey, team] of Object.entries(day.teams || {})) {
+                        if (!(team.playerIds || []).some(id => String(id) === String(memberId))) continue;
+                        const result = team.results;
+                        if (!result || (!result.phase && !(Number.isSafeInteger(result.rank) && result.rank > 0))) continue;
+                        const key = JSON.stringify([tournament.id, dayId, teamKey]);
+                        if (seen.has(key)) continue;
+                        seen.add(key);
+                        const swiss = result.system === 'swiss';
+                        const tableau = String(result.tableau || 'Principal').trim() || 'Principal';
+                        const normalized = tableau.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                        const group = swiss ? 'swiss' : normalized === 'principal' ? 'principal' : normalized === 'consolante' ? 'consolante' : 'other';
+                        const rank = Number.isSafeInteger(result.rank) && result.rank > 0 ? result.rank
+                            : result.phase === 'Vainqueur' ? 1 : result.phase === 'Finaliste' ? 2 : result.phase === '3e place' ? 3 : null;
+                        records.push({
+                            tournament:tournament.name, team:team.name, date, dayId,
+                            format:day.format || tournament.format, tableau:swiss ? 'Système suisse' : tableau,
+                            group, phase:result.phase || '', rank,
+                            winner:rank === 1, podium:rank !== null && rank <= 3
+                        });
+                    }
+                }
+            }
+            records.sort((a, b) => b.date.localeCompare(a.date));
+            const groups = ['principal', 'consolante', 'swiss', 'other'].map(key => {
+                const matches = records.filter(record => record.group === key);
+                return {key, count:matches.length, wins:matches.filter(r => r.winner).length, podiums:matches.filter(r => r.podium).length};
+            });
+            return {records, groups};
+        }
+
+        function renderPlayerPerformance(memberId) {
+            const {records, groups} = playerPerformance(memberId, state.tournaments);
+            if (!records.length) return '<p style="margin:0;">Aucun résultat d’équipe enregistré en 2026. Pour alimenter ce bilan, renseigne « Résultat de l’équipe » sur sa fiche tournoi.</p>';
+            const labels = {principal:'Principal', consolante:'Consolante', swiss:'Système suisse', other:'Autres tableaux'};
+            return `
+                <strong>${records.length} résultat${records.length > 1 ? 's' : ''} d’équipe en 2026</strong>
+                <div style="display:grid; gap:6px; margin-top:8px;">
+                    ${groups.filter(group => group.count).map(group => `<div><strong>${labels[group.key]} :</strong> ${group.wins} victoire${group.wins > 1 ? 's' : ''} · ${group.podiums} podium${group.podiums > 1 ? 's' : ''} <span style="color:#64748b;">(sur ${group.count} résultat${group.count > 1 ? 's' : ''})</span></div>`).join('')}
+                </div>
+                <details style="margin-top:10px;">
+                    <summary style="cursor:pointer; font-weight:bold; padding:4px 0;">Voir les tournois et résultats</summary>
+                    <ul style="margin:8px 0 0; padding-left:18px; display:grid; gap:10px;">
+                        ${records.map(record => `<li><strong>${escapeText(record.tournament)}</strong><br>
+                            ${escapeText(record.date.split('-').reverse().join('/'))} · ${escapeText(record.format === 'Quadrette' ? 'Quadruplette' : record.format)}<br>
+                            ${escapeText(record.team)} — ${escapeText(record.tableau)}<br>
+                            <strong>${record.rank !== null ? (record.rank === 1 ? '1er' : record.rank + 'e') : escapeText(record.phase)}</strong>${record.winner ? ' 🏆' : record.podium ? ' 🏅' : ''}
+                        </li>`).join('')}
+                    </ul>
+                </details>`;
+        }
+
         function isTournamentArchived(t) {
             const days = Object.values(t.days || {});
             return days.length ? days.every(day => day.results && day.results.phase) : Boolean(t.results && t.results.phase);
@@ -1154,7 +1213,7 @@
                         <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid ${isGuest ? '#ffedd5' : '#e2e8f0'}; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div style="width: 40px; height: 40px; border-radius: 50%; background: ${isGuest ? '#fff7ed' : '#eff6ff'}; color: ${isGuest ? '#ea580c' : '#1d4ed8'}; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; border: 1px solid ${isGuest ? '#fed7aa' : '#bfdbfe'};">
-                                    ${m.name.split(' ').map(n=>n[0]).join('')}
+                                    ${escapeText(m.name.split(' ').map(n=>n[0]).join(''))}
                                 </div>
                                 <div>
                                     <div style="font-weight: bold; color: #1e293b; font-size: 0.875rem;">
@@ -1182,12 +1241,12 @@
                                     ${m.name.split(' ').map(n=>n[0]).join('')}
                                 </div>
                                 <div>
-                                    <div style="font-weight: bold; color: #1e293b; font-size: 1rem;">${m.name}</div>
-                                    <div style="font-size: 0.75rem; color: #64748b;">${m.role}</div>
+                                    <div style="font-weight: bold; color: #1e293b; font-size: 1rem;">${escapeText(m.name)}</div>
+                                    <div style="font-size: 0.75rem; color: #64748b;">${escapeText(m.role)}</div>
                                 </div>
                             </div>
                             <div style="font-size: 0.75rem; color: #475569; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                                <em>Dossier prêt à recevoir les statistiques de la saison.</em>
+                                ${renderPlayerPerformance(m.id)}
                             </div>
                         </div>
                     `;
