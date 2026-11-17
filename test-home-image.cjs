@@ -1,0 +1,17 @@
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const html = fs.readFileSync(__dirname + '/index.html','utf8');
+const start = html.indexOf('<section id="view-tournaments"');
+const end = html.indexOf('</section>', start);
+const section = html.slice(start,end);
+assert(section.includes('id="home-club-visual"'));
+assert(section.includes('accueil-pagny-molkky.webp?v=1'));
+assert(section.indexOf('home-club-visual') < section.indexOf('Calendrier des Tournois'));
+assert.equal((html.match(/id="home-club-visual"/g) || []).length,1);
+assert(section.includes('alt="Pagny Mölkky'));
+assert(html.includes('apple-touch-icon.png?v=1'));
+assert(html.includes('logo-pagny-header.png'));
+const image = fs.readFileSync(__dirname + '/accueil-pagny-molkky.webp');
+assert.equal(image.toString('ascii',0,4),'RIFF');
+assert.equal(image.toString('ascii',8,12),'WEBP');
+console.log('OK : visuel dans l’accueil seulement, avant les tournois, texte alternatif, WebP valide ; icône et logo du bandeau conservés.');
