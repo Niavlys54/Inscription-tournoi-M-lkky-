@@ -7,7 +7,7 @@ const section = html.slice(start,end);
 assert(!html.includes('id="home-club-visual"'));
 assert(!html.includes('accueil-pagny-molkky.webp?v=1'));
 assert(section.includes('Calendrier des Tournois'));
-assert(html.includes('apple-touch-icon.png?v=1'));
+assert(html.includes('apple-touch-icon.png?v=2'));
 assert(html.includes('logo-pagny-header.png'));
 const image = fs.readFileSync(__dirname + '/accueil-pagny-molkky.webp');
 assert.equal(image.toString('ascii',0,4),'RIFF');
